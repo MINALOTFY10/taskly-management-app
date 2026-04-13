@@ -1,18 +1,17 @@
-import { Button } from "@/components/ui/button"
+import { supabase } from "@/lib/supabase"
 
-export default function Page() {
+export default async function Page() {
+  const { data, error } = await supabase.from("projects").select("count")
+
+  console.log("Supabase connection test:", { data, error })
+
   return (
-    <div className="flex min-h-svh p-6">
-      <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div>
-          <h1 className="font-medium">Project ready!</h1>
-          <p>You may now add components and start building.</p>
-          <Button className="mt-2">Button</Button>
-        </div>
-        <div className="font-mono text-xs text-muted-foreground">
-          (Press <kbd>d</kbd> to toggle dark mode)
-        </div>
-      </div>
+    <div className="p-8">
+      {error ? (
+        <p className="text-red-500">❌ Connection failed: {error.message}</p>
+      ) : (
+        <p className="text-green-600">✅ Supabase connected successfully</p>
+      )}
     </div>
   )
 }
