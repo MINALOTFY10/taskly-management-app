@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
-  display: "swap",           // prevents invisible text during font load
+  display: "swap",
   weight: ["400", "500", "600", "700"],
 })
 
@@ -17,7 +17,8 @@ export const metadata: Metadata = {
     default: "Taskly",
     template: "%s | Taskly",
   },
-  description: "Modern project management for teams. Organize work with Projects, Epics, and Tasks.",
+  description:
+    "Modern project management for teams. Organize work with Projects, Epics, and Tasks.",
 }
 
 export default function RootLayout({
