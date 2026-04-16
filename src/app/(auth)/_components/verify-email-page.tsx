@@ -21,7 +21,6 @@ export default function VerifyEmailPage({ email }: { email: string }) {
       </div>
       <p className="text-sm text-muted-foreground">
         Didn&apos;t receive it? Check your spam folder, or{" "}
-        {/* Plain Link without reload — navigating to /signup is already a fresh page */}
         <Link
           href="/signup"
           className="font-semibold text-primary underline-offset-4 hover:underline"

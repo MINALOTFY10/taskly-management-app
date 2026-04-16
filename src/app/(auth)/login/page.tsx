@@ -69,7 +69,6 @@ export default function Page() {
           aria-invalid={Boolean(errors.email)}
           {...register("email")}
           error={errors.email?.message}
-          containerClassName="mb-5"
         />
 
         <AuthInput
@@ -81,7 +80,6 @@ export default function Page() {
           aria-invalid={Boolean(errors.password)}
           {...register("password")}
           error={errors.password?.message}
-          containerClassName="mb-2"
         />
 
         {/* Remember me + Forgot password row */}
