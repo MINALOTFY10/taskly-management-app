@@ -4,6 +4,7 @@ import Image from "next/image"
 import Icon from "@/../public/assets/icon.png"
 import React from "react"
 import { cn } from "@/lib/utils"
+import AppLogo from "@/components/shared/app-logo"
 
 interface AuthLayoutProps {
   children: React.ReactNode
@@ -21,10 +22,7 @@ export default function AuthLayout({
   return (
     <main className="relative min-h-screen overflow-hidden bg-background px-4 py-6 sm:px-8 sm:py-7">
       <div className="relative mx-auto flex min-h-[calc(100vh-3rem)] w-full flex-col gap-6">
-        <header className="flex items-center gap-2 text-foreground">
-          <Image src={Icon} alt="Taskly Logo" className="h-5.5 w-5" />
-          <span className="text-xl font-bold tracking-tight">TASKLY</span>
-        </header>
+         <AppLogo />
 
         <section
           className={cn(`mx-auto w-full ${className ?? "max-w-xl"} rounded-xl bg-card p-4 sm:px-10 sm:py-10 sm:shadow-[0_10px_25px_rgba(0,0,0,0.05),0_20px_40px_rgba(0,0,0,0.08)]`)}

@@ -6,11 +6,11 @@ import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 
-import { loginSchema, type LoginFormValues } from "@/lib/validations/auth"
-import AuthLayout from "@/app/(auth)/_components/auth-layout"
-import AuthInput from "@/app/(auth)/_components/auth-input"
-import AuthSubmitButton from "@/app/(auth)/_components/auth-submit-button"
-import { loginUser } from "@/lib/services/auth-service"
+import { loginSchema, type LoginFormValues } from "@/lib/validations"
+import AuthLayout from "@/features/auth/components/auth-layout"
+import AuthInput from "@/features/auth/components/auth-input"
+import AuthSubmitButton from "@/features/auth/components/auth-submit-button"
+import { loginUser } from "@/features/auth/services/auth-service"
 
 export default function Page() {
   const router = useRouter()
@@ -42,7 +42,7 @@ export default function Page() {
         )
         return
       }
-      router.push("/main")
+      router.push("/")
       router.refresh()
     } catch {
       setApiError("Network error. Please check your connection and try again.")

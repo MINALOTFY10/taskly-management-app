@@ -6,17 +6,17 @@ import { ArrowLeft, RotateCcw } from "lucide-react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 
-import AuthInput from "@/app/(auth)/_components/auth-input"
-import AuthLayout from "@/app/(auth)/_components/auth-layout"
-import AuthSubmitButton from "@/app/(auth)/_components/auth-submit-button"
+import AuthInput from "@/features/auth/components/auth-input"
+import AuthLayout from "@/features/auth/components/auth-layout"
+import AuthSubmitButton from "@/features/auth/components/auth-submit-button"
 import {
   forgotPasswordSchema,
   type ForgotPasswordFormValues,
-} from "@/lib/validations/auth"
-import { requestPasswordRecovery } from "@/lib/services/auth-service"
-import { useCooldown } from "../_components/use-cooldown"
-import PasswordResetSuccessSection from "../_components/password-reset-success-section"
-import { formatCountdown } from "@/lib/utils/auth/format-countdown"
+} from "@/lib/validations"
+import { requestPasswordRecovery } from "@/features/auth/services/auth-service"
+import { useCooldown } from "../../../features/auth/hooks/use-cooldown"
+import PasswordResetSuccessSection from "../../../features/auth/components/password-reset-success-section"
+import { formatCountdown } from "@/lib/utils"
 
 const RESEND_COOLDOWN_SECONDS = 5 * 60
 

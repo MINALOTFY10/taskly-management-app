@@ -3,6 +3,13 @@ import { NextRequest, NextResponse } from "next/server"
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
+  const { pathname } = req.nextUrl
+  const publicPaths = new Set([
+    "/login",
+    "/signup",
+    "/forgot-password",
+    "/reset-password",
+  ])
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -38,30 +45,27 @@ export async function middleware(req: NextRequest) {
     return redirectRes
   }
 
-  if (req.nextUrl.pathname.startsWith("/main") && !isAuthenticated) {
+  if (!isAuthenticated && !publicPaths.has(pathname)) {
     return redirectWithCookies("/signup")
   }
 
   const emailLinkError = "Email link is invalid or has expired"
   if (
     req.nextUrl.searchParams.get("error_description") === emailLinkError &&
-    req.nextUrl.pathname !== "/signup"
+    pathname !== "/signup"
   ) {
     return redirectWithCookies(
       `/signup?error_description=${encodeURIComponent(emailLinkError)}`
     )
   }
 
-  if (
-    ["/", "/login", "/signup"].includes(req.nextUrl.pathname) &&
-    isAuthenticated
-  ) {
-    return redirectWithCookies("/main")
+  if (publicPaths.has(pathname) && isAuthenticated) {
+    return redirectWithCookies("/")
   }
 
   return res
 }
 
 export const config = {
-  matcher: ["/main/:path*", "/login", "/signup", "/"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|auth/callback).*)"],
 }
