@@ -5,15 +5,14 @@ import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, useWatch } from "react-hook-form"
-import { FaCheck } from "react-icons/fa"
 
-import { type SignUpFormValues, signUpSchema } from "@/lib/validations/auth"
-import AuthLayout from "../_components/auth-layout"
-import AuthInput from "../_components/auth-input"
-import AuthSubmitButton from "../_components/auth-submit-button"
-import VerifyEmailState from "../_components/verify-email-page"
-import { signUpUser } from "@/lib/services/auth-service"
-import PasswordRulesChecker from "../_components/password-rules-checker"
+import { type SignUpFormValues, signUpSchema } from "@/lib/validations"
+import AuthLayout from "../../../features/auth/components/auth-layout"
+import AuthInput from "../../../features/auth/components/auth-input"
+import AuthSubmitButton from "../../../features/auth/components/auth-submit-button"
+import VerifyEmailState from "../../../features/auth/components/verify-email-page"
+import { signUpUser } from "@/features/auth/services/auth-service"
+import PasswordRulesChecker from "../../../features/auth/components/password-rules-checker"
 
 const PASSWORD_RULES = [
   {
@@ -93,7 +92,7 @@ export default function SignUpPage() {
       }
 
       if (data.session) {
-        router.push("/main")
+        router.push("/")
         router.refresh()
       } else {
         setVerifyEmail(values.email)

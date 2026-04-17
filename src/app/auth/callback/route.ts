@@ -8,10 +8,9 @@ export async function GET(req: NextRequest) {
   const code = searchParams.get("code")
   const tokenHash = searchParams.get("token_hash")
   const type = searchParams.get("type") as EmailOtpType | null
-  const next = searchParams.get("next") ?? "/main"
+  const next = searchParams.get("next") ?? "/"
   const errorDescription = searchParams.get("error_description")
 
-  // Surface Supabase errors (e.g. expired link) back to the signup page.
   if (errorDescription) {
     return NextResponse.redirect(
       new URL(
@@ -25,7 +24,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(new URL("/signup", origin))
   }
 
-  const safeNext = next.startsWith("/") ? next : "/main"
+  const safeNext = next.startsWith("/") ? next : "/"
+  const normalizedNext = safeNext === "/main" ? "/" : safeNext
 
   const supabase = await createSupabaseServerClient()
   let authError: string | null = null
@@ -49,5 +49,5 @@ export async function GET(req: NextRequest) {
     )
   }
 
-  return NextResponse.redirect(new URL(safeNext, origin))
+  return NextResponse.redirect(new URL(normalizedNext, origin))
 }

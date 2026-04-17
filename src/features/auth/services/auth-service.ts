@@ -12,7 +12,7 @@ export async function signUpUser(values: {
     email: values.email,
     password: values.password,
     options: {
-      emailRedirectTo: `${window.location.origin}/auth/callback?next=/main`,
+      emailRedirectTo: `${window.location.origin}/auth/callback?next=/`,
       data: {
         name: values.name,
         job_title: values.jobTitle || null,
@@ -59,10 +59,6 @@ export async function requestPasswordRecovery(values: {
   }
 }
 
-/**
- * Activates the recovery session from the URL hash tokens, then updates the
- * password, then signs out so the user must log in fresh.
- */
 export async function resetPasswordWithAccessToken(values: {
   accessToken: string
   refreshToken: string

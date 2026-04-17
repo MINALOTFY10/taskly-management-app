@@ -7,13 +7,13 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { CheckCircle2, Circle, Eye, EyeOff } from "lucide-react"
 import { useForm, useWatch } from "react-hook-form"
 
-import AuthLayout from "@/app/(auth)/_components/auth-layout"
-import AuthSubmitButton from "@/app/(auth)/_components/auth-submit-button"
-import { resetPasswordWithAccessToken } from "@/lib/services/auth-service"
+import AuthLayout from "@/features/auth/components/auth-layout"
+import AuthSubmitButton from "@/features/auth/components/auth-submit-button"
+import { resetPasswordWithAccessToken } from "@/features/auth/services/auth-service"
 import {
   resetPasswordSchema,
   type ResetPasswordFormValues,
-} from "@/lib/validations/auth"
+} from "@/lib/validations"
 
 const SUCCESS_MESSAGE =
   "Your password has been updated successfully. You can now log in"

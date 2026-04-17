@@ -80,7 +80,7 @@
   --surface-low: #F8F8FF;         /* Background */
 
   /* ── App Background & Surfaces ── */
-  --background: #F8F8FF;
+  --background: #F2F3F8;
   --foreground: #0D1B2A;          /* Slate/Dark — primary text */
 
   --card: #FFFFFF;
@@ -118,7 +118,7 @@
   --destructive: #EF4444;
 
   /* ── Sidebar ── */
-  --sidebar: #FFFFFF;
+  --sidebar: #E8EAF3;
   --sidebar-foreground: #0D1B2A;
   --sidebar-primary: #0032B8;
   --sidebar-primary-foreground: #FFFFFF;
