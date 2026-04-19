@@ -12,6 +12,7 @@ import AuthSubmitButton from "@/features/auth/components/auth-submit-button"
 import PasswordRulesChecker from "@/features/auth/components/password-rules-checker"
 import { usePasswordRules } from "@/features/auth/hooks/usePasswordRules"
 import { resetPasswordWithAccessToken } from "@/features/auth/services/auth-service"
+import { createClient } from "@/lib/supabase/client"
 import {
   resetPasswordSchema,
   type ResetPasswordFormValues } from "@/features/auth/schemas/validations"
@@ -42,7 +43,9 @@ export default function ResetPasswordPage() {
   const rules = usePasswordRules(control, "password")
 
   useEffect(() => {
-    const timeout = window.setTimeout(() => {
+    const timeout = window.setTimeout(async () => {
+      const url = new URL(window.location.href)
+      const code = url.searchParams.get("code")
       const hashParams = new URLSearchParams(
         window.location.hash.replace("#", "")
       )
@@ -58,6 +61,41 @@ export default function ResetPasswordPage() {
           document.title,
           window.location.pathname
         )
+        setIsLinkChecked(true)
+        return
+      }
+
+      if (code) {
+        const supabase = createClient()
+        const { error } = await supabase.auth.exchangeCodeForSession(code)
+
+        if (!error) {
+          const {
+            data: { session },
+          } = await supabase.auth.getSession()
+
+          if (session?.access_token && session.refresh_token) {
+            setAccessToken(session.access_token)
+            setRefreshToken(session.refresh_token)
+            window.history.replaceState(
+              null,
+              document.title,
+              window.location.pathname
+            )
+            setIsLinkChecked(true)
+            return
+          }
+        }
+      }
+
+      const supabase = createClient()
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+
+      if (session?.access_token && session.refresh_token) {
+        setAccessToken(session.access_token)
+        setRefreshToken(session.refresh_token)
       } else {
         setAccessToken(null)
         setRefreshToken(null)
