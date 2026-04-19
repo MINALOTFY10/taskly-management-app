@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react"
 import { ThemeProvider } from "@/components/providers/theme-provider"
+import { ToastProvider } from "@/components/providers/toast-provider"
 
 type AppProvidersProps = {
   children: ReactNode
@@ -15,7 +16,7 @@ export function AppProviders({ children }: AppProvidersProps) {
       enableSystem
       disableTransitionOnChange
     >
-      {children}
+      <ToastProvider>{children}</ToastProvider>
     </ThemeProvider>
   )
 }

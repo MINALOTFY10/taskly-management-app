@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 
 import "./globals.css"
-import { ThemeProvider } from "@/components/providers/theme-provider"
+import { AppProviders } from "@/components/providers/app-provider"
 import { cn } from "@/lib/utils"
 
 const inter = Inter({
@@ -33,14 +33,7 @@ export default function RootLayout({
       className={cn(inter.variable, "antialiased")}
     >
       <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+        <AppProviders>{children}</AppProviders>
       </body>
     </html>
   )
