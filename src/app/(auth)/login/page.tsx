@@ -6,7 +6,7 @@ import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 
-import { loginSchema, type LoginFormValues } from "@/lib/validations"
+import { loginSchema, type LoginFormValues } from "@/features/auth/schemas/validations"
 import AuthLayout from "@/features/auth/components/auth-layout"
 import AuthInput from "@/features/auth/components/auth-input"
 import AuthSubmitButton from "@/features/auth/components/auth-submit-button"

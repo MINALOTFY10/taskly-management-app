@@ -6,13 +6,16 @@ import { useMemo, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, useWatch } from "react-hook-form"
 
-import { type SignUpFormValues, signUpSchema } from "@/lib/validations"
+import {
+  type SignUpFormValues,
+  signUpSchema } from "@/features/auth/schemas/validations"
 import AuthLayout from "../../../features/auth/components/auth-layout"
 import AuthInput from "../../../features/auth/components/auth-input"
 import AuthSubmitButton from "../../../features/auth/components/auth-submit-button"
 import VerifyEmailState from "../../../features/auth/components/verify-email-page"
 import { signUpUser } from "@/features/auth/services/auth-service"
 import PasswordRulesChecker from "../../../features/auth/components/password-rules-checker"
+import { usePasswordRules } from "@/features/auth/hooks/usePasswordRules"
 
 const PASSWORD_RULES = [
   {
@@ -34,7 +37,6 @@ const PASSWORD_RULES = [
 
 export default function SignUpPage() {
   const router = useRouter()
-
   const [apiError, setApiError] = useState<string | null>(null)
   const [verifyEmail, setVerifyEmail] = useState<string | null>(null)
 
@@ -55,21 +57,7 @@ export default function SignUpPage() {
     mode: "onChange",
   })
 
-  const passwordValue = useWatch({ control, name: "password" }) || ""
-
-  const passwordChecks = useMemo(
-    () =>
-      Object.fromEntries(
-        PASSWORD_RULES.map((rule) => [rule.key, rule.test(passwordValue)])
-      ),
-    [passwordValue]
-  ) as Record<(typeof PASSWORD_RULES)[number]["key"], boolean>
-
-  const rules = PASSWORD_RULES.map((rule) => ({
-    key: rule.key,
-    label: rule.label,
-    matched: passwordChecks[rule.key],
-  }))
+  const rules = usePasswordRules(control, "password")
 
   const onSubmit = async (values: SignUpFormValues) => {
     setApiError(null)
@@ -154,9 +142,9 @@ export default function SignUpPage() {
               id="password"
               label="Password"
               type="password"
+              showPasswordToggle
               autoComplete="new-password"
               placeholder="Min. 8 characters"
-              aria-invalid={Boolean(errors.password)}
               {...register("password")}
               error={errors.password?.message}
               containerClassName=""
@@ -166,6 +154,7 @@ export default function SignUpPage() {
               id="confirmPassword"
               label="Confirm Password"
               type="password"
+              showPasswordToggle
               autoComplete="new-password"
               placeholder="Repeat your password"
               aria-invalid={Boolean(errors.confirmPassword)}
@@ -178,7 +167,6 @@ export default function SignUpPage() {
           <PasswordRulesChecker
             rules={rules}
             variant="badge"
-            layout="list"
             className="mb-6"
           />
           <p

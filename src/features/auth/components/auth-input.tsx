@@ -1,6 +1,7 @@
 "use client"
 
-import React from "react"
+import React, { useState } from "react"
+import { Eye, EyeOff } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface AuthInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -8,7 +9,7 @@ interface AuthInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string | null
   containerClassName?: string
   labelClassName?: string
-  hideLabel?: boolean
+  showPasswordToggle?: boolean  // ← new
 }
 
 const BASE_INPUT_CLASS =
@@ -24,8 +25,17 @@ export default function AuthInput({
   containerClassName = "mb-7",
   labelClassName,
   className,
+  type,
+  showPasswordToggle = false,
   ...props
 }: AuthInputProps) {
+  const [showPassword, setShowPassword] = useState(false)
+
+  const inputType =
+    showPasswordToggle && type === "password"
+      ? showPassword ? "text" : "password"
+      : type
+
   return (
     <div className={containerClassName}>
       {label && (
@@ -34,7 +44,33 @@ export default function AuthInput({
         </label>
       )}
 
-      <input id={id} className={cn(BASE_INPUT_CLASS, className)} {...props} />
+      <div className="relative">
+        <input
+          id={id}
+          type={inputType}
+          className={cn(
+            BASE_INPUT_CLASS,
+            showPasswordToggle && "pr-12",
+            className
+          )}
+          {...props}
+        />
+
+        {showPasswordToggle && type === "password" && (
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? (
+              <EyeOff className="h-5 w-5" />
+            ) : (
+              <Eye className="h-5 w-5" />
+            )}
+          </button>
+        )}
+      </div>
 
       {error && (
         <p className="mt-1 ml-2 text-sm text-muted-foreground" role="alert">
