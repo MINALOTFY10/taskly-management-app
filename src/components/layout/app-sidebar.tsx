@@ -18,15 +18,10 @@ import { NAV_ITEMS } from "./main-shell.constants"
 import type { NavKey } from "./main-shell.types"
 import AppLogo from "../shared/app-logo"
 import { useState } from "react"
+import { useLogout } from "@/hooks/use-logout"
 
-interface AppSidebarProps {
-  handleLogout: () => void
-}
-
-export function AppSidebar({
-  handleLogout,
-}: AppSidebarProps) {
-  const [activeNav, setActiveNav] = useState<NavKey>("projects")  
+export function AppSidebar() {
+  const { handleLogout, isLoggingOut, logoutError } = useLogout()
 
   return (
     <Sidebar collapsible="icon" className="border-0!">
@@ -38,7 +33,7 @@ export function AppSidebar({
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu className="mt-4 gap-2">
-              <NavItem activeNav={activeNav} setActiveNav={setActiveNav} />
+              <NavItems />
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -52,19 +47,34 @@ export function AppSidebar({
           <SidebarMenuItem>
             <SidebarMenuButton
               onClick={handleLogout}
+              disabled={isLoggingOut}
               tooltip="Logout"
               className="h-10 text-destructive hover:bg-destructive/10 hover:text-destructive"
             >
               <LogOut className="size-4.5" />
-              <span className="text-sm">Logout</span>
+              <span className="text-sm">
+                {isLoggingOut ? "Logging out..." : "Logout"}
+              </span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
+
+        <p
+          role="alert"
+          className={
+            logoutError
+              ? "mt-2 rounded-md border border-error/30 bg-error/10 px-2 py-1 text-xs text-error"
+              : "sr-only"
+          }
+        >
+          {logoutError ?? ""}
+        </p>
       </SidebarFooter>
     </Sidebar>
   )
 }
 
+// Sub-components
 function CollapseButton() {
   const { toggleSidebar, open } = useSidebar()
   return (
@@ -83,7 +93,9 @@ function CollapseButton() {
   )
 }
 
-function NavItem({activeNav, setActiveNav}: {activeNav: NavKey, setActiveNav: (key: NavKey) => void}) {
+function NavItems() {
+  const [activeNav, setActiveNav] = useState<NavKey>("projects")
+
   return (
     <>
       {NAV_ITEMS.map((item) => {

@@ -1,9 +1,9 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
 import { createClient } from "@/lib/supabase/client"
-import { clearUser, setUser } from "@/store/user/user-slice"
+import { setUser } from "@/store/user/user-slice"
 import { useAppDispatch } from "@/store/hooks"
 import { SidebarInset } from "@/components/ui/sidebar"
 import { AppSidebar } from "./app-sidebar"
@@ -25,13 +25,9 @@ export function MainShell({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe()
   }, [dispatch])
 
-  const handleLogout = async () => {
-    dispatch(clearUser())
-  }
-
   return (
     <>
-      <AppSidebar handleLogout={handleLogout} />
+      <AppSidebar />
       <SidebarInset className="bg-background text-foreground">
         <MainNavbar />
         <main className="flex flex-1 flex-col pb-14 sm:pb-0">{children}</main>
