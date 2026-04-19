@@ -1,6 +1,8 @@
 "use client"
 
 import { ChevronLeft, ChevronRight, LogOut } from "lucide-react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 import {
   Sidebar,
@@ -15,9 +17,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { NAV_ITEMS } from "./main-shell.constants"
-import type { NavKey } from "./main-shell.types"
 import AppLogo from "../shared/app-logo"
-import { useState } from "react"
 import { useLogout } from "@/hooks/use-logout"
 
 export function AppSidebar() {
@@ -94,17 +94,38 @@ function CollapseButton() {
 }
 
 function NavItems() {
-  const [activeNav, setActiveNav] = useState<NavKey>("projects")
+  const pathname = usePathname()
 
   return (
     <>
       {NAV_ITEMS.map((item) => {
         const Icon = item.icon
+        const isActive = item.href
+          ? pathname === item.href || pathname.startsWith(`${item.href}/`)
+          : false
+
+        if (item.href) {
+          return (
+            <SidebarMenuItem key={item.key} className="px-2">
+              <SidebarMenuButton
+                asChild
+                isActive={isActive}
+                tooltip={item.label}
+                className="h-11"
+              >
+                <Link href={item.href}>
+                  <Icon className="mr-1 size-5 shrink-0" />
+                  <span className="text-sm">{item.label}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )
+        }
+
         return (
           <SidebarMenuItem key={item.key} className="px-2">
             <SidebarMenuButton
-              isActive={item.key === activeNav}
-              onClick={() => setActiveNav(item.key)}
+              isActive={false}
               tooltip={item.label}
               className="h-11"
             >

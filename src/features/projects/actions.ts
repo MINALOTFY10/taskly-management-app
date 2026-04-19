@@ -6,12 +6,7 @@ import {
   createProjectSchema,
   type CreateProjectFormValues,
 } from "@/features/projects/schemas/validations"
-
-type ProjectRow = {
-  id: string
-  name: string
-  description: string | null
-}
+import type { ProjectRow } from "@/features/projects/types"
 
 type ActionResult = {
   data: ProjectRow | null
@@ -33,13 +28,13 @@ export async function createProjectAction(
       name: validated.data.name,
       description: validated.data.description?.trim() || null,
     })
-    .select("id, name, description")
+    .select("id, name, description, created_at")
     .single<ProjectRow>()
 
   if (error) {
     return { data: null, error: `Failed to create project: ${error.message}` }
   }
 
-  revalidatePath("/projects")
+  revalidatePath("/project")
   return { data, error: null }
 }

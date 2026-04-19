@@ -42,7 +42,7 @@ export default function Page() {
         )
         return
       }
-      router.push("/")
+      router.push("/project")
       router.refresh()
     } catch {
       setApiError("Network error. Please check your connection and try again.")

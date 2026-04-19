@@ -9,4 +9,5 @@ export type NavItem = {
   key: NavKey
   label: string
   icon: LucideIcon
+  href?: string
 }
