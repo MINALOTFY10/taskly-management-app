@@ -44,7 +44,7 @@ export default function AddProjectForm() {
   const onSubmit = async (values: CreateProjectFormValues) => {
     setApiError(null)
 
-    const { data, error } = await createProjectAction(values)
+    const { error } = await createProjectAction(values)
 
     if (error) {
       setApiError(error)
@@ -54,7 +54,7 @@ export default function AddProjectForm() {
 
     showToast({ variant: "success", message: "Project created successfully" })
 
-    router.push(data?.id ? `/projects/${data.id}` : "/projects")
+    router.push("/project")
   }
 
   const handleCancel = () => {
