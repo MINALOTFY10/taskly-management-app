@@ -7,6 +7,11 @@ import {
   type CreateProjectFormValues,
 } from "@/features/projects/schemas/validations"
 import type { ProjectRow } from "@/features/projects/types"
+import {
+  getProjects,
+  type GetProjectsOptions,
+  type ProjectsQueryResult,
+} from "@/features/projects/queries"
 
 type ActionResult = {
   data: ProjectRow | null
@@ -37,4 +42,10 @@ export async function createProjectAction(
 
   revalidatePath("/project")
   return { data, error: null }
+}
+
+export async function getProjectsAction(
+  options: GetProjectsOptions = {}
+): Promise<ProjectsQueryResult> {
+  return getProjects(options)
 }

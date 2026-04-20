@@ -20,7 +20,7 @@ export default function EmptyState() {
       </div>
 
       <h1 className="mt-8 text-[2.2rem] leading-none font-semibold tracking-tight text-foreground">
-        No Projects
+        No projects found
       </h1>
       <p className="mt-4 max-w-md text-[0.9rem] leading-relaxed text-muted-foreground sm:text-[1rem]">
         You don&apos;t have any projects yet. Start by defining your first

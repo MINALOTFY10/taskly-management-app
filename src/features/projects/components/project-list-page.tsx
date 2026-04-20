@@ -1,22 +1,84 @@
+"use client"
+
+import { useCallback, useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { Plus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { useIsMobile } from "@/hooks/use-mobile"
+import { getProjectsAction } from "@/features/projects/actions"
+import { type PaginationMeta } from "@/lib/pagination"
 import type { ProjectRow } from "@/features/projects/types"
+import {
+  getOffsetFromPage,
+  getPageFromOffset,
+  getTotalPages,
+} from "@/lib/pagination"
 import EmptyState from "./project-list-empty"
 import ErrorState from "./project-list-error"
 import ProjectListItem from "./project-list-item"
+import CompactPagination from "@/components/shared/compact-pagination"
+import MobilePaginationFeedback from "@/components/shared/mobile-pagination-feedback"
+import ScrollSentinel from "./scroll-sentinel"
 
 type ProjectListPageProps = {
-  projects: ProjectRow[]
-  hasError: boolean
+  initialProjects: ProjectRow[]
+  initialError: string | null
+  initialPagination: PaginationMeta
 }
 
 export default function ProjectListPage({
-  projects,
-  hasError,
+  initialProjects,
+  initialError,
+  initialPagination,
 }: ProjectListPageProps) {
-  if (hasError) return <ErrorState />
+  const isMobile = useIsMobile()
+  const limit = initialPagination.limit
+
+  const [projects, setProjects] = useState<ProjectRow[]>(initialProjects)
+  const [currentPage, setCurrentPage] = useState(
+    getPageFromOffset(initialPagination.offset, limit)
+  )
+  const [totalCount, setTotalCount] = useState(initialPagination.totalCount)
+  const [loadMoreError, setLoadMoreError] = useState<string | null>(null)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+
+  const totalPages = getTotalPages(totalCount, limit)
+  const hasMore = projects.length < totalCount
+
+  const fetchProjectsOnMobileMode = useCallback(async () => {
+    if (!isMobile || isLoadingMore || !hasMore) return
+
+    setIsLoadingMore(true)
+    setLoadMoreError(null)
+
+    const nextPage = currentPage + 1
+
+    try {
+      const { data, error, pagination } = await getProjectsAction({
+        limit,
+        offset: getOffsetFromPage(nextPage, limit),
+      })
+
+      if (error) {
+        setLoadMoreError(error)
+        return
+      }
+
+      setCurrentPage(nextPage)
+      setTotalCount(pagination.totalCount)
+
+      setProjects((prev) => {
+        const existingIds = new Set(prev.map((p) => p.id))
+        const newRows = data.filter((row) => !existingIds.has(row.id))
+        return newRows.length ? [...prev, ...newRows] : prev
+      })
+    } finally {
+      setIsLoadingMore(false)
+    }
+  }, [currentPage, hasMore, isMobile, isLoadingMore, limit])
+
+  if (initialError) return <ErrorState message="Failed to load projects" />
   if (projects.length === 0) return <EmptyState />
 
   return (
@@ -35,36 +97,55 @@ export default function ProjectListPage({
           <Button
             asChild
             size="lg"
-            className="hidden h-12 gap-2 rounded-md px-6 text-[14px] font-semibold shadow-[0_10px_18px_rgba(0,50,184,0.15)] sm:inline-flex"
+            className="mt-auto hidden h-12 gap-2 rounded-md px-4 text-[14px] font-semibold shadow-[0_10px_18px_rgba(0,50,184,0.15)] sm:inline-flex"
           >
             <Link href="/project/add">
-              <Plus className="size-4" />
-              Create New Project
+              <Plus className="size-4" /> Create New Project
             </Link>
           </Button>
         </div>
 
-        <div className="mt-7 grid grid-cols-1 gap-4 sm:mt-8 md:grid-cols-2 xl:grid-cols-3 xl:gap-5">
+        <div
+          role="list"
+          className="mt-7 grid grid-cols-1 gap-4 sm:mt-8 md:grid-cols-2 xl:grid-cols-3 xl:gap-5"
+        >
           {projects.map((project) => (
-            <ProjectListItem key={project.id} project={project} />
-          ))}
-
-          <Link
-            href="/project/add"
-            className="hidden min-h-55 items-center justify-center rounded-lg border border-dashed border-border/70 bg-card/40 text-center transition-colors hover:bg-card md:flex"
-          >
-            <div className="space-y-3">
-              <div className="mx-auto flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                <Plus className="size-5" />
-              </div>
-              <p className="text-xs font-bold tracking-[0.14em] text-muted-foreground uppercase">
-                Add Project
-              </p>
+            <div key={project.id} role="listitem">
+              <ProjectListItem project={project} />
             </div>
-          </Link>
+          ))}
         </div>
+
+        <div className="mt-8 flex min-h-7 items-center justify-between gap-4 pb-4">
+          <p className="text-[0.82rem] text-muted-foreground">
+            Showing {projects.length} of {totalCount} active projects
+          </p>
+
+          {isMobile === false && totalCount > 0 && (
+            <CompactPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+            />
+          )}
+        </div>
+
+        <ScrollSentinel
+          enabled={isMobile === true && hasMore}
+          onIntersect={fetchProjectsOnMobileMode}
+        />
+
+        <MobilePaginationFeedback
+          isLoadingMore={isLoadingMore}
+          loadingText="Loading more projects"
+          errorMessage={loadMoreError}
+          showError={projects.length > 0}
+          onRetry={() => {
+            void fetchProjectsOnMobileMode()
+          }}
+        />
       </div>
 
+      {/* ── Mobile FAB ── */}
       <Button
         asChild
         size="icon-lg"
