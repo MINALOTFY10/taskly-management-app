@@ -2,7 +2,13 @@ import { Button } from "@/components/ui/button"
 import { FileWarning } from "lucide-react"
 import Link from "next/link"
 
-export default function ErrorState() {
+type ErrorStateProps = {
+  message?: string
+}
+
+export default function ErrorState({
+  message = "Failed to load projects",
+}: ErrorStateProps) {
   return (
     <section className="flex min-h-[calc(100dvh-64px)] flex-col items-center justify-center px-5 py-12 text-center sm:px-8">
       <div className="flex size-18 items-center justify-center rounded-xl bg-error/15 text-error">
@@ -13,8 +19,7 @@ export default function ErrorState() {
         Something went wrong
       </h1>
       <p className="mt-4 max-w-sm text-[0.9rem] leading-relaxed text-muted-foreground sm:text-[1rem]">
-        We&apos;re having trouble retrieving your projects right now. Please try
-        again in a moment.
+        {message}
       </p>
 
       <Button
