@@ -19,7 +19,7 @@ import ErrorState from "./project-list-error"
 import ProjectListItem from "./project-list-item"
 import CompactPagination from "@/components/shared/compact-pagination"
 import MobilePaginationFeedback from "@/components/shared/mobile-pagination-feedback"
-import ScrollSentinel from "./scroll-sentinel"
+import ScrollSentinel from "../scroll-sentinel"
 
 type ProjectListPageProps = {
   initialProjects: ProjectRow[]
