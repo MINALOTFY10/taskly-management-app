@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { PAGE_SIZE } from "@/lib/pagination"
 import { getProjects } from "@/features/projects/queries"
-import ProjectListPage from "@/features/projects/components/project-list-page"
+import ProjectListPage from "@/features/projects/components/listing/project-list-page"
 import { getOffsetFromPage, parsePageParam } from "@/lib/pagination"
 
 export const metadata: Metadata = {

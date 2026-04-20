@@ -1,4 +1,4 @@
-import ProjectListLoading from "@/features/projects/components/project-list-loading"
+import ProjectListLoading from "@/features/projects/components/listing/project-list-loading"
 
 export default function ProjectLoading() {
   return <ProjectListLoading />

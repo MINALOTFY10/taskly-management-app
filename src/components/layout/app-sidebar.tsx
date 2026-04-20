@@ -95,16 +95,29 @@ function CollapseButton() {
 
 function NavItems() {
   const pathname = usePathname()
+  const projectIdMatch = pathname.match(/^\/project\/([^\/]+)/)
+  const projectId = projectIdMatch?.[1] ?? null
+
+  const projectNavHrefByKey = {
+    epics: projectId ? `/project/${projectId}/epics` : undefined,
+    tasks: projectId ? `/project/${projectId}/tasks` : undefined,
+    members: projectId ? `/project/${projectId}/members` : undefined,
+    details: projectId ? `/project/${projectId}/details` : undefined,
+  } as const
 
   return (
     <>
       {NAV_ITEMS.map((item) => {
+        const href =
+          item.key === "projects" ? item.href : projectNavHrefByKey[item.key]
+        const isDisabled = item.key !== "projects" && !projectId
         const Icon = item.icon
-        const isActive = item.href
-          ? pathname === item.href || pathname.startsWith(`${item.href}/`)
+
+        const isActive = href
+          ? pathname === (href || pathname.startsWith(`${href}/`))
           : false
 
-        if (item.href) {
+        if (href && !isDisabled) {
           return (
             <SidebarMenuItem key={item.key} className="px-2">
               <SidebarMenuButton
@@ -113,7 +126,7 @@ function NavItems() {
                 tooltip={item.label}
                 className="h-11"
               >
-                <Link href={item.href}>
+                <Link href={href}>
                   <Icon className="mr-1 size-5 shrink-0" />
                   <span className="text-sm">{item.label}</span>
                 </Link>
@@ -127,7 +140,8 @@ function NavItems() {
             <SidebarMenuButton
               isActive={false}
               tooltip={item.label}
-              className="h-11"
+              disabled={isDisabled}
+              className="h-11 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Icon className="mr-1 size-5 shrink-0" />
               <span className="text-sm">{item.label}</span>
