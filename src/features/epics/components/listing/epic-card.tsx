@@ -1,10 +1,10 @@
 "use client"
 
 import { CalendarDays, MoreHorizontal, UserRound } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import { Button } from "@/components/ui/button"
-import EpicDetailsModal from "@/features/epics/components/listing/epic-details-modal"
+import EpicDetailsModal from "@/features/epics/components/modal/epic-details-modal"
 import type { EpicRow } from "@/features/epics/types"
 import EpicAvatar from "@/features/epics/components/shared/epic-avatar"
 import { getEpicBadgeColor } from "@/features/epics/utils/epic-badge"
@@ -17,16 +17,32 @@ import { cn } from "@/lib/utils"
 
 type EpicCardProps = {
   epic: EpicRow
+  projectId: string
+  assigneeOptions: {
+    userId: string
+    name: string
+    email: string
+    avatarUrl: string | null
+  }[]
 }
 
-export default function EpicCard({ epic }: EpicCardProps) {
-  const badgeColor = getEpicBadgeColor(epic.epic_id)
-  const statusLabel = getStatusLabel(epic.status)
-  const statusClass = getStatusClassName(epic.status)
-  const assigneeName = epic.assignee?.name ?? "Unassigned"
-  const isDone = statusLabel === "Done"
-
+export default function EpicCard({
+  epic,
+  projectId,
+  assigneeOptions,
+}: EpicCardProps) {
+  const [currentEpic, setCurrentEpic] = useState(epic)
   const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    setCurrentEpic(epic)
+  }, [epic])
+
+  const badgeColor = getEpicBadgeColor(currentEpic.epic_id)
+  const statusLabel = getStatusLabel(currentEpic.status)
+  const statusClass = getStatusClassName(currentEpic.status)
+  const assigneeName = currentEpic.assignee?.name ?? "Unassigned"
+  const isDone = statusLabel === "Done"
 
   return (
     <>
@@ -45,7 +61,7 @@ export default function EpicCard({ epic }: EpicCardProps) {
                 badgeColor
               )}
             >
-              {epic.epic_id}
+              {currentEpic.epic_id}
             </span>
 
             <span
@@ -62,7 +78,7 @@ export default function EpicCard({ epic }: EpicCardProps) {
             variant="ghost"
             size="icon"
             className="size-7 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100"
-            aria-label={`Options for ${epic.title}`}
+            aria-label={`Options for ${currentEpic.title}`}
             tabIndex={-1}
             onClick={(e) => e.stopPropagation()}
           >
@@ -71,7 +87,7 @@ export default function EpicCard({ epic }: EpicCardProps) {
         </div>
 
         <h3 className="mt-5 line-clamp-2 text-[1.35rem] leading-snug font-bold text-foreground">
-          {epic.title}
+          {currentEpic.title}
         </h3>
 
         <div className="mt-4 hidden items-center justify-between sm:flex">
@@ -115,7 +131,7 @@ export default function EpicCard({ epic }: EpicCardProps) {
               Deadline
             </p>
             <p className="text-sm font-medium text-foreground">
-              {formatEpicDate(epic.deadline)}
+              {formatEpicDate(currentEpic.deadline)}
             </p>
           </div>
         </div>
@@ -129,14 +145,14 @@ export default function EpicCard({ epic }: EpicCardProps) {
               <span>
                 Created by:{" "}
                 <span className="font-medium text-foreground/80">
-                  {epic.created_by.name}
+                  {currentEpic.created_by.name}
                 </span>
               </span>
             </div>
 
             <div className="flex items-center gap-1.5">
               <CalendarDays className="size-3.5 shrink-0" aria-hidden="true" />
-              <span>{formatEpicDate(epic.created_at)}</span>
+              <span>{formatEpicDate(currentEpic.created_at)}</span>
             </div>
           </div>
         </div>
@@ -144,7 +160,10 @@ export default function EpicCard({ epic }: EpicCardProps) {
       <EpicDetailsModal
         open={open}
         onClose={() => setOpen(false)}
-        epic={epic}
+        epic={currentEpic}
+        projectId={projectId}
+        assigneeOptions={assigneeOptions}
+        onEpicUpdated={setCurrentEpic}
       />
     </>
   )
