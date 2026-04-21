@@ -19,6 +19,7 @@ import {
 import { NAV_ITEMS } from "./main-shell.constants"
 import AppLogo from "../shared/app-logo"
 import { useLogout } from "@/hooks/use-logout"
+import console from "console"
 
 export function AppSidebar() {
   const { handleLogout, isLoggingOut, logoutError } = useLogout()
@@ -96,12 +97,7 @@ function CollapseButton() {
 function NavItems() {
   const pathname = usePathname()
   const projectIdMatch = pathname.match(/^\/project\/([^\/]+)/)
-  let projectId = projectIdMatch?.[1] ?? null
-
-  const RESERVED_PROJECT_SEGMENTS = new Set(["add", "new", "create"])
-  if (projectId && RESERVED_PROJECT_SEGMENTS.has(projectId)) {
-    projectId = null
-  }
+  const projectId = projectIdMatch?.[1] ?? null
 
   const projectNavHrefByKey = {
     epics: projectId ? `/project/${projectId}/epics` : undefined,
@@ -118,7 +114,9 @@ function NavItems() {
         const isDisabled = item.key !== "projects" && !projectId
         const Icon = item.icon
 
-        const isActive = href ? (pathname === href || pathname.startsWith(`${href}/`)) : false
+        const isActive = href
+          ? pathname === (href || pathname.startsWith(`${href}/`))
+          : false
 
         if (href && !isDisabled) {
           return (

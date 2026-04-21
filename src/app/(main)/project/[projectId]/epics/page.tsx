@@ -5,9 +5,11 @@ import { PAGE_SIZE } from "@/lib/pagination"
 import { getProjectById } from "@/features/projects/queries"
 import { getEpics } from "@/features/epics/queries"
 import EpicsListPage from "@/features/epics/components/listing/epics-list-page"
+import { getOffsetFromPage, parsePageParam } from "@/lib/pagination"
 
 type EpicsPageProps = {
   params: Promise<{ projectId: string }>
+  searchParams: Promise<{ page?: string }>
 }
 
 export async function generateMetadata({
@@ -20,12 +22,18 @@ export async function generateMetadata({
   }
 }
 
-export default async function EpicsPage({ params }: EpicsPageProps) {
+export default async function EpicsPage({
+  params,
+  searchParams,
+}: EpicsPageProps) {
   const { projectId } = await params
+  const { page: pageParam } = await searchParams
+  const page = parsePageParam(pageParam)
+  const offset = getOffsetFromPage(page, PAGE_SIZE)
 
   const [projectResult, epicsResult] = await Promise.all([
     getProjectById(projectId),
-    getEpics(projectId, { limit: PAGE_SIZE, offset: 0 }),
+    getEpics(projectId, { limit: PAGE_SIZE, offset }),
   ])
 
   if (projectResult.error) {
@@ -38,6 +46,7 @@ export default async function EpicsPage({ params }: EpicsPageProps) {
 
   return (
     <EpicsListPage
+      key={`page-${page}`}
       projectId={projectId}
       projectName={projectResult.data.name}
       initialEpics={epicsResult.data}
