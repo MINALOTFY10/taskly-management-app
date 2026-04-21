@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { BiSolidCarousel } from "react-icons/bi"
 import { List } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -40,9 +41,16 @@ export default function EpicDetailsModal({
   loading = false,
   error = null,
 }: EpicDetailsModalProps) {
+  const router = useRouter()
   const { showToast } = useAppToast()
   const [localEpic, setLocalEpic] = useState<EpicRow | null>(epic)
   const [isSaving, setIsSaving] = useState(false)
+
+  const handleAddTaskClick = useCallback(() => {
+    if (!localEpic) return
+    router.push(`/project/${projectId}/tasks/new?epicId=${localEpic.id}`)
+    onClose()
+  }, [localEpic, onClose, projectId, router])
 
   useEffect(() => {
     setLocalEpic(epic)
@@ -126,26 +134,32 @@ export default function EpicDetailsModal({
 
           <div className="mt-10 flex items-center justify-between">
             <h3 className="text-3xl font-semibold text-foreground">Tasks</h3>
-            <Button variant="ghost" className="font-semibold text-primary">
+            <Button
+              variant="ghost"
+              className="font-semibold text-primary"
+              onClick={handleAddTaskClick}
+            >
               + Add Task
             </Button>
           </div>
 
-          <EmptyTaskState />
+          <EmptyTaskState onAddTask={handleAddTaskClick} />
         </div>
       </DialogContent>
     </Dialog>
   )
 }
 
-function EmptyTaskState() {
+function EmptyTaskState({ onAddTask }: { onAddTask: () => void }) {
   return (
     <div className="mt-5 flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border/70 bg-surface-low py-12">
       <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-accent">
         <List className="h-6 w-6 text-muted-foreground" />
       </div>
       <h3 className="mb-6 text-lg font-normal">No tasks added yet</h3>
-      <Button className="bg-primary px-7">+ Add Task</Button>
+      <Button className="bg-primary px-7" onClick={onAddTask}>
+        + Add Task
+      </Button>
     </div>
   )
 }
