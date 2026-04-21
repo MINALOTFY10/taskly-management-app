@@ -23,6 +23,12 @@ type EpicsListPageProps = {
   initialEpics: EpicRow[]
   initialError: string | null
   initialPagination: PaginationMeta
+  assigneeOptions: {
+    userId: string
+    name: string
+    email: string
+    avatarUrl: string | null
+  }[]
 }
 
 export default function EpicsListPage({
@@ -31,6 +37,7 @@ export default function EpicsListPage({
   initialEpics,
   initialError,
   initialPagination,
+  assigneeOptions,
 }: EpicsListPageProps) {
   const isMobile = useIsMobile()
 
@@ -62,7 +69,12 @@ export default function EpicsListPage({
 
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2" aria-label="Epics list">
         {epics.map((epic) => (
-          <EpicCard key={epic.id} epic={epic} />
+          <EpicCard
+            key={epic.id}
+            epic={epic}
+            projectId={projectId}
+            assigneeOptions={assigneeOptions}
+          />
         ))}
       </div>
 
