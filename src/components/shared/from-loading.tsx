@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton"
 
-export default function EditProjectLoading() {
+export default function FormLoading() {
   return (
     <section className="px-5 py-5 sm:px-6 sm:py-7 lg:px-8">
       <div className="mx-auto hidden w-full items-start justify-between gap-4 sm:flex">

@@ -4,7 +4,7 @@ import type { Metadata } from "next"
 import { PAGE_SIZE } from "@/lib/pagination"
 import { getProjectById } from "@/features/projects/queries"
 import { getEpics } from "@/features/epics/queries"
-import EpicsListPage from "@/features/epics/components/epics-list-page"
+import EpicsListPage from "@/features/epics/components/listing/epics-list-page"
 
 type EpicsPageProps = {
   params: Promise<{ projectId: string }>

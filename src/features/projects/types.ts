@@ -9,6 +9,7 @@ export type ProjectMemberRole = "owner" | "admin" | "member" | "viewer"
 
 export type ProjectMemberRow = {
   id: string
+  userId: string
   projectId: string
   name: string
   email: string

@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
-  AlertCircle,
   CircleCheckBig,
   Lightbulb,
   UserRoundPlus,
@@ -11,6 +10,8 @@ import { useForm, useWatch } from "react-hook-form"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { FormField } from "@/components/shared/form-field"
+import { FormStatusMessage } from "@/components/shared/form-status-message"
 import {
   createProjectSchema,
   type CreateProjectFormValues,
@@ -108,14 +109,13 @@ export default function ProjectForm({
           className="space-y-6 px-0 py-5 sm:px-8 sm:py-7"
           aria-describedby="project-form-status"
         >
-          <div className="space-y-2">
-            <label
-              htmlFor="project-name"
-              className="block text-xs font-bold tracking-[0.08em] text-muted-foreground uppercase"
-            >
-              Project Title <span className="text-error">*</span>
-            </label>
-
+          <FormField
+            label="Project Title"
+            htmlFor="project-name"
+            required
+            error={errors.name?.message}
+            errorId="project-name-error"
+          >
             <Input
               id="project-name"
               type="text"
@@ -126,31 +126,15 @@ export default function ProjectForm({
               className="h-14 border-transparent bg-surface-highest px-4 text-base shadow-none sm:h-12"
               {...register("name")}
             />
+          </FormField>
 
-            {errors.name?.message && (
-              <p
-                id="project-name-error"
-                className="flex items-center gap-1.5 text-sm font-medium text-error"
-                role="alert"
-              >
-                <AlertCircle className="size-4" aria-hidden="true" />
-                {errors.name.message}
-              </p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label
-                htmlFor="project-description"
-                className="block text-xs font-bold tracking-[0.08em] text-muted-foreground uppercase"
-              >
-                Description
-              </label>
-              <span className="text-xs font-semibold text-muted-foreground">
-                Optional
-              </span>
-            </div>
+          <FormField
+            label="Description"
+            htmlFor="project-description"
+            trailingLabel="Optional"
+            error={errors.description?.message}
+            errorId="project-description-error"
+          >
 
             <textarea
               id="project-description"
@@ -166,17 +150,6 @@ export default function ProjectForm({
               {...register("description")}
             />
 
-            {errors.description?.message && (
-              <p
-                id="project-description-error"
-                className="flex items-center gap-1.5 text-sm font-medium text-error"
-                role="alert"
-              >
-                <AlertCircle className="size-4" aria-hidden="true" />
-                {errors.description.message}
-              </p>
-            )}
-
             <p
               id="description-char-count"
               className="text-right text-xs font-semibold text-muted-foreground"
@@ -188,19 +161,12 @@ export default function ProjectForm({
                 {descriptionValue.length} / 500 characters
               </span>
             </p>
-          </div>
+          </FormField>
 
-          <p
+          <FormStatusMessage
             id="project-form-status"
-            role="alert"
-            className={
-              apiError
-                ? "rounded-md border border-error/30 bg-error/10 px-3 py-2 text-sm text-error"
-                : "sr-only"
-            }
-          >
-            {apiError ?? ""}
-          </p>
+            message={apiError}
+          />
 
           <div className="flex flex-col-reverse gap-4 pt-2 sm:flex-row sm:items-center sm:justify-between">
             <Button

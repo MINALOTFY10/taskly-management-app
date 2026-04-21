@@ -95,6 +95,7 @@ export async function getProjectMembers(
 
     return {
       id: member.id ?? `${normalizedProjectId}-member-${index}`,
+      userId: member.user_id,
       projectId: normalizedProjectId,
       name: profile?.name?.trim() || "Unknown User",
       email: profile?.email?.trim() || "No email",
