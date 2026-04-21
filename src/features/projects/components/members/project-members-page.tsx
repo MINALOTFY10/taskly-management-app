@@ -1,47 +1,17 @@
 import { MoreVertical, UserPlus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import type { ProjectMemberRole, ProjectMemberRow } from "@/features/projects/types"
+import ProjectMemberAvatar from "@/features/projects/components/members/project-member-avatar"
+import { formatProjectDate } from "@/features/projects/utils/date"
+import {
+  formatProjectMemberRole,
+  PROJECT_MEMBER_ROLE_BADGE_CLASS_NAME,
+} from "@/features/projects/utils/member"
+import type { ProjectMemberRow } from "@/features/projects/types"
 
 type ProjectMembersPageProps = {
   projectName: string
   members: ProjectMemberRow[]
-}
-
-const roleBadgeClassName: Record<ProjectMemberRole, string> = {
-  owner: "bg-primary text-primary-foreground",
-  admin: "bg-surface-highest text-primary",
-  member: "bg-muted text-muted-foreground",
-  viewer: "bg-surface-high text-muted-foreground",
-}
-
-function getInitials(name: string): string {
-  const parts = name
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean)
-
-  if (parts.length === 0) return "?"
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
-
-  return `${parts[0][0] ?? ""}${parts[1][0] ?? ""}`.toUpperCase()
-}
-
-function formatRole(role: ProjectMemberRole): string {
-  return role.charAt(0).toUpperCase() + role.slice(1)
-}
-
-function formatJoinedAt(joinedAt: string | null): string {
-  if (!joinedAt) return "-"
-
-  const parsed = new Date(joinedAt)
-  if (Number.isNaN(parsed.getTime())) return "-"
-
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "2-digit",
-    year: "numeric",
-  }).format(parsed)
 }
 
 export default function ProjectMembersPage({
@@ -100,9 +70,7 @@ export default function ProjectMembersPage({
                     className="grid grid-cols-[minmax(0,1.5fr)_minmax(110px,0.7fr)_minmax(120px,0.7fr)_40px] items-center gap-4 ps-4 pe-10 py-4"
                   >
                     <div className="flex min-w-0 items-center gap-3">
-                      <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-surface-high font-bold text-primary">
-                        {getInitials(member.name)}
-                      </div>
+                        <ProjectMemberAvatar name={member.name} />
 
                       <div className="min-w-0">
                         <p className="truncate text-[0.95rem] font-semibold text-foreground">
@@ -115,13 +83,13 @@ export default function ProjectMembersPage({
                     </div>
 
                     <span
-                      className={`inline-flex w-fit rounded-full px-2.5 py-1 text-[0.63rem] font-semibold tracking-[0.08em] uppercase ${roleBadgeClassName[member.role]}`}
+                      className={`inline-flex w-fit rounded-full px-2.5 py-1 text-[0.63rem] font-semibold tracking-[0.08em] uppercase ${PROJECT_MEMBER_ROLE_BADGE_CLASS_NAME[member.role]}`}
                     >
-                      {formatRole(member.role)}
+                      {formatProjectMemberRole(member.role)}
                     </span>
 
                     <p className="text-[0.82rem] text-muted-foreground">
-                      {formatJoinedAt(member.joinedAt)}
+                      {formatProjectDate(member.joinedAt)}
                     </p>
 
                     <button
@@ -144,9 +112,7 @@ export default function ProjectMembersPage({
                   className="rounded-xl border border-border/45 bg-card px-4 py-3"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-surface-high font-bold text-primary">
-                      {getInitials(member.name)}
-                    </div>
+                    <ProjectMemberAvatar name={member.name} />
 
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-[1.01rem] font-semibold text-foreground">
@@ -158,9 +124,9 @@ export default function ProjectMembersPage({
                     </div>
 
                     <span
-                      className={`inline-flex rounded-md px-2 py-1 text-[0.63rem] font-semibold tracking-[0.08em] uppercase ${roleBadgeClassName[member.role]}`}
+                      className={`inline-flex rounded-md px-2 py-1 text-[0.63rem] font-semibold tracking-[0.08em] uppercase ${PROJECT_MEMBER_ROLE_BADGE_CLASS_NAME[member.role]}`}
                     >
-                      {formatRole(member.role)}
+                      {formatProjectMemberRole(member.role)}
                     </span>
 
                     <button

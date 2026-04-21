@@ -4,9 +4,9 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 
 import { useAppToast } from "@/components/providers/toast-provider"
-import type { CreateProjectFormValues } from "@/features/projects/schemas/validations"
 import { createProjectAction } from "@/features/projects/actions"
 import ProjectForm from "@/features/projects/components/project-form"
+import type { CreateProjectFormValues } from "@/features/projects/schemas/validations"
 
 export default function AddProjectForm() {
   const router = useRouter()

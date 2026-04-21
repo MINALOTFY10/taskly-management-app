@@ -1,19 +1,8 @@
 import Link from "next/link"
 import { EllipsisVertical, Pencil } from "lucide-react"
 
+import { formatProjectDate } from "@/features/projects/utils/date"
 import type { ProjectRow } from "../../types"
-
-const dateFormatter = new Intl.DateTimeFormat("en-GB", {
-  day: "2-digit",
-  month: "short",
-  year: "numeric",
-})
-
-function formatProjectDate(value: string) {
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return "-"
-  return dateFormatter.format(date)
-}
 
 export default function ProjectListItem({ project }: { project: ProjectRow }) {
   return (

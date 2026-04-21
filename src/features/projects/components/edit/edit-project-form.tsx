@@ -4,10 +4,10 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 
 import { useAppToast } from "@/components/providers/toast-provider"
-import ProjectForm from "@/features/projects/components/project-form"
 import { updateProjectAction } from "@/features/projects/actions"
-import type { ProjectRow } from "@/features/projects/types"
+import ProjectForm from "@/features/projects/components/project-form"
 import type { CreateProjectFormValues } from "@/features/projects/schemas/validations"
+import type { ProjectRow } from "@/features/projects/types"
 
 type EditProjectFormProps = {
   project: Pick<ProjectRow, "id" | "name" | "description">

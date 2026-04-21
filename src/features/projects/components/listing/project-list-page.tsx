@@ -1,12 +1,11 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useState } from "react"
 import Link from "next/link"
 import { Plus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { getProjectsAction } from "@/features/projects/actions"
 import { type PaginationMeta } from "@/lib/pagination"
 import type { ProjectRow } from "@/features/projects/types"
 import {
@@ -55,10 +54,16 @@ export default function ProjectListPage({
     const nextPage = currentPage + 1
 
     try {
-      const { data, error, pagination } = await getProjectsAction({
-        limit,
-        offset: getOffsetFromPage(nextPage, limit),
-      })
+      const res = await fetch(
+        `/api/projects?limit=${limit}&offset=${getOffsetFromPage(nextPage, limit)}`
+      )
+
+      if (!res.ok) {
+        setLoadMoreError("Failed to load more projects.")
+        return
+      }
+
+      const { data, error, pagination } = await res.json()
 
       if (error) {
         setLoadMoreError(error)
@@ -70,7 +75,7 @@ export default function ProjectListPage({
 
       setProjects((prev) => {
         const existingIds = new Set(prev.map((p) => p.id))
-        const newRows = data.filter((row) => !existingIds.has(row.id))
+        const newRows = data.filter((row: ProjectRow) => !existingIds.has(row.id))
         return newRows.length ? [...prev, ...newRows] : prev
       })
     } finally {
