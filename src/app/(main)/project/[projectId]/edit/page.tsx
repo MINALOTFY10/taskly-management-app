@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
-import EditProjectForm from "@/features/projects/components/edit-project-form"
+import EditProjectForm from "@/features/projects/components/edit/edit-project-form"
 import { getProjectById } from "@/features/projects/queries"
 
 type EditProjectPageProps = {
