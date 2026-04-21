@@ -12,7 +12,7 @@ import AuthSubmitButton from "@/features/auth/components/auth-submit-button"
 import {
   forgotPasswordSchema,
   type ForgotPasswordFormValues,
-} from "@/lib/validations"
+} from "@/features/auth/schemas/validations"
 import { requestPasswordRecovery } from "@/features/auth/services/auth-service"
 import { useCooldown } from "../../../features/auth/hooks/use-cooldown"
 import PasswordResetSuccessSection from "../../../features/auth/components/password-reset-success-section"

@@ -1,50 +1,35 @@
 "use client"
 
-import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import { createClient } from "@/lib/supabase/client"
+import { setUser } from "@/store/user/user-slice"
+import { useAppDispatch } from "@/store/hooks"
 import { SidebarInset } from "@/components/ui/sidebar"
 import { AppSidebar } from "./app-sidebar"
 import { MainNavbar } from "./main-navbar"
-import type { NavKey } from "./main-shell.types"
 
-type MainShellProps = {
-  displayName: string
-  initials: string
-  jobTitle: string
-  children: React.ReactNode
-}
+export function MainShell({ children }: { children: React.ReactNode }) {
+  const dispatch = useAppDispatch()
 
-export function MainShell({
-  displayName,
-  initials,
-  jobTitle,
-  children,
-}: MainShellProps) {
-  const router = useRouter()
-  const [activeNav, setActiveNav] = useState<NavKey>("projects")
-
-  const handleLogout = async () => {
+  // Keep Redux in sync with Supabase session changes (registers the listener)
+  useEffect(() => {
     const supabase = createClient()
-    await supabase.auth.signOut()
-    router.replace("/login")
-  }
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      // This callback runs WHENEVER Supabase detects an auth change
+      // - token expired & other tab logs out & OAuth completes→ fires
+      dispatch(setUser(session?.user ?? null))
+    })
+    return () => subscription.unsubscribe()
+  }, [dispatch])
 
   return (
     <>
-      <AppSidebar
-        activeNav={activeNav}
-        setActiveNav={setActiveNav}
-        handleLogout={handleLogout}
-      />
-
+      <AppSidebar />
       <SidebarInset className="bg-background text-foreground">
-        <MainNavbar
-          displayName={displayName}
-          jobTitle={jobTitle}
-          initials={initials}
-        />
+        <MainNavbar />
         <main className="flex flex-1 flex-col pb-14 sm:pb-0">{children}</main>
       </SidebarInset>
     </>

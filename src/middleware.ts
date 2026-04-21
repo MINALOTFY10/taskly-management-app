@@ -60,7 +60,7 @@ export async function middleware(req: NextRequest) {
   }
 
   if (publicPaths.has(pathname) && isAuthenticated) {
-    return redirectWithCookies("/")
+    return redirectWithCookies("/project")
   }
 
   return res

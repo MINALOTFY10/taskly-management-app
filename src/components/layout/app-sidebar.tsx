@@ -1,6 +1,8 @@
 "use client"
 
 import { ChevronLeft, ChevronRight, LogOut } from "lucide-react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 import {
   Sidebar,
@@ -15,15 +17,65 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { NAV_ITEMS } from "./main-shell.constants"
-import type { NavKey } from "./main-shell.types"
 import AppLogo from "../shared/app-logo"
+import { useLogout } from "@/hooks/use-logout"
+import console from "console"
 
-interface AppSidebarProps {
-  activeNav: NavKey
-  setActiveNav: (key: NavKey) => void
-  handleLogout: () => void
+export function AppSidebar() {
+  const { handleLogout, isLoggingOut, logoutError } = useLogout()
+
+  return (
+    <Sidebar collapsible="icon" className="border-0!">
+      <SidebarHeader className="h-16 justify-center border-b border-border/50">
+        <AppLogo className="ml-4" />
+      </SidebarHeader>
+
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu className="mt-4 gap-2">
+              <NavItems />
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+
+      <SidebarFooter className="border-t border-border/50 px-4 py-3">
+        <SidebarMenu className="gap-2">
+          <SidebarMenuItem className="hidden lg:flex">
+            <CollapseButton />
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              tooltip="Logout"
+              className="h-10 text-destructive hover:bg-destructive/10 hover:text-destructive"
+            >
+              <LogOut className="size-4.5" />
+              <span className="text-sm">
+                {isLoggingOut ? "Logging out..." : "Logout"}
+              </span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+
+        <p
+          role="alert"
+          className={
+            logoutError
+              ? "mt-2 rounded-md border border-error/30 bg-error/10 px-2 py-1 text-xs text-error"
+              : "sr-only"
+          }
+        >
+          {logoutError ?? ""}
+        </p>
+      </SidebarFooter>
+    </Sidebar>
+  )
 }
 
+// Sub-components
 function CollapseButton() {
   const { toggleSidebar, open } = useSidebar()
   return (
@@ -42,18 +94,55 @@ function CollapseButton() {
   )
 }
 
-function NavItem({activeNav, setActiveNav}: {activeNav: NavKey, setActiveNav: (key: NavKey) => void}) {
+function NavItems() {
+  const pathname = usePathname()
+  const projectIdMatch = pathname.match(/^\/project\/([^\/]+)/)
+  const projectId = projectIdMatch?.[1] ?? null
+
+  const projectNavHrefByKey = {
+    epics: projectId ? `/project/${projectId}/epics` : undefined,
+    tasks: projectId ? `/project/${projectId}/tasks` : undefined,
+    members: projectId ? `/project/${projectId}/members` : undefined,
+    details: projectId ? `/project/${projectId}/details` : undefined,
+  } as const
+
   return (
     <>
       {NAV_ITEMS.map((item) => {
+        const href =
+          item.key === "projects" ? item.href : projectNavHrefByKey[item.key]
+        const isDisabled = item.key !== "projects" && !projectId
         const Icon = item.icon
+
+        const isActive = href
+          ? pathname === (href || pathname.startsWith(`${href}/`))
+          : false
+
+        if (href && !isDisabled) {
+          return (
+            <SidebarMenuItem key={item.key} className="px-2">
+              <SidebarMenuButton
+                asChild
+                isActive={isActive}
+                tooltip={item.label}
+                className="h-11"
+              >
+                <Link href={href}>
+                  <Icon className="mr-1 size-5 shrink-0" />
+                  <span className="text-sm">{item.label}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )
+        }
+
         return (
           <SidebarMenuItem key={item.key} className="px-2">
             <SidebarMenuButton
-              isActive={item.key === activeNav}
-              onClick={() => setActiveNav(item.key)}
+              isActive={false}
               tooltip={item.label}
-              className="h-11"
+              disabled={isDisabled}
+              className="h-11 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Icon className="mr-1 size-5 shrink-0" />
               <span className="text-sm">{item.label}</span>
@@ -62,46 +151,5 @@ function NavItem({activeNav, setActiveNav}: {activeNav: NavKey, setActiveNav: (k
         )
       })}
     </>
-  )
-}
-export function AppSidebar({
-  activeNav,
-  setActiveNav,
-  handleLogout,
-}: AppSidebarProps) {
-  return (
-    <Sidebar collapsible="icon" className="border-0!">
-      <SidebarHeader className="h-16 justify-center border-b border-border/50">
-        <AppLogo className="ml-4" />
-      </SidebarHeader>
-
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu className="mt-4 gap-2">
-              <NavItem activeNav={activeNav} setActiveNav={setActiveNav} />
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-
-      <SidebarFooter className="border-t border-border/50 px-4 py-3">
-        <SidebarMenu className="gap-2">
-          <SidebarMenuItem className="hidden lg:flex">
-            <CollapseButton />
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              onClick={handleLogout}
-              tooltip="Logout"
-              className="h-10 text-destructive hover:bg-destructive/10 hover:text-destructive"
-            >
-              <LogOut className="size-4.5" />
-              <span className="text-sm">Logout</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
-    </Sidebar>
   )
 }

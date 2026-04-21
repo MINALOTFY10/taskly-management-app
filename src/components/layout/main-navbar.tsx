@@ -1,15 +1,17 @@
+"use client" 
 import { SidebarTrigger } from "@/components/ui/sidebar"
+import { getDisplayName, getInitials, getJobTitle } from "./main-shell.utils"
+import { useAppSelector } from "@/store/hooks"
 
-type MainNavbarProps = {
-  displayName: string
-  jobTitle: string
-  initials: string
-}
+export function MainNavbar() {
+  const user = useAppSelector((state) => state.user.user)
 
-export function MainNavbar({ displayName, jobTitle, initials }: MainNavbarProps) {
+  const displayName = getDisplayName(user)
+  const initials = getInitials(displayName)
+  const jobTitle = getJobTitle(user).toUpperCase()
+
   return (
     <header className="flex h-16 shrink-0 items-center justify-between border-b border-border/60 bg-surface-high px-3 sm:px-6">
-      {/* hidden in mobile view, show logo and trigger */}
       <div className="flex items-center gap-2 lg:hidden">
         <SidebarTrigger className="text-foreground" />
         <span className="text-xl font-bold tracking-tight text-foreground">

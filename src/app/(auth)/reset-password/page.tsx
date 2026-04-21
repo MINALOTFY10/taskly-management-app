@@ -2,23 +2,25 @@
 
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { CheckCircle2, Circle, Eye, EyeOff } from "lucide-react"
-import { useForm, useWatch } from "react-hook-form"
+import { useForm } from "react-hook-form"
 
 import AuthLayout from "@/features/auth/components/auth-layout"
+import AuthInput from "@/features/auth/components/auth-input"
 import AuthSubmitButton from "@/features/auth/components/auth-submit-button"
+import PasswordRulesChecker from "@/features/auth/components/password-rules-checker"
+import { usePasswordRules } from "@/features/auth/hooks/usePasswordRules"
 import { resetPasswordWithAccessToken } from "@/features/auth/services/auth-service"
+import { createClient } from "@/lib/supabase/client"
 import {
   resetPasswordSchema,
-  type ResetPasswordFormValues,
-} from "@/lib/validations"
+  type ResetPasswordFormValues } from "@/features/auth/schemas/validations"
 
 const SUCCESS_MESSAGE =
-  "Your password has been updated successfully. You can now log in"
+  "Your password has been updated successfully. You can now log in."
 
-export default function Page() {
+export default function ResetPasswordPage() {
   const router = useRouter()
 
   const [accessToken, setAccessToken] = useState<string | null>(null)
@@ -26,8 +28,6 @@ export default function Page() {
   const [isLinkChecked, setIsLinkChecked] = useState(false)
   const [apiError, setApiError] = useState<string | null>(null)
   const [isUpdated, setIsUpdated] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const {
     control,
@@ -40,41 +40,12 @@ export default function Page() {
     mode: "onChange",
   })
 
-  const passwordValue = useWatch({ control, name: "password" }) || ""
-
-  const passwordRules = useMemo(
-    () => [
-      {
-        key: "length",
-        label: "8 - 64 characters",
-        matched: passwordValue.length >= 8 && passwordValue.length <= 64,
-      },
-      {
-        key: "upperLower",
-        label: "Uppercase letter",
-        matched: /[A-Z]/.test(passwordValue),
-      },
-      {
-        key: "lowercase",
-        label: "Lowercase letter",
-        matched: /[a-z]/.test(passwordValue),
-      },
-      {
-        key: "digit",
-        label: "One digit",
-        matched: /[0-9]/.test(passwordValue),
-      },
-      {
-        key: "special",
-        label: "Special character",
-        matched: /[^A-Za-z0-9]/.test(passwordValue),
-      },
-    ],
-    [passwordValue]
-  )
+  const rules = usePasswordRules(control, "password")
 
   useEffect(() => {
-    const timeout = window.setTimeout(() => {
+    const timeout = window.setTimeout(async () => {
+      const url = new URL(window.location.href)
+      const code = url.searchParams.get("code")
       const hashParams = new URLSearchParams(
         window.location.hash.replace("#", "")
       )
@@ -90,6 +61,41 @@ export default function Page() {
           document.title,
           window.location.pathname
         )
+        setIsLinkChecked(true)
+        return
+      }
+
+      if (code) {
+        const supabase = createClient()
+        const { error } = await supabase.auth.exchangeCodeForSession(code)
+
+        if (!error) {
+          const {
+            data: { session },
+          } = await supabase.auth.getSession()
+
+          if (session?.access_token && session.refresh_token) {
+            setAccessToken(session.access_token)
+            setRefreshToken(session.refresh_token)
+            window.history.replaceState(
+              null,
+              document.title,
+              window.location.pathname
+            )
+            setIsLinkChecked(true)
+            return
+          }
+        }
+      }
+
+      const supabase = createClient()
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+
+      if (session?.access_token && session.refresh_token) {
+        setAccessToken(session.access_token)
+        setRefreshToken(session.refresh_token)
       } else {
         setAccessToken(null)
         setRefreshToken(null)
@@ -121,10 +127,7 @@ export default function Page() {
     }
 
     setIsUpdated(true)
-
-    window.setTimeout(() => {
-      router.push("/login")
-    }, 3000)
+    window.setTimeout(() => router.push("/login"), 3000)
   }
 
   if (!isLinkChecked) {
@@ -170,117 +173,34 @@ export default function Page() {
         className="space-y-4"
         aria-describedby="reset-password-status"
       >
-        {/* New Password */}
-        <div>
-          <label
-            htmlFor="password"
-            className="mb-2 block text-xs font-semibold tracking-wide text-muted-foreground uppercase"
-          >
-            New Password
-          </label>
+        <AuthInput
+          id="password"
+          label="New Password"
+          type="password"
+          showPasswordToggle
+          autoComplete="new-password"
+          placeholder="Enter new password"
+          aria-invalid={Boolean(errors.password)}
+          {...register("password")}
+          error={errors.password?.message}
+        />
 
-          <div className="relative">
-            <input
-              id="password"
-              type={showPassword ? "text" : "password"}
-              autoComplete="new-password"
-              placeholder="Enter new password"
-              aria-invalid={Boolean(errors.password)}
-              className="h-11 w-full rounded-md border border-transparent bg-surface-highest px-4 pr-12 text-base text-foreground transition outline-none focus:border-primary focus:ring-2 focus:ring-primary/25"
-              {...register("password")}
-            />
+        <AuthInput
+          id="confirmPassword"
+          label="Confirm Password"
+          type="password"
+          showPasswordToggle
+          autoComplete="new-password"
+          placeholder="Confirm new password"
+          aria-invalid={Boolean(errors.confirmPassword)}
+          {...register("confirmPassword")}
+          error={errors.confirmPassword?.message}
+        />
 
-            <button
-              type="button"
-              onClick={() => setShowPassword((prev) => !prev)}
-              className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground"
-              aria-label={showPassword ? "Hide password" : "Show password"}
-            >
-              {showPassword ? (
-                <EyeOff className="h-5 w-5" />
-              ) : (
-                <Eye className="h-5 w-5" />
-              )}
-            </button>
-          </div>
-
-          {errors.password ? (
-            <p className="mt-1 text-sm text-error" role="alert">
-              {errors.password.message}
-            </p>
-          ) : null}
-        </div>
-
-        {/* Confirm Password */}
-        <div>
-          <label
-            htmlFor="confirmPassword"
-            className="mb-2 block text-xs font-semibold tracking-wide text-muted-foreground uppercase"
-          >
-            Confirm Password
-          </label>
-
-          <div className="relative">
-            <input
-              id="confirmPassword"
-              type={showConfirmPassword ? "text" : "password"}
-              autoComplete="new-password"
-              placeholder="Confirm new password"
-              aria-invalid={Boolean(errors.confirmPassword)}
-              className="h-11 w-full rounded-md border border-transparent bg-surface-highest px-4 pr-12 text-base text-foreground transition outline-none focus:border-primary focus:ring-2 focus:ring-primary/25"
-              {...register("confirmPassword")}
-            />
-
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword((prev) => !prev)}
-              className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground"
-              aria-label={
-                showConfirmPassword
-                  ? "Hide confirm password"
-                  : "Show confirm password"
-              }
-            >
-              {showConfirmPassword ? (
-                <EyeOff className="h-5 w-5" />
-              ) : (
-                <Eye className="h-5 w-5" />
-              )}
-            </button>
-          </div>
-
-          {errors.confirmPassword ? (
-            <p className="mt-1 text-sm text-error" role="alert">
-              {errors.confirmPassword.message}
-            </p>
-          ) : null}
-        </div>
-
-        {/* Password requirements checklist */}
-        <section className="rounded-md bg-surface-high p-4" aria-live="polite">
-          <h2 className="mb-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-            Security Requirements
-          </h2>
-
-          <ul className="grid grid-cols-2 gap-2 text-sm">
-            {passwordRules.map((rule) => (
-              <li key={rule.key} className="flex items-center gap-2">
-                {rule.matched ? (
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                ) : (
-                  <Circle className="h-4 w-4 text-muted-foreground/60" />
-                )}
-                <span
-                  className={
-                    rule.matched ? "text-emerald-900" : "text-muted-foreground"
-                  }
-                >
-                  {rule.label}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
+        <PasswordRulesChecker
+          rules={rules}
+          title="Security Requirements"
+        />
 
         <p
           id="reset-password-status"
@@ -294,11 +214,11 @@ export default function Page() {
           {apiError ?? ""}
         </p>
 
-        {isUpdated ? (
+        {isUpdated && (
           <p className="rounded-md border border-success/30 bg-success/10 px-3 py-2 text-sm text-success">
             {SUCCESS_MESSAGE}
           </p>
-        ) : null}
+        )}
 
         <AuthSubmitButton
           isLoading={isSubmitting}

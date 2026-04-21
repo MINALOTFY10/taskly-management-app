@@ -1,4 +1,68 @@
 import { createClient } from "@/lib/supabase/client"
+import { createClient as createSupabaseJsClient } from "@supabase/supabase-js"
+
+const AUTH_STORAGE_KEY_PATTERN = /access_token|refresh_token|auth-token/i
+
+function clearMatchingStorageKeys(storage: Storage) {
+  const keys: string[] = []
+
+  for (let i = 0; i < storage.length; i += 1) {
+    const key = storage.key(i)
+    if (key) keys.push(key)
+  }
+
+  keys
+    .filter((key) => AUTH_STORAGE_KEY_PATTERN.test(key))
+    .forEach((key) => storage.removeItem(key))
+}
+
+function clearAuthCookiesInBrowser() {
+  if (typeof document === "undefined") return
+
+  const existingCookieNames = document.cookie
+    .split(";")
+    .map((cookie) => cookie.split("=")[0]?.trim())
+    .filter((name): name is string => Boolean(name))
+
+  const cookieNamesToClear = new Set([
+    "access_token",
+    "refresh_token",
+    ...existingCookieNames.filter((name) =>
+      AUTH_STORAGE_KEY_PATTERN.test(name)
+    ),
+  ])
+
+  cookieNamesToClear.forEach((name) => {
+    document.cookie = `${name}=; Max-Age=0; path=/`
+  })
+}
+
+// Supabase's own signOut() already removes its `sb-*` keys, so this is purely defensive.
+export function clearClientAuthData() {
+  if (typeof window === "undefined") return
+
+  clearMatchingStorageKeys(localStorage)
+  clearMatchingStorageKeys(sessionStorage)
+  clearAuthCookiesInBrowser()
+}
+
+export async function logoutUser() {
+  const supabase = createClient()
+
+  try {
+    const { error } = await supabase.auth.signOut({ scope: "local" })
+
+    if (error) {
+      return { error: "Logout failed, please try again." }
+    }
+
+    clearClientAuthData()
+
+    return { error: null }
+  } catch {
+    return { error: "Logout failed, please try again." }
+  }
+}
 
 export async function signUpUser(values: {
   email: string
@@ -42,7 +106,16 @@ export async function requestPasswordRecovery(values: {
   email: string
   redirectTo?: string
 }) {
-  const supabase = createClient()
+  // Create recovery links in implicit flow so they do not depend on PKCE verifier storage.
+  const supabase = createSupabaseJsClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    {
+      auth: {
+        flowType: "implicit",
+      },
+    }
+  )
 
   try {
     const { error } = await supabase.auth.resetPasswordForEmail(values.email, {
@@ -55,7 +128,9 @@ export async function requestPasswordRecovery(values: {
 
     return { error: null }
   } catch {
-    return { error: "Network error. Please check your connection and try again." }
+    return {
+      error: "Network error. Please check your connection and try again.",
+    }
   }
 }
 
@@ -74,7 +149,9 @@ export async function resetPasswordWithAccessToken(values: {
     })
 
     if (sessionError) {
-      return { error: "Invalid or expired reset link. Please request a new one." }
+      return {
+        error: "Invalid or expired reset link. Please request a new one.",
+      }
     }
 
     // 2. Update the password while the session is active.
@@ -83,7 +160,10 @@ export async function resetPasswordWithAccessToken(values: {
     })
 
     if (updateError) {
-      return { error: updateError.message ?? "Failed to update password. Please try again." }
+      return {
+        error:
+          updateError.message ?? "Failed to update password. Please try again.",
+      }
     }
 
     // 3. Sign out immediately — user must log in with their new password.
@@ -91,6 +171,8 @@ export async function resetPasswordWithAccessToken(values: {
 
     return { error: null }
   } catch {
-    return { error: "Network error. Please check your connection and try again." }
+    return {
+      error: "Network error. Please check your connection and try again.",
+    }
   }
 }
