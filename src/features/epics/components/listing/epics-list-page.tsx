@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useState, useTransition } from "react"
 import { Plus } from "lucide-react"
 
@@ -54,12 +55,12 @@ export default function EpicsListPage({
 
   return (
     <section className="relative px-5 py-5 sm:px-6 sm:py-7 lg:px-8">
-      <EpicsListHeader projectName={projectName} />
+      <EpicsListHeader projectId={projectId} projectName={projectName} />
 
       {error ? (
         <EpicsError onRetry={handleRetry} />
       ) : epics.length === 0 ? (
-        <EpicsEmpty />
+        <EpicsEmpty projectId={projectId} />
       ) : (
         <div
           className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2"
@@ -72,11 +73,13 @@ export default function EpicsListPage({
       )}
 
       <Button
+        asChild
         size="icon"
         className="fixed right-6 bottom-6 size-14 rounded-full shadow-[0_8px_24px_rgba(0,50,184,0.25)] sm:hidden"
-        aria-label="New epic"
       >
-        <Plus className="size-6" aria-hidden="true" />
+        <Link href={`/project/${projectId}/epics/add`} aria-label="New epic">
+          <Plus className="size-6" aria-hidden="true" />
+        </Link>
       </Button>
     </section>
   )

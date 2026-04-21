@@ -1,13 +1,18 @@
+import Link from "next/link"
 import { ChevronRight, Plus, Search } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
 type EpicsListHeaderProps = {
+  projectId: string
   projectName: string
 }
 
-export default function EpicsListHeader({ projectName }: EpicsListHeaderProps) {
+export default function EpicsListHeader({
+  projectId,
+  projectName,
+}: EpicsListHeaderProps) {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
       <div>
@@ -42,11 +47,14 @@ export default function EpicsListHeader({ projectName }: EpicsListHeaderProps) {
         </div>
 
         <Button
+          asChild
           size="lg"
           className="h-10 gap-2 px-5 text-sm font-semibold shadow-[0_8px_20px_rgba(0,50,184,0.18)]"
         >
-          <Plus className="size-4" aria-hidden="true" />
-          New Epic
+          <Link href={`/project/${projectId}/epics/add`}>
+            <Plus className="size-4" aria-hidden="true" />
+            New Epic
+          </Link>
         </Button>
       </div>
 
