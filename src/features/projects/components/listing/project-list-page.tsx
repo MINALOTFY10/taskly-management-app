@@ -1,6 +1,5 @@
 "use client"
 
-import { useCallback, useState } from "react"
 import Link from "next/link"
 import { Plus } from "lucide-react"
 
@@ -8,17 +7,14 @@ import { Button } from "@/components/ui/button"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { type PaginationMeta } from "@/lib/pagination"
 import type { ProjectRow } from "@/features/projects/types"
-import {
-  getOffsetFromPage,
-  getPageFromOffset,
-  getTotalPages,
-} from "@/lib/pagination"
 import EmptyState from "./project-list-empty"
 import ErrorState from "./project-list-error"
 import ProjectListItem from "./project-list-item"
-import CompactPagination from "@/components/shared/compact-pagination"
-import MobilePaginationFeedback from "@/components/shared/mobile-pagination-feedback"
-import ScrollSentinel from "../scroll-sentinel"
+import CompactPagination from "@/components/shared/pagination/compact-pagination"
+import MobilePaginationFeedback from "@/components/shared/pagination/mobile-pagination-feedback"
+import ScrollSentinel from "@/components/shared/pagination/scroll-sentinel"
+import ListPaginationSummary from "@/components/shared/pagination/list-pagination-summary"
+import { useMobilePaginationFetch } from "@/hooks/use-mobile-pagination-fetch"
 
 type ProjectListPageProps = {
   initialProjects: ProjectRow[]
@@ -32,56 +28,25 @@ export default function ProjectListPage({
   initialPagination,
 }: ProjectListPageProps) {
   const isMobile = useIsMobile()
-  const limit = initialPagination.limit
 
-  const [projects, setProjects] = useState<ProjectRow[]>(initialProjects)
-  const [currentPage, setCurrentPage] = useState(
-    getPageFromOffset(initialPagination.offset, limit)
-  )
-  const [totalCount, setTotalCount] = useState(initialPagination.totalCount)
-  const [loadMoreError, setLoadMoreError] = useState<string | null>(null)
-  const [isLoadingMore, setIsLoadingMore] = useState(false)
-
-  const totalPages = getTotalPages(totalCount, limit)
-  const hasMore = projects.length < totalCount
-
-  const fetchProjectsOnMobileMode = useCallback(async () => {
-    if (!isMobile || isLoadingMore || !hasMore) return
-
-    setIsLoadingMore(true)
-    setLoadMoreError(null)
-
-    const nextPage = currentPage + 1
-
-    try {
-      const res = await fetch(
-        `/api/projects?limit=${limit}&offset=${getOffsetFromPage(nextPage, limit)}`
-      )
-
-      if (!res.ok) {
-        setLoadMoreError("Failed to load more projects.")
-        return
-      }
-
-      const { data, error, pagination } = await res.json()
-
-      if (error) {
-        setLoadMoreError(error)
-        return
-      }
-
-      setCurrentPage(nextPage)
-      setTotalCount(pagination.totalCount)
-
-      setProjects((prev) => {
-        const existingIds = new Set(prev.map((p) => p.id))
-        const newRows = data.filter((row: ProjectRow) => !existingIds.has(row.id))
-        return newRows.length ? [...prev, ...newRows] : prev
-      })
-    } finally {
-      setIsLoadingMore(false)
-    }
-  }, [currentPage, hasMore, isMobile, isLoadingMore, limit])
+  const {
+    items: projects,
+    currentPage,
+    totalCount,
+    totalPages,
+    hasMore,
+    isLoadingMore,
+    loadMoreError,
+    fetchNextPageOnMobile,
+  } = useMobilePaginationFetch<ProjectRow>({
+    initialItems: initialProjects,
+    initialPagination,
+    isMobile,
+    buildRequestUrl: ({ limit, offset }) =>
+      `/api/projects?limit=${limit}&offset=${offset}`,
+    getItemId: (project) => project.id,
+    loadMoreErrorMessage: "Failed to load more projects.",
+  })
 
   if (initialError) return <ErrorState message="Failed to load projects" />
   if (projects.length === 0) return <EmptyState />
@@ -122,9 +87,11 @@ export default function ProjectListPage({
         </div>
 
         <div className="mt-8 flex min-h-7 items-center justify-between gap-4 pb-4">
-          <p className="text-[0.82rem] text-muted-foreground">
-            Showing {projects.length} of {totalCount} active projects
-          </p>
+          <ListPaginationSummary
+            shownCount={projects.length}
+            totalCount={totalCount}
+            itemLabel="active projects"
+          />
 
           {isMobile === false && totalCount > 0 && (
             <CompactPagination
@@ -136,7 +103,7 @@ export default function ProjectListPage({
 
         <ScrollSentinel
           enabled={isMobile === true && hasMore}
-          onIntersect={fetchProjectsOnMobileMode}
+          onIntersect={fetchNextPageOnMobile}
         />
 
         <MobilePaginationFeedback
@@ -145,7 +112,7 @@ export default function ProjectListPage({
           errorMessage={loadMoreError}
           showError={projects.length > 0}
           onRetry={() => {
-            void fetchProjectsOnMobileMode()
+            void fetchNextPageOnMobile()
           }}
         />
       </div>

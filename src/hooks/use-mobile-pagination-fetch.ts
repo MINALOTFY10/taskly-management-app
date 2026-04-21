@@ -1,0 +1,118 @@
+import { useCallback, useRef, useState } from "react"
+
+import {
+  getOffsetFromPage,
+  getPageFromOffset,
+  getTotalPages,
+  type PaginationMeta,
+} from "@/lib/pagination"
+
+type UseMobilePaginationFetchParams<TItem> = {
+  initialItems: TItem[]
+  initialPagination: PaginationMeta
+  isMobile: boolean | undefined
+  buildRequestUrl: (params: {
+    nextPage: number
+    limit: number
+    offset: number
+  }) => string
+  getItemId: (item: TItem) => string
+  loadMoreErrorMessage: string
+}
+
+type PaginatedFetchResponse<TItem> = {
+  data: TItem[]
+  error: string | null
+  pagination: PaginationMeta
+}
+
+export function useMobilePaginationFetch<TItem>({
+  initialItems,
+  initialPagination,
+  isMobile,
+  buildRequestUrl,
+  getItemId,
+  loadMoreErrorMessage,
+}: UseMobilePaginationFetchParams<TItem>) {
+  const limit = initialPagination.limit
+
+  const [items, setItems] = useState<TItem[]>(initialItems)
+  const [currentPage, setCurrentPage] = useState(
+    getPageFromOffset(initialPagination.offset, limit)
+  )
+  const [totalCount, setTotalCount] = useState(initialPagination.totalCount)
+  const [loadMoreError, setLoadMoreError] = useState<string | null>(null)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+
+  const totalPages = getTotalPages(totalCount, limit)
+  const hasMore = items.length < totalCount
+
+  const isLoadingMoreRef = useRef(false)
+
+  const fetchNextPageOnMobile = useCallback(async () => {
+    if (!isMobile || isLoadingMoreRef.current || !hasMore) return
+
+    isLoadingMoreRef.current = true
+    setIsLoadingMore(true)
+    setLoadMoreError(null)
+
+    const nextPage = currentPage + 1
+    const offset = getOffsetFromPage(nextPage, limit)
+
+    try {
+      const res = await fetch(
+        buildRequestUrl({
+          nextPage,
+          limit,
+          offset,
+        })
+      )
+
+      if (!res.ok) {
+        setLoadMoreError(loadMoreErrorMessage)
+        return
+      }
+
+      const payload = (await res.json()) as PaginatedFetchResponse<TItem>
+
+      if (payload.error) {
+        setLoadMoreError(payload.error)
+        return
+      }
+
+      setCurrentPage(nextPage)
+      setTotalCount(payload.pagination.totalCount)
+
+      setItems((prev) => {
+        const existingIds = new Set(prev.map((item) => getItemId(item)))
+        const newRows = payload.data.filter(
+          (item) => !existingIds.has(getItemId(item))
+        )
+
+        return newRows.length ? [...prev, ...newRows] : prev
+      })
+    } finally {
+      isLoadingMoreRef.current = false
+      setIsLoadingMore(false)
+    }
+  }, [
+    isMobile,
+    hasMore,
+    buildRequestUrl,
+    currentPage,
+    getItemId,
+    limit,
+    loadMoreErrorMessage,
+  ])
+
+  return {
+    items,
+    currentPage,
+    totalCount,
+    totalPages,
+    hasMore,
+    isLoadingMore,
+    loadMoreError,
+    fetchNextPageOnMobile,
+  }
+}
