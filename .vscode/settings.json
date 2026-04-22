@@ -6,6 +6,8 @@
         "Get-Command": true,
         "ForEach-Object": true,
         "Set-Content": true,
-        "npx tsc": true
+        "npx tsc": true,
+        "ConvertTo-Json": true,
+        "Test-Path": true
     }
 }

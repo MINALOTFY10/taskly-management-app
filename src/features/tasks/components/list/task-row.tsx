@@ -1,42 +1,52 @@
-import Link from "next/link"
 import { MoreVertical } from "lucide-react"
 import { getTaskStatusLabel } from "../../utils/status"
 import { TASK_STATUS_VISUALS } from "../../utils/task-status-visuals"
 import { formatTaskDate } from "../../utils/date"
 import { cn } from "@/lib/utils"
-import { TaskWithAssignee } from "../../queries"
-import { getAvatarColor, getInitials } from "@/features/projects/utils/avatar"
+import type { TaskWithAssignee } from "../../queries"
+
+// Bug fix: was incorrectly importing from @/features/projects/utils/avatar.
+// All other task/epic components use @/features/epics/utils/avatar — use that.
+// Long-term: move these utilities to @/lib/utils/avatar so they have one home.
+import { getAvatarColor, getInitials } from "@/features/epics/utils/avatar"
 
 export default function TaskRow({
   task,
-  projectId,
+  onTaskSelect,
 }: {
   task: TaskWithAssignee
-  projectId: string
+  onTaskSelect?: (task: TaskWithAssignee) => void
 }) {
   const assigneeName = task.assignee_name ?? "Unassigned"
   const { bg, text } = getAvatarColor(assigneeName)
   const initials = getInitials(assigneeName)
   const statusLabel = getTaskStatusLabel(task.status)
   const statusVisuals = TASK_STATUS_VISUALS[task.status]
-
-  // Short human-readable task ID: #AB12CD34
   const shortId = `Task-${task.id.slice(0, 3).toUpperCase()}`
 
+  const handleSelect = () => onTaskSelect?.(task)
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault()
+      onTaskSelect?.(task)
+    }
+  }
+
   return (
-    <tr className="border-b border-border/20 transition-colors hover:bg-accent/20">
+    <tr
+      role="button"
+      tabIndex={0}
+      aria-label={`Open task: ${task.title}`}
+      className="cursor-pointer border-b border-border/20 transition-colors hover:bg-accent/20 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-inset"
+      onClick={handleSelect}
+      onKeyDown={handleKeyDown}
+    >
       <td className="px-6 py-4 text-sm font-semibold whitespace-nowrap text-blue-600">
         {shortId}
       </td>
 
-      {/* Title doubles as the navigation entry-point into the task detail page */}
       <td className="max-w-xs px-6 py-4 text-sm font-medium text-foreground">
-        <Link
-          href={`/project/${projectId}/tasks/${task.id}`}
-          className="block truncate underline-offset-2 transition-colors hover:text-blue-600 hover:underline"
-        >
-          {task.title}
-        </Link>
+        <span className="block truncate">{task.title}</span>
       </td>
 
       <td className="px-6 py-4 text-sm whitespace-nowrap">
@@ -69,6 +79,7 @@ export default function TaskRow({
           type="button"
           aria-label="Task options"
           className="inline-flex items-center justify-center rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          onClick={(e) => e.stopPropagation()}
         >
           <MoreVertical className="size-4" />
         </button>
@@ -90,7 +101,7 @@ function AssigneeCell({ name, avatar, bg, text, initials }: AssigneeCellProps) {
     <div className="flex items-center gap-2">
       <div
         className={cn(
-          "flex size-6 shrink-0 items-center justify-center rounded-full font-semibold overflow-hidden",
+          "flex size-6 shrink-0 items-center justify-center overflow-hidden rounded-full font-semibold",
           !avatar && ["p-2 text-[8px]", bg, text]
         )}
         title={name}

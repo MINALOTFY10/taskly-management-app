@@ -5,13 +5,15 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { TaskRow } from "./task-row"
 import { useFetchEpicTasks } from "@/features/tasks/hooks/use-fetch-epic-tasks"
 import type { EpicRow } from "@/features/epics/types"
+import type { TaskWithAssignee } from "@/features/tasks/queries"
 
 type TasksListProps = {
   epic: EpicRow | null
   projectId: string
+  onTaskSelect?: (task: TaskWithAssignee) => void
 }
 
-export function TasksList({ epic, projectId }: TasksListProps) {
+export function TasksList({ epic, projectId, onTaskSelect }: TasksListProps) {
   const { tasks, loading, error } = useFetchEpicTasks(epic?.id, projectId)
 
   return (
@@ -29,7 +31,7 @@ export function TasksList({ epic, projectId }: TasksListProps) {
               key={task.id}
               className={index !== tasks.length - 1 ? "border-b border-border/60" : ""}
             >
-              <TaskRow task={task} />
+              <TaskRow task={task} onTaskSelect={onTaskSelect} />
             </div>
           ))}
         </div>

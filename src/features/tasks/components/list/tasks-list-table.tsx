@@ -3,11 +3,14 @@ import type { TaskWithAssignee } from "@/features/tasks/queries"
 import TaskRow from "./task-row"
 
 type TasksListTableProps = {
-  projectId: string
   tasks: TaskWithAssignee[]
+  onTaskSelect?: (task: TaskWithAssignee) => void
 }
 
-export function TasksListTable({ projectId, tasks }: TasksListTableProps) {
+export function TasksListTable({
+  tasks,
+  onTaskSelect,
+}: TasksListTableProps) {
   if (tasks.length === 0) {
     return (
       <div className="rounded-lg border border-border/20 bg-background px-6 py-12 text-center">
@@ -46,7 +49,11 @@ export function TasksListTable({ projectId, tasks }: TasksListTableProps) {
           </thead>
           <tbody>
             {tasks.map((task) => (
-              <TaskRow key={task.id} task={task} projectId={projectId} />
+              <TaskRow
+                key={task.id}
+                task={task}
+                onTaskSelect={onTaskSelect}
+              />
             ))}
           </tbody>
         </table>

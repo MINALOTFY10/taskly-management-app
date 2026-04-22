@@ -2,26 +2,46 @@ import { CalendarDays } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { getAvatarColor, getInitials } from "@/features/epics/utils/avatar"
-import { TaskWithAssignee } from "../../queries"
-import { TaskStatus } from "../../types"
+import type { TaskWithAssignee } from "../../queries"
+import type { TaskStatus } from "../../types"
 import { formatTaskDate } from "../../utils/date"
 import { TASK_STATUS_VISUALS } from "../../utils/task-status-visuals"
 
 export default function TaskCard({
   task,
   status,
+  onSelect,
 }: {
   task: TaskWithAssignee
   status: TaskStatus
+  onSelect?: (task: TaskWithAssignee) => void
 }) {
   const theme = TASK_STATUS_VISUALS[status]
   const assigneeName = task.assignee_name ?? "Unassigned"
   const { bg, text } = getAvatarColor(assigneeName)
   const initials = getInitials(assigneeName)
 
+  const handleSelect = () => onSelect?.(task)
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault()
+      onSelect?.(task)
+    }
+  }
+
   return (
     <article
-      className={cn("rounded-xl border px-4 py-4 shadow-sm", theme.card)}
+      role="button"
+      tabIndex={0}
+      aria-label={`Open task: ${task.title}`}
+      onClick={handleSelect}
+      onKeyDown={handleKeyDown}
+      className={cn(
+        "rounded-xl border px-4 py-4 shadow-sm cursor-pointer transition-all",
+        "hover:shadow-md hover:scale-105",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        theme.card
+      )}
     >
       <div className="flex min-h-28 flex-col justify-between gap-4">
         <div className="space-y-3">
