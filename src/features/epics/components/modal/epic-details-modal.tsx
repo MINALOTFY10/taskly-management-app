@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { useAppToast } from "@/components/providers/toast-provider"
 import { updateEpicAction } from "@/features/epics/actions"
+import type { TaskWithAssignee } from "@/features/tasks/queries"
 
 import type { EpicRow } from "@/features/epics/types"
 import type { UpdateEpicFormValues } from "@/features/epics/schemas/validations"
@@ -17,6 +18,7 @@ import { EpicTitleSection } from "./epic-title-section"
 import { EpicDescriptionSection } from "./epic-description-section"
 import { EpicMetaGrid } from "./epic-meta-grid"
 import { TasksList } from "@/features/tasks/components/shared/tasks-list"
+import TaskDetailsModal from "@/features/tasks/components/details/task-details-popup"
 
 const UPDATE_EPIC_ERROR_MESSAGE = "Failed to update epic. Please try again."
 
@@ -45,6 +47,9 @@ export default function EpicDetailsModal({
   const { showToast } = useAppToast()
   const [localEpic, setLocalEpic] = useState<EpicRow | null>(epic)
   const [isSaving, setIsSaving] = useState(false)
+  const [selectedTask, setSelectedTask] = useState<TaskWithAssignee | null>(
+    null
+  )
 
   const handleAddTaskClick = useCallback(() => {
     if (!localEpic) return
@@ -143,8 +148,19 @@ export default function EpicDetailsModal({
             </Button>
           </div>
 
-          <TasksList epic={localEpic} projectId={projectId} />
+          <TasksList
+            epic={localEpic}
+            projectId={projectId}
+            onTaskSelect={setSelectedTask}
+          />
         </div>
+
+        <TaskDetailsModal
+          open={selectedTask !== null}
+          onClose={() => setSelectedTask(null)}
+          task={selectedTask}
+          projectId={projectId}
+        />
       </DialogContent>
     </Dialog>
   )

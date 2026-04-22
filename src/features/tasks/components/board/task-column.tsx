@@ -12,10 +12,12 @@ export default function TaskColumn({
   projectId,
   status,
   tasks,
+  onTaskSelect,
 }: {
   projectId: string
   status: TaskStatus
   tasks: TaskWithAssignee[]
+  onTaskSelect?: (task: TaskWithAssignee) => void
 }) {
   const theme = TASK_STATUS_VISUALS[status]
   const statusLabel = getTaskStatusLabel(status).toUpperCase()
@@ -70,7 +72,12 @@ export default function TaskColumn({
 
       <div className="flex flex-1 flex-col gap-3 pt-0.5">
         {tasks.map((task) => (
-          <TaskCard key={task.id} task={task} status={status} />
+          <TaskCard
+            key={task.id}
+            task={task}
+            status={status}
+            onSelect={onTaskSelect}
+          />
         ))}
       </div>
     </section>

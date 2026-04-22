@@ -6,16 +6,20 @@ import type { TaskWithAssignee } from "@/features/tasks/queries"
 
 type TaskRowProps = {
   task: TaskWithAssignee
+  onTaskSelect?: (task: TaskWithAssignee) => void
 }
 
-export function TaskRow({ task }: TaskRowProps) {
+export function TaskRow({ task, onTaskSelect }: TaskRowProps) {
   const assigneeName = task.assignee_name ?? "Unassigned"
   const { bg, text } = getAvatarColor(assigneeName)
   const initials = getInitials(assigneeName)
   const isCompleted = task.status === "DONE"
 
   return (
-    <div className="flex items-center justify-between py-4 px-4 hover:bg-accent/30 transition-colors">
+    <div
+      onClick={() => onTaskSelect?.(task)}
+      className="flex items-center justify-between py-4 px-4 hover:bg-accent/30 transition-colors cursor-pointer"
+    >
       <div className="flex items-center gap-4">
         {isCompleted ? (
           <CheckCircle2 className="h-5 w-5 shrink-0 text-muted-foreground/50" />
