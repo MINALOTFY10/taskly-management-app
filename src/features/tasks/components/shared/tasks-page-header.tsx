@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { cn } from "@/lib/utils"
 
 type TasksView = "board" | "list"
 
@@ -51,7 +52,6 @@ export function TasksPageHeader({
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        {/* Search — not yet functional, aria-label communicates this */}
         <div className="relative w-full sm:w-53.5">
           <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -67,10 +67,10 @@ export function TasksPageHeader({
           onValueChange={handleViewChange}
           disabled={isSwitchingView}
         >
-          <SelectTrigger className="h-10 w-full border-0 bg-accent px-3 text-sm font-medium text-foreground shadow-none focus:ring-0 sm:w-36">
+          <SelectTrigger className="w-full border-0 bg-accent px-3 text-sm font-medium text-foreground shadow-none focus:ring-0 sm:w-36">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="mt-2">
+          <SelectContent className={cn(view === "board" ? "mt-18" : "mt-10")}>
             <SelectItem value="list">List View</SelectItem>
             <SelectItem value="board">Board View</SelectItem>
           </SelectContent>

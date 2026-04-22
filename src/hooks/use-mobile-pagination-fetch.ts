@@ -11,6 +11,7 @@ type UseMobilePaginationFetchParams<TItem> = {
   initialItems: TItem[]
   initialPagination: PaginationMeta
   isMobile: boolean | undefined
+  isInfiniteEnabled?: boolean
   buildRequestUrl: (params: {
     nextPage: number
     limit: number
@@ -30,6 +31,7 @@ export function useMobilePaginationFetch<TItem>({
   initialItems,
   initialPagination,
   isMobile,
+  isInfiniteEnabled,
   buildRequestUrl,
   getItemId,
   loadMoreErrorMessage,
@@ -46,11 +48,12 @@ export function useMobilePaginationFetch<TItem>({
 
   const totalPages = getTotalPages(totalCount, limit)
   const hasMore = items.length < totalCount
+  const canLoadMore = isInfiniteEnabled ?? isMobile === true
 
   const isLoadingMoreRef = useRef(false)
 
   const fetchNextPageOnMobile = useCallback(async () => {
-    if (!isMobile || isLoadingMoreRef.current || !hasMore) return
+    if (!canLoadMore || isLoadingMoreRef.current || !hasMore) return
 
     isLoadingMoreRef.current = true
     setIsLoadingMore(true)
@@ -96,7 +99,7 @@ export function useMobilePaginationFetch<TItem>({
       setIsLoadingMore(false)
     }
   }, [
-    isMobile,
+    canLoadMore,
     hasMore,
     buildRequestUrl,
     currentPage,

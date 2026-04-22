@@ -40,7 +40,7 @@ export default function TasksBoardPage({
           onViewChange={onViewChange ?? (() => {})}
         />
 
-        <div className="mt-7 max-w-full overflow-x-auto pb-3">
+        <div className="mt-10 max-w-full overflow-x-auto pb-3">
           <div className="grid min-w-max auto-cols-[17.8rem] grid-flow-col gap-4">
             {groupedTasks.map(({ status, tasks: columnTasks }) => (
               <TaskColumn
