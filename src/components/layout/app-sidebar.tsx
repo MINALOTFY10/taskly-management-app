@@ -19,7 +19,6 @@ import {
 import { NAV_ITEMS } from "./main-shell.constants"
 import AppLogo from "../shared/app-logo"
 import { useLogout } from "@/hooks/use-logout"
-import console from "console"
 
 export function AppSidebar() {
   const { handleLogout, isLoggingOut, logoutError } = useLogout()
@@ -101,10 +100,12 @@ function NavItems() {
 
   const projectNavHrefByKey = {
     epics: projectId ? `/project/${projectId}/epics` : undefined,
-    tasks: projectId ? `/project/${projectId}/tasks` : undefined,
+    tasks: projectId ? `/project/${projectId}/tasks?view=board` : undefined,
     members: projectId ? `/project/${projectId}/members` : undefined,
     details: projectId ? `/project/${projectId}/details` : undefined,
   } as const
+
+  const getActiveHref = (href: string | undefined) => href?.split("?")[0]
 
   return (
     <>
@@ -113,9 +114,10 @@ function NavItems() {
           item.key === "projects" ? item.href : projectNavHrefByKey[item.key]
         const isDisabled = item.key !== "projects" && !projectId
         const Icon = item.icon
+        const activeHref = getActiveHref(href)
 
-        const isActive = href
-          ? pathname === (href || pathname.startsWith(`${href}/`))
+        const isActive = activeHref
+          ? (pathname === activeHref || pathname.startsWith(`${activeHref}/`))
           : false
 
         if (href && !isDisabled) {

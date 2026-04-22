@@ -7,7 +7,7 @@ import { getProjectById, getProjectMembers } from "@/features/projects/queries"
 
 type NewTaskPageProps = {
   params: Promise<{ projectId: string }>
-  searchParams: Promise<{ epicId?: string }>
+  searchParams: Promise<{ epicId?: string; status?: string }>
 }
 
 export async function generateMetadata({
@@ -26,7 +26,7 @@ export default async function NewTaskPage({
   searchParams,
 }: NewTaskPageProps) {
   const { projectId } = await params
-  const { epicId } = await searchParams
+  const { epicId, status } = await searchParams
 
   const [projectResult, membersResult, epicsResult] = await Promise.all([
     getProjectById(projectId),
@@ -67,6 +67,7 @@ export default async function NewTaskPage({
       projectId={projectId}
       projectName={projectResult.data.name}
       initialEpicId={epicId}
+      initialStatus={status}
       members={members}
       epics={epics}
     />

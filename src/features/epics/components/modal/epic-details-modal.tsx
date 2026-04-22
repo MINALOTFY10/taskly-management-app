@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react"
 import { BiSolidCarousel } from "react-icons/bi"
-import { List } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog"
@@ -17,6 +16,7 @@ import type { UpdateEpicFormValues } from "@/features/epics/schemas/validations"
 import { EpicTitleSection } from "./epic-title-section"
 import { EpicDescriptionSection } from "./epic-description-section"
 import { EpicMetaGrid } from "./epic-meta-grid"
+import { TasksList } from "@/features/tasks/components/shared/tasks-list"
 
 const UPDATE_EPIC_ERROR_MESSAGE = "Failed to update epic. Please try again."
 
@@ -92,8 +92,8 @@ export default function EpicDetailsModal({
   const isBusy = loading || isSaving
 
   return (
-    <Dialog open={open} onOpenChange={(val) => !val && onClose()}>
-      <DialogContent className="max-w-215 p-0">
+<Dialog open={open} onOpenChange={(val) => !val && onClose()}>
+      <DialogContent className="max-w-215 p-0 max-h-[80vh] overflow-y-auto">
         <div className="px-8 py-8">
           <DialogHeader>
             <div className="flex items-center gap-3">
@@ -143,23 +143,9 @@ export default function EpicDetailsModal({
             </Button>
           </div>
 
-          <EmptyTaskState onAddTask={handleAddTaskClick} />
+          <TasksList epic={localEpic} projectId={projectId} />
         </div>
       </DialogContent>
     </Dialog>
-  )
-}
-
-function EmptyTaskState({ onAddTask }: { onAddTask: () => void }) {
-  return (
-    <div className="mt-5 flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border/70 bg-surface-low py-12">
-      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-accent">
-        <List className="h-6 w-6 text-muted-foreground" />
-      </div>
-      <h3 className="mb-6 text-lg font-normal">No tasks added yet</h3>
-      <Button className="bg-primary px-7" onClick={onAddTask}>
-        + Add Task
-      </Button>
-    </div>
   )
 }

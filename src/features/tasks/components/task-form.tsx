@@ -19,7 +19,7 @@ import {
   createTaskSchema,
   type CreateTaskFormValues,
 } from "@/features/tasks/schemas/validations"
-import { TASK_STATUS_VALUES } from "@/features/tasks/types"
+import { TASK_STATUS_VALUES, isTaskStatus } from "@/features/tasks/types"
 import { getTaskStatusLabel } from "@/features/tasks/utils/status"
 
 type AssigneeOption = {
@@ -38,6 +38,7 @@ type TaskFormProps = {
   assigneeOptions: AssigneeOption[]
   epicOptions: EpicOption[]
   initialEpicId?: string
+  initialStatus?: string
   apiError: string | null
   isPending?: boolean
   onSubmit: (values: CreateTaskFormValues) => Promise<void>
@@ -50,6 +51,7 @@ export default function TaskForm({
   assigneeOptions,
   epicOptions,
   initialEpicId,
+  initialStatus,
   apiError,
   isPending = false,
   onSubmit,
@@ -59,6 +61,9 @@ export default function TaskForm({
     initialEpicId && epicOptions.some((epic) => epic.id === initialEpicId)
       ? initialEpicId
       : ""
+  const normalizedInitialStatus = isTaskStatus(initialStatus)
+    ? initialStatus
+    : "TO_DO"
 
   const {
     register,
@@ -69,7 +74,7 @@ export default function TaskForm({
     resolver: zodResolver(createTaskSchema),
     defaultValues: {
       title: "",
-      status: "TO_DO",
+      status: normalizedInitialStatus,
       epicId: normalizedInitialEpicId,
       assigneeId: "",
       dueDate: "",

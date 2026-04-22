@@ -4,6 +4,8 @@
         "pnpm": true,
         "git checkout": true,
         "Get-Command": true,
-        "ForEach-Object": true
+        "ForEach-Object": true,
+        "Set-Content": true,
+        "npx tsc": true
     }
 }
