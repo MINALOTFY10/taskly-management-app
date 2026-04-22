@@ -96,7 +96,8 @@ function CollapseButton() {
 function NavItems() {
   const pathname = usePathname()
   const projectIdMatch = pathname.match(/^\/project\/([^\/]+)/)
-  const projectId = projectIdMatch?.[1] ?? null
+  const extractedId = projectIdMatch?.[1] ?? null
+  const projectId = extractedId === "add" ? null : extractedId
 
   const projectNavHrefByKey = {
     epics: projectId ? `/project/${projectId}/epics` : undefined,
@@ -117,7 +118,8 @@ function NavItems() {
         const activeHref = getActiveHref(href)
 
         const isActive = activeHref
-          ? (pathname === activeHref || pathname.startsWith(`${activeHref}/`))
+          ? pathname === activeHref ||
+            (pathname.startsWith(`${activeHref}/`) && activeHref !== "/project")
           : false
 
         if (href && !isDisabled) {

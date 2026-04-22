@@ -8,9 +8,15 @@ import {
   createTaskSchema,
   type CreateTaskFormValues,
 } from "@/features/tasks/schemas/validations"
+import { isTaskStatus, type TaskStatus } from "@/features/tasks/types"
 
 type TaskActionResult = {
   data: { id: string } | null
+  error: string | null
+}
+
+type TaskStatusActionResult = {
+  data: { id: string; status: TaskStatus } | null
   error: string | null
 }
 
@@ -140,6 +146,88 @@ export async function createTaskAction(
 
   revalidatePath(`/project/${normalizedProjectId}/tasks`)
   revalidatePath(`/project/${normalizedProjectId}/tasks/new`)
+  revalidatePath(`/project/${normalizedProjectId}/epics`)
+
+  return { data, error: null }
+}
+
+export async function updateTaskStatusAction(
+  projectId: string,
+  taskId: string,
+  status: string
+): Promise<TaskStatusActionResult> {
+  const normalizedProjectId = projectId.trim()
+  const normalizedTaskId = taskId.trim()
+
+  if (!normalizedProjectId || !normalizedTaskId) {
+    return { data: null, error: "Invalid project id or task id." }
+  }
+
+  if (!isTaskStatus(status)) {
+    return { data: null, error: "Invalid task status." }
+  }
+
+  const authUser = await requireUser()
+  const supabase = await createSupabaseServerClient()
+
+  const { data: member, error: memberError } = await supabase
+    .from("project_members")
+    .select("id")
+    .eq("project_id", normalizedProjectId)
+    .eq("user_id", authUser.id)
+    .maybeSingle<{ id: string }>()
+
+  if (memberError) {
+    return {
+      data: null,
+      error: `Failed to validate project membership: ${memberError.message}`,
+    }
+  }
+
+  if (!member) {
+    return {
+      data: null,
+      error: "You are not allowed to update tasks in this project.",
+    }
+  }
+
+  const { data: task, error: taskError } = await supabase
+    .from("tasks")
+    .select("id")
+    .eq("id", normalizedTaskId)
+    .eq("project_id", normalizedProjectId)
+    .maybeSingle<{ id: string }>()
+
+  if (taskError) {
+    return {
+      data: null,
+      error: `Failed to validate task: ${taskError.message}`,
+    }
+  }
+
+  if (!task) {
+    return {
+      data: null,
+      error: "Task does not belong to this project.",
+    }
+  }
+
+  const { data, error } = await supabase
+    .from("tasks")
+    .update({ status })
+    .eq("id", normalizedTaskId)
+    .eq("project_id", normalizedProjectId)
+    .select("id, status")
+    .single<{ id: string; status: TaskStatus }>()
+
+  if (error) {
+    return {
+      data: null,
+      error: `Failed to update task status: ${error.message}`,
+    }
+  }
+
+  revalidatePath(`/project/${normalizedProjectId}/tasks`)
   revalidatePath(`/project/${normalizedProjectId}/epics`)
 
   return { data, error: null }
