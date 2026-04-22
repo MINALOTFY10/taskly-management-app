@@ -1,6 +1,7 @@
 "use server"
 
 import { createSupabaseServerClient } from "@/lib/supabase/server"
+import { PAGE_SIZE, type PaginationMeta } from "@/lib/pagination"
 import {
   TASK_STATUS_VALUES,
   type TaskStatus,
@@ -33,6 +34,12 @@ export type TasksByEpicResult = {
 export type TasksByProjectResult = {
   data: TaskWithAssignee[]
   error: string | null
+  pagination: PaginationMeta
+}
+
+export type GetTasksOptions = {
+  limit?: number
+  offset?: number
 }
 
 type TaskQueryRow = {
@@ -59,6 +66,14 @@ type EpicLookupRow = {
   id: string
   epic_id: string
 }
+
+const EMPTY_PAGINATION = (limit: number, offset: number): PaginationMeta => ({
+  limit,
+  offset,
+  totalCount: 0,
+  rangeStart: 0,
+  rangeEnd: 0,
+})
 
 function normalizeTaskStatus(value: string | null | undefined): TaskStatus {
   if (typeof value !== "string") {
@@ -112,15 +127,24 @@ function mapTasksWithAssignees(
 
 async function getTaskRowsByProject(
   projectId: string,
-  epicId?: string
-): Promise<{ data: TaskQueryRow[]; error: string | null }> {
+  options: GetTasksOptions & { epicId?: string } = {}
+): Promise<{
+  data: TaskQueryRow[]
+  error: string | null
+  pagination: PaginationMeta
+}> {
   const normalizedProjectId = projectId.trim()
-  const normalizedEpicId = epicId?.trim()
+  const normalizedEpicId = options.epicId?.trim()
+  const shouldPaginate =
+    typeof options.limit === "number" || typeof options.offset === "number"
+  const limit = Math.max(1, options.limit ?? PAGE_SIZE)
+  const offset = Math.max(0, options.offset ?? 0)
 
   if (!normalizedProjectId) {
     return {
       data: [],
       error: "Invalid project id.",
+      pagination: EMPTY_PAGINATION(limit, offset),
     }
   }
 
@@ -129,7 +153,8 @@ async function getTaskRowsByProject(
   let query = supabase
     .from("tasks")
     .select(
-      "id, project_id, title, description, epic_id, assignee_id, due_date, status, created_at, created_by"
+      "id, project_id, title, description, epic_id, assignee_id, due_date, status, created_at, created_by",
+      { count: "exact" }
     )
     .eq("project_id", normalizedProjectId)
 
@@ -137,20 +162,36 @@ async function getTaskRowsByProject(
     query = query.eq("epic_id", normalizedEpicId)
   }
 
-  const { data: tasks, error } = await query.order("created_at", {
+  const orderedQuery = query.order("created_at", {
     ascending: false,
   })
+
+  const { data: tasks, error, count } = shouldPaginate
+    ? await orderedQuery.range(offset, offset + limit - 1)
+    : await orderedQuery
 
   if (error) {
     return {
       data: [],
       error: `Failed to load tasks: ${error.message}`,
+      pagination: EMPTY_PAGINATION(limit, offset),
     }
   }
 
+  const rows = (tasks ?? []) as TaskQueryRow[]
+  const effectiveOffset = shouldPaginate ? offset : 0
+  const effectiveLimit = shouldPaginate ? limit : Math.max(1, rows.length)
+
   return {
-    data: (tasks ?? []) as TaskQueryRow[],
+    data: rows,
     error: null,
+    pagination: {
+      limit: effectiveLimit,
+      offset: effectiveOffset,
+      totalCount: count ?? rows.length,
+      rangeStart: rows.length > 0 ? effectiveOffset : 0,
+      rangeEnd: rows.length > 0 ? effectiveOffset + rows.length - 1 : 0,
+    },
   }
 }
 
@@ -236,7 +277,9 @@ export async function getTasksByEpicId(
     }
   }
 
-  const taskResult = await getTaskRowsByProject(projectId, normalizedEpicId)
+  const taskResult = await getTaskRowsByProject(projectId, {
+    epicId: normalizedEpicId,
+  })
 
   if (taskResult.error) {
     return { data: [], error: taskResult.error }
@@ -246,13 +289,57 @@ export async function getTasksByEpicId(
 }
 
 export async function getTasksByProjectId(
+  projectId: string,
+  options: GetTasksOptions = {}
+): Promise<TasksByProjectResult> {
+  const limit = Math.max(1, options.limit ?? PAGE_SIZE)
+  const offset = Math.max(0, options.offset ?? 0)
+  const taskResult = await getTaskRowsByProject(projectId, {
+    limit,
+    offset,
+  })
+
+  if (taskResult.error) {
+    return {
+      data: [],
+      error: taskResult.error,
+      pagination: EMPTY_PAGINATION(limit, offset),
+    }
+  }
+
+  const resolved = await resolveTasksWithAssignees(
+    projectId.trim(),
+    taskResult.data
+  )
+
+  return {
+    data: resolved.data,
+    error: resolved.error,
+    pagination: taskResult.pagination,
+  }
+}
+
+export async function getAllTasksByProjectId(
   projectId: string
 ): Promise<TasksByProjectResult> {
   const taskResult = await getTaskRowsByProject(projectId)
 
   if (taskResult.error) {
-    return { data: [], error: taskResult.error }
+    return {
+      data: [],
+      error: taskResult.error,
+      pagination: taskResult.pagination,
+    }
   }
 
-  return resolveTasksWithAssignees(projectId.trim(), taskResult.data)
+  const resolved = await resolveTasksWithAssignees(
+    projectId.trim(),
+    taskResult.data
+  )
+
+  return {
+    data: resolved.data,
+    error: resolved.error,
+    pagination: taskResult.pagination,
+  }
 }

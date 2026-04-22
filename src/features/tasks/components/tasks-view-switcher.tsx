@@ -1,28 +1,38 @@
 "use client"
 
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useState } from "react"
 
 import TasksBoardPage from "@/features/tasks/components/board/tasks-board-page"
 import TasksListPage from "@/features/tasks/components/list/tasks-list-page"
 import type { TaskWithAssignee } from "@/features/tasks/queries"
+import type { PaginationMeta } from "@/lib/pagination"
 
 type TasksView = "board" | "list"
 
 type TasksViewSwitcherProps = {
   projectId: string
   projectName: string
-  tasks: TaskWithAssignee[]
+  boardTasks: TaskWithAssignee[]
+  hasBoardTasksLoaded: boolean
+  listTasks: TaskWithAssignee[]
+  listError: string | null
+  listPagination: PaginationMeta
   initialView: TasksView
 }
 
 export default function TasksViewSwitcher({
   projectId,
   projectName,
-  tasks,
+  boardTasks,
+  hasBoardTasksLoaded,
+  listTasks,
+  listError,
+  listPagination,
   initialView,
 }: TasksViewSwitcherProps) {
   const pathname = usePathname()
+  const router = useRouter()
 
   const [activeView, setActiveView] = useState<TasksView>(initialView)
   const [mountedViews, setMountedViews] = useState<Record<TasksView, boolean>>({
@@ -32,6 +42,7 @@ export default function TasksViewSwitcher({
 
   const syncUrl = (nextView: TasksView) => {
     const params = new URLSearchParams(window.location.search)
+    params.delete("page")
 
     if (nextView === "list") {
       params.set("view", "list")
@@ -47,6 +58,11 @@ export default function TasksViewSwitcher({
   const handleViewChange = (nextView: TasksView) => {
     if (nextView === activeView) return
 
+    if (nextView === "board" && !hasBoardTasksLoaded) {
+      router.push(pathname)
+      return
+    }
+
     setActiveView(nextView)
     setMountedViews((previous) => ({ ...previous, [nextView]: true }))
     syncUrl(nextView)
@@ -59,7 +75,7 @@ export default function TasksViewSwitcher({
           <TasksBoardPage
             projectId={projectId}
             projectName={projectName}
-            tasks={tasks}
+            tasks={boardTasks}
             view={activeView}
             onViewChange={handleViewChange}
           />
@@ -71,7 +87,9 @@ export default function TasksViewSwitcher({
           <TasksListPage
             projectId={projectId}
             projectName={projectName}
-            tasks={tasks}
+            initialTasks={listTasks}
+            initialError={listError}
+            initialPagination={listPagination}
             view={activeView}
             onViewChange={handleViewChange}
           />
