@@ -12,6 +12,7 @@ type AddTaskFormProps = {
   projectId: string
   projectName: string
   initialEpicId?: string
+  initialStatus?: string
   members: Array<{
     userId: string
     name: string
@@ -33,6 +34,7 @@ export default function AddTaskForm({
   projectId,
   projectName,
   initialEpicId,
+  initialStatus,
   members,
   epics,
 }: AddTaskFormProps) {
@@ -64,12 +66,12 @@ export default function AddTaskForm({
       }
 
       showToast({ variant: "success", message: "Task created successfully" })
-      router.replace(`/project/${projectId}/tasks`)
+      router.replace(`/project/${projectId}/tasks?view=board`)
     })
   }
 
   const handleCancel = () => {
-    router.replace(`/project/${projectId}/tasks`)
+    router.replace(`/project/${projectId}/tasks?view=board`)
   }
 
   return (
@@ -79,6 +81,7 @@ export default function AddTaskForm({
       assigneeOptions={assigneeOptions}
       epicOptions={epicOptions}
       initialEpicId={initialEpicId}
+      initialStatus={initialStatus}
       apiError={apiError}
       isPending={isPending}
       onSubmit={onSubmit}

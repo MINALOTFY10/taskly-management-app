@@ -11,6 +11,12 @@ export const TASK_STATUS_VALUES = [
 
 export type TaskStatus = (typeof TASK_STATUS_VALUES)[number]
 
+export function isTaskStatus(
+  value: string | null | undefined
+): value is TaskStatus {
+  return typeof value === "string" && TASK_STATUS_VALUES.includes(value as TaskStatus)
+}
+
 export type TaskRow = {
   id: string
   project_id: string
@@ -22,3 +28,4 @@ export type TaskRow = {
   status: TaskStatus
   created_at: string
 }
+
