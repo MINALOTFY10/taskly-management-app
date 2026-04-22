@@ -1,10 +1,10 @@
 "use client"
 
 import { Filter, Plus, Search } from "lucide-react"
-import { useEffect, useTransition } from "react"
-import { useRouter } from "next/navigation"
-
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useEffect, useTransition } from "react"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -15,10 +15,9 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import type { TaskWithAssignee } from "@/features/tasks/queries"
-import { TASK_STATUS_VALUES } from "@/features/tasks/types"
-import TaskColumn from "./task-column"
+import { TasksListTable } from "./tasks-list-table"
 
-type TasksBoardPageProps = {
+type TasksListPageProps = {
   projectId: string
   projectName: string
   tasks: TaskWithAssignee[]
@@ -26,18 +25,17 @@ type TasksBoardPageProps = {
   onViewChange?: (view: "board" | "list") => void
 }
 
-export default function TasksBoardPage({
+export default function TasksListPage({
   projectId,
   projectName,
   tasks,
-  view = "board",
+  view = "list",
   onViewChange,
-}: TasksBoardPageProps) {
+}: TasksListPageProps) {
   const router = useRouter()
   const [isSwitchingView, startSwitchViewTransition] = useTransition()
 
   const boardPath = `/project/${projectId}/tasks`
-  const listPath = `${boardPath}?view=list`
 
   const handleViewChange = (value: string) => {
     if (value !== "list" && value !== "board") return
@@ -49,14 +47,9 @@ export default function TasksBoardPage({
     }
 
     startSwitchViewTransition(() => {
-      router.replace(listPath, { scroll: false })
+      router.replace(boardPath, { scroll: false })
     })
   }
-
-  const groupedTasks = TASK_STATUS_VALUES.map((status) => ({
-    status,
-    tasks: tasks.filter((task) => task.status === status),
-  }))
 
   return (
     <section className="px-4 py-5 sm:px-6 sm:py-7 lg:px-8">
@@ -96,7 +89,7 @@ export default function TasksBoardPage({
               <SelectTrigger className="h-10 w-full border-0 bg-accent px-3 text-sm font-medium text-foreground shadow-none focus:ring-0 sm:w-36">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="mt-18">
+              <SelectContent className="mt-10">
                 <SelectItem value="list">List View</SelectItem>
                 <SelectItem value="board">Board View</SelectItem>
               </SelectContent>
@@ -106,7 +99,7 @@ export default function TasksBoardPage({
               type="button"
               variant="outline"
               size="icon"
-              className="h-10 w-10 border-border/60 bg-background shadow-none"
+              className="h-10 w-10 shrink-0 border-border/60 bg-background shadow-none"
               aria-label="Filter tasks"
             >
               <Filter className="size-4" />
@@ -124,17 +117,8 @@ export default function TasksBoardPage({
           </div>
         </header>
 
-        <div className="mt-7 max-w-full overflow-x-auto pb-3">
-          <div className="grid min-w-max auto-cols-[17.8rem] grid-flow-col gap-4">
-            {groupedTasks.map(({ status, tasks: columnTasks }) => (
-              <TaskColumn
-                key={status}
-                projectId={projectId}
-                status={status}
-                tasks={columnTasks}
-              />
-            ))}
-          </div>
+        <div className="mt-7">
+          <TasksListTable projectId={projectId} tasks={tasks} />
         </div>
       </div>
     </section>
