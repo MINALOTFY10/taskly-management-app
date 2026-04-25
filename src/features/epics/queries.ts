@@ -16,6 +16,7 @@ export type EpicDetailsQueryResult = {
 export type GetEpicsOptions = {
   limit?: number
   offset?: number
+  search?: string
 }
 
 const EMPTY_PAGINATION = (limit: number, offset: number): PaginationMeta => ({
@@ -40,15 +41,26 @@ export async function getEpics(
     }
   }
 
-  const limit = Math.max(1, options.limit ?? PAGE_SIZE)
-  const offset = Math.max(0, options.offset ?? 0)
+  const rawLimit = Number(options.limit)
+  const rawOffset = Number(options.offset)
+
+  const limit = Number.isFinite(rawLimit) && rawLimit > 0 ? Math.floor(rawLimit) : PAGE_SIZE
+  const offset =
+    Number.isFinite(rawOffset) && rawOffset >= 0 ? Math.floor(rawOffset) : 0
+  const search = options.search?.trim() ?? ""
 
   const supabase = await createSupabaseServerClient()
 
-  const { data, error, count } = await supabase
+  let query = supabase
     .from("project_epics")
     .select("*", { count: "exact" })
     .eq("project_id", normalizedId)
+
+  if (search) {
+    query = query.ilike("title", `%${search}%`)
+  }
+
+  const { data, error, count } = await query
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1)
 

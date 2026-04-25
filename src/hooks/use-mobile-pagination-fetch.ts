@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 import {
   getOffsetFromPage,
@@ -27,6 +27,16 @@ type PaginatedFetchResponse<TItem> = {
   pagination: PaginationMeta
 }
 
+function getTotalFromContentRange(contentRange: string | null): number | null {
+  if (!contentRange) return null
+
+  const [, totalPart] = contentRange.split("/")
+  if (!totalPart) return null
+
+  const parsed = Number.parseInt(totalPart, 10)
+  return Number.isNaN(parsed) ? null : Math.max(0, parsed)
+}
+
 export function useMobilePaginationFetch<TItem>({
   initialItems,
   initialPagination,
@@ -51,6 +61,15 @@ export function useMobilePaginationFetch<TItem>({
   const canLoadMore = isInfiniteEnabled ?? isMobile === true
 
   const isLoadingMoreRef = useRef(false)
+
+  useEffect(() => {
+    setItems(initialItems)
+    setCurrentPage(getPageFromOffset(initialPagination.offset, limit))
+    setTotalCount(initialPagination.totalCount)
+    setLoadMoreError(null)
+    isLoadingMoreRef.current = false
+    setIsLoadingMore(false)
+  }, [initialItems, initialPagination.offset, initialPagination.totalCount, limit])
 
   const fetchNextPageOnMobile = useCallback(async () => {
     if (!canLoadMore || isLoadingMoreRef.current || !hasMore) return
@@ -83,8 +102,12 @@ export function useMobilePaginationFetch<TItem>({
         return
       }
 
+      const totalFromHeader = getTotalFromContentRange(
+        res.headers.get("Content-Range")
+      )
+
       setCurrentPage(nextPage)
-      setTotalCount(payload.pagination.totalCount)
+      setTotalCount(totalFromHeader ?? payload.pagination.totalCount)
 
       setItems((prev) => {
         const existingIds = new Set(prev.map((item) => getItemId(item)))
