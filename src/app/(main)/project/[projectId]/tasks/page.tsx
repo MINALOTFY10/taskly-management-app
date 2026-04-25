@@ -11,7 +11,7 @@ import { PAGE_SIZE, getOffsetFromPage, parsePageParam } from "@/lib/pagination"
 
 type TasksPageProps = {
   params: Promise<{ projectId: string }>
-  searchParams: Promise<{ view?: string; page?: string }>
+  searchParams: Promise<{ view?: string; page?: string; q?: string }>
 }
 
 export async function generateMetadata({
@@ -30,16 +30,17 @@ export default async function TasksPage({
   searchParams,
 }: TasksPageProps) {
   const { projectId } = await params
-  const { view, page: pageParam } = await searchParams
+  const { view, page: pageParam, q } = await searchParams
   const initialView = view === "list" ? "list" : "board"
   const page = initialView === "list" ? parsePageParam(pageParam) : 1
   const offset = getOffsetFromPage(page, PAGE_SIZE)
+  const searchTerm = q?.trim() ?? ""
   const shouldLoadBoardTasks = initialView === "board"
 
   const [projectResult, boardTasksResult, listTasksResult] = await Promise.all([
     getProjectById(projectId),
     shouldLoadBoardTasks
-      ? getAllTasksByProjectId(projectId)
+      ? getAllTasksByProjectId(projectId, { search: searchTerm })
       : Promise.resolve({
           data: [],
           error: null,
@@ -51,7 +52,11 @@ export default async function TasksPage({
             rangeEnd: 0,
           },
         }),
-    getTasksByProjectId(projectId, { limit: PAGE_SIZE, offset }),
+    getTasksByProjectId(projectId, {
+      limit: PAGE_SIZE,
+      offset,
+      search: searchTerm,
+    }),
   ])
 
   if (projectResult.error) {
@@ -72,6 +77,7 @@ export default async function TasksPage({
       listTasks={listTasksResult.data}
       listError={listTasksResult.error}
       listPagination={listTasksResult.pagination}
+      initialSearchTerm={searchTerm}
       initialView={initialView}
     />
   )

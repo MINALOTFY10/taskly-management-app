@@ -9,7 +9,8 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core"
-import { useEffect, useState, useTransition } from "react"
+import { useEffect, useMemo, useState, useTransition } from "react"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
 import { useAppToast } from "@/components/providers/toast-provider"
 import { updateTaskStatusAction } from "@/features/tasks/actions"
@@ -23,6 +24,7 @@ type TasksBoardPageProps = {
   projectId: string
   projectName: string
   tasks: TaskWithAssignee[]
+  initialSearchTerm: string
   view?: "board" | "list"
   onViewChange?: (view: "board" | "list") => void
 }
@@ -54,13 +56,23 @@ export default function TasksBoardPage({
   projectId,
   projectName,
   tasks,
+  initialSearchTerm,
   view = "board",
   onViewChange,
 }: TasksBoardPageProps) {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   const { showToast } = useAppToast()
-  const [, startTransition] = useTransition()
+  const [isSearching, startSearchTransition] = useTransition()
+  const [, startUpdateTransition] = useTransition()
   const [selectedTask, setSelectedTask] = useState<TaskWithAssignee | null>(null)
   const [boardTasks, setBoardTasks] = useState<TaskWithAssignee[]>(tasks)
+  const [searchTerm, setSearchTerm] = useState(initialSearchTerm)
+  const normalizedInitialSearchTerm = useMemo(
+    () => initialSearchTerm.trim(),
+    [initialSearchTerm]
+  )
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -80,6 +92,44 @@ export default function TasksBoardPage({
   useEffect(() => {
     setBoardTasks(tasks)
   }, [tasks])
+
+  useEffect(() => {
+    setSearchTerm(initialSearchTerm)
+  }, [initialSearchTerm])
+
+  useEffect(() => {
+    const normalizedSearchTerm = searchTerm.trim()
+
+    if (normalizedSearchTerm === normalizedInitialSearchTerm) {
+      return
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      startSearchTransition(() => {
+        const params = new URLSearchParams(searchParams.toString())
+
+        if (normalizedSearchTerm) {
+          params.set("q", normalizedSearchTerm)
+        } else {
+          params.delete("q")
+        }
+
+        params.delete("view")
+        params.delete("page")
+
+        const query = params.toString()
+        router.replace(query ? `${pathname}?${query}` : pathname)
+      })
+    }, 400)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [
+    normalizedInitialSearchTerm,
+    pathname,
+    router,
+    searchParams,
+    searchTerm,
+  ])
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
@@ -113,7 +163,7 @@ export default function TasksBoardPage({
         : previousSelectedTask
     )
 
-    startTransition(async () => {
+    startUpdateTransition(async () => {
       const { error } = await updateTaskStatusAction(projectId, taskId, nextStatus)
 
       if (!error) {
@@ -145,6 +195,9 @@ export default function TasksBoardPage({
           projectName={projectName}
           view={view}
           onViewChange={onViewChange ?? (() => {})}
+          searchTerm={searchTerm}
+          onSearchTermChange={setSearchTerm}
+          isSearching={isSearching}
         />
 
         <div className="mt-10 max-w-full overflow-x-auto pb-3">

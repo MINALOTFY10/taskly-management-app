@@ -1,4 +1,4 @@
-import { Filter, Plus, Search } from "lucide-react"
+import { Filter, Loader2, Plus, Search } from "lucide-react"
 import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
@@ -20,6 +20,9 @@ type TasksPageHeaderProps = {
   view: TasksView
   onViewChange: (view: TasksView) => void
   isSwitchingView?: boolean
+  searchTerm?: string
+  onSearchTermChange?: (value: string) => void
+  isSearching?: boolean
 }
 
 export function TasksPageHeader({
@@ -28,6 +31,9 @@ export function TasksPageHeader({
   view,
   onViewChange,
   isSwitchingView = false,
+  searchTerm,
+  onSearchTermChange,
+  isSearching = false,
 }: TasksPageHeaderProps) {
   const handleViewChange = (value: string) => {
     if (value === "list" || value === "board") {
@@ -53,12 +59,22 @@ export function TasksPageHeader({
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative w-full sm:w-53.5">
-          <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+          {isSearching ? (
+            <Loader2 className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 animate-spin text-muted-foreground" />
+          ) : (
+            <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+          )}
           <Input
-            aria-label="Search tasks (not yet available)"
+            aria-label="Search tasks"
             placeholder="Search tasks..."
-            readOnly
-            className="h-10 cursor-default border-0 bg-[#d9e2ff] pl-9 text-sm text-foreground shadow-none placeholder:text-slate-500 focus-visible:ring-0"
+            className={cn(
+              "h-10 border-0 bg-[#d9e2ff] pl-9 text-sm text-foreground shadow-none placeholder:text-slate-500 focus-visible:ring-0",
+              !onSearchTermChange && "cursor-default"
+            )}
+            value={searchTerm}
+            onChange={(event) => onSearchTermChange?.(event.target.value)}
+            readOnly={!onSearchTermChange}
+            aria-busy={isSearching}
           />
         </div>
 

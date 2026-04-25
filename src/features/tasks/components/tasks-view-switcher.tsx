@@ -18,6 +18,7 @@ type TasksViewSwitcherProps = {
   listTasks: TaskWithAssignee[]
   listError: string | null
   listPagination: PaginationMeta
+  initialSearchTerm: string
   initialView: TasksView
 }
 
@@ -29,6 +30,7 @@ export default function TasksViewSwitcher({
   listTasks,
   listError,
   listPagination,
+  initialSearchTerm,
   initialView,
 }: TasksViewSwitcherProps) {
   const pathname = usePathname()
@@ -59,7 +61,12 @@ export default function TasksViewSwitcher({
     if (nextView === activeView) return
 
     if (nextView === "board" && !hasBoardTasksLoaded) {
-      router.push(pathname)
+      const params = new URLSearchParams(window.location.search)
+      params.delete("view")
+      params.delete("page")
+
+      const query = params.toString()
+      router.push(query ? `${pathname}?${query}` : pathname)
       return
     }
 
@@ -76,6 +83,7 @@ export default function TasksViewSwitcher({
             projectId={projectId}
             projectName={projectName}
             tasks={boardTasks}
+            initialSearchTerm={initialSearchTerm}
             view={activeView}
             onViewChange={handleViewChange}
           />
@@ -87,6 +95,7 @@ export default function TasksViewSwitcher({
           <TasksListPage
             projectId={projectId}
             projectName={projectName}
+            initialSearchTerm={initialSearchTerm}
             initialTasks={listTasks}
             initialError={listError}
             initialPagination={listPagination}
