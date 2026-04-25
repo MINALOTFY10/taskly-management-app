@@ -11,7 +11,10 @@ export default function ScrollSentinel({
 }) {
   const ref = useRef<HTMLDivElement>(null)
   const onIntersectRef = useRef(onIntersect)
-  onIntersectRef.current = onIntersect
+
+  useEffect(() => {
+    onIntersectRef.current = onIntersect
+  }, [onIntersect])
 
   useEffect(() => {
     if (!enabled || !ref.current) return

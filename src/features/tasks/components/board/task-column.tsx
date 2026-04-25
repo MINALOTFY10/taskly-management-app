@@ -1,3 +1,5 @@
+"use client"
+
 import { getTaskStatusLabel } from "@/features/tasks/utils/status"
 import { TaskStatus } from "../../types"
 import { TaskWithAssignee } from "../../queries"
@@ -5,8 +7,10 @@ import { TASK_STATUS_VISUALS } from "../../utils/task-status-visuals"
 import { Button } from "@/components/ui/button"
 import { Plus, PlusCircle } from "lucide-react"
 import Link from "next/link"
-import TaskCard from "./task-card"
+import { useDroppable } from "@dnd-kit/core"
+
 import { cn } from "@/lib/utils"
+import DraggableTaskCard from "./draggable-task-card"
 
 export default function TaskColumn({
   projectId,
@@ -19,6 +23,13 @@ export default function TaskColumn({
   tasks: TaskWithAssignee[]
   onTaskSelect?: (task: TaskWithAssignee) => void
 }) {
+  const { setNodeRef } = useDroppable({
+    id: status,
+    data: {
+      status,
+    },
+  })
+
   const theme = TASK_STATUS_VISUALS[status]
   const statusLabel = getTaskStatusLabel(status).toUpperCase()
   const addTaskHref = `/project/${projectId}/tasks/new?status=${status}`
@@ -70,9 +81,9 @@ export default function TaskColumn({
         </Link>
       </Button>
 
-      <div className="flex flex-1 flex-col gap-3 pt-0.5">
+      <div ref={setNodeRef} className="flex flex-1 flex-col gap-3 pt-0.5">
         {tasks.map((task) => (
-          <TaskCard
+          <DraggableTaskCard
             key={task.id}
             task={task}
             status={status}

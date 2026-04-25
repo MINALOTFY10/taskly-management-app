@@ -4,7 +4,7 @@ serve(async (req : Request) => {
   try {
     const { email, invite_link } = await req.json();
     const GMAIL_USER = "menalotfy665@gmail.com";
-    const GMAIL_APP_PASSWORD = "uwet gneu cyhx ywzn";
+    const GMAIL_APP_PASSWORD = "mqdq xzla uybp sxdt";
     const client = new SMTPClient({
       connection: {
         hostname: "smtp.gmail.com",

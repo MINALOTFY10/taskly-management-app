@@ -9,7 +9,7 @@ import { getOffsetFromPage, parsePageParam } from "@/lib/pagination"
 
 type EpicsPageProps = {
   params: Promise<{ projectId: string }>
-  searchParams: Promise<{ page?: string }>
+  searchParams: Promise<{ page?: string; q?: string }>
 }
 
 export async function generateMetadata({
@@ -27,13 +27,14 @@ export default async function EpicsPage({
   searchParams,
 }: EpicsPageProps) {
   const { projectId } = await params
-  const { page: pageParam } = await searchParams
+  const { page: pageParam, q } = await searchParams
   const page = parsePageParam(pageParam)
   const offset = getOffsetFromPage(page, PAGE_SIZE)
+  const searchTerm = q?.trim() ?? ""
 
   const [projectResult, epicsResult, membersResult] = await Promise.all([
     getProjectById(projectId),
-    getEpics(projectId, { limit: PAGE_SIZE, offset }),
+    getEpics(projectId, { limit: PAGE_SIZE, offset, search: searchTerm }),
     getProjectMembers(projectId),
   ])
 
@@ -58,9 +59,9 @@ export default async function EpicsPage({
 
   return (
     <EpicsListPage
-      key={`page-${page}`}
       projectId={projectId}
       projectName={projectResult.data.name}
+      initialSearchTerm={searchTerm}
       initialEpics={epicsResult.data}
       initialError={epicsResult.error}
       initialPagination={epicsResult.pagination}
