@@ -40,6 +40,7 @@ export type TasksByProjectResult = {
 export type GetTasksOptions = {
   limit?: number
   offset?: number
+  search?: string
 }
 
 type TaskQueryRow = {
@@ -135,10 +136,15 @@ async function getTaskRowsByProject(
 }> {
   const normalizedProjectId = projectId.trim()
   const normalizedEpicId = options.epicId?.trim()
+  const normalizedSearch = options.search?.trim() ?? ""
   const shouldPaginate =
     typeof options.limit === "number" || typeof options.offset === "number"
-  const limit = Math.max(1, options.limit ?? PAGE_SIZE)
-  const offset = Math.max(0, options.offset ?? 0)
+
+  const rawLimit = Number(options.limit)
+  const rawOffset = Number(options.offset)
+  const limit = Number.isFinite(rawLimit) && rawLimit > 0 ? Math.floor(rawLimit) : PAGE_SIZE
+  const offset =
+    Number.isFinite(rawOffset) && rawOffset >= 0 ? Math.floor(rawOffset) : 0
 
   if (!normalizedProjectId) {
     return {
@@ -160,6 +166,10 @@ async function getTaskRowsByProject(
 
   if (normalizedEpicId) {
     query = query.eq("epic_id", normalizedEpicId)
+  }
+
+  if (normalizedSearch) {
+    query = query.ilike("title", `%${normalizedSearch}%`)
   }
 
   const orderedQuery = query.order("created_at", {
@@ -292,11 +302,16 @@ export async function getTasksByProjectId(
   projectId: string,
   options: GetTasksOptions = {}
 ): Promise<TasksByProjectResult> {
-  const limit = Math.max(1, options.limit ?? PAGE_SIZE)
-  const offset = Math.max(0, options.offset ?? 0)
+  const rawLimit = Number(options.limit)
+  const rawOffset = Number(options.offset)
+  const limit = Number.isFinite(rawLimit) && rawLimit > 0 ? Math.floor(rawLimit) : PAGE_SIZE
+  const offset =
+    Number.isFinite(rawOffset) && rawOffset >= 0 ? Math.floor(rawOffset) : 0
+
   const taskResult = await getTaskRowsByProject(projectId, {
     limit,
     offset,
+    search: options.search,
   })
 
   if (taskResult.error) {
@@ -320,9 +335,12 @@ export async function getTasksByProjectId(
 }
 
 export async function getAllTasksByProjectId(
-  projectId: string
+  projectId: string,
+  options: Pick<GetTasksOptions, "search"> = {}
 ): Promise<TasksByProjectResult> {
-  const taskResult = await getTaskRowsByProject(projectId)
+  const taskResult = await getTaskRowsByProject(projectId, {
+    search: options.search,
+  })
 
   if (taskResult.error) {
     return {
