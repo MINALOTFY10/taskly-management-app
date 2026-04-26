@@ -1,10 +1,12 @@
-import { serve } from "https://deno.land/std/http/server.ts";
-import { SMTPClient } from "https://deno.land/x/denomailer/mod.ts";
-serve(async (req : Request) => {
+import { serve } from "https://deno.land/std/http/server.ts"
+import { SMTPClient } from "https://deno.land/x/denomailer/mod.ts"
+serve(async (req: Request) => {
   try {
-    const { email, invite_link } = await req.json();
-    const GMAIL_USER = "menalotfy665@gmail.com";
-    const GMAIL_APP_PASSWORD = "mqdq xzla uybp sxdt";
+    const { email, invite_link } = await req.json()
+    // @ts-ignore
+    const GMAIL_USER = Deno.env.get("GMAIL_USER")!
+    // @ts-ignore
+    const GMAIL_APP_PASSWORD = Deno.env.get("GMAIL_APP_PASSWORD")!
     const client = new SMTPClient({
       connection: {
         hostname: "smtp.gmail.com",
@@ -15,7 +17,7 @@ serve(async (req : Request) => {
           password: GMAIL_APP_PASSWORD,
         },
       },
-    });
+    })
     await client.send({
       from: GMAIL_USER,
       to: email,
@@ -25,8 +27,8 @@ serve(async (req : Request) => {
     <p>Click below to join the project:</p>
     <a href="${invite_link}">Accept Invitation</a>
   `,
-    });
-    await client.close();
+    })
+    await client.close()
     return new Response(
       JSON.stringify({
         success: true,
@@ -36,17 +38,17 @@ serve(async (req : Request) => {
         headers: {
           "Content-Type": "application/json",
         },
-      },
-    );
+      }
+    )
   } catch (err) {
-    console.error(err);
+    console.error(err)
     return new Response(
       JSON.stringify({
         error: err instanceof Error ? err.message : String(err),
       }),
       {
         status: 500,
-      },
-    );
+      }
+    )
   }
-});
+})

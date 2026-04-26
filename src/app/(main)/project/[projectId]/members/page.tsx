@@ -1,9 +1,10 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
-import ProjectMembersError from "@/features/projects/components/members/project-members-error"
-import ProjectMembersPage from "@/features/projects/components/members/project-members-page"
-import { getProjectById, getProjectMembers } from "@/features/projects/queries"
+import ProjectMembersError from "@/features/members/components/project-members-error"
+import ProjectMembersPage from "@/features/members/components/project-members-page"
+import { getProjectById } from "@/features/projects/queries"
+import { getProjectMembers } from "@/features/members/queries"
 
 type MembersPageProps = {
     params: Promise<{ projectId: string }>
@@ -47,6 +48,7 @@ export default async function MembersPage({ params }: MembersPageProps) {
 
     return (
         <ProjectMembersPage
+            projectId={projectId}
             projectName={projectResult.data.name}
             members={membersResult.data}
         />

@@ -1,23 +1,31 @@
+"use client"
+
+import { useState } from "react"
 import { MoreVertical, UserPlus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import ProjectMemberAvatar from "@/features/projects/components/members/project-member-avatar"
+import InviteMemberForm from "@/features/members/components/invite-member-form"
+import ProjectMemberAvatar from "@/features/members/components/project-member-avatar"
 import { formatProjectDate } from "@/features/projects/utils/date"
 import {
   formatProjectMemberRole,
   PROJECT_MEMBER_ROLE_BADGE_CLASS_NAME,
-} from "@/features/projects/utils/member"
-import type { ProjectMemberRow } from "@/features/projects/types"
+} from "@/features/members/utils/member"
+import type { ProjectMemberRow } from "@/features/members/types"
 
 type ProjectMembersPageProps = {
+  projectId: string
   projectName: string
   members: ProjectMemberRow[]
 }
 
 export default function ProjectMembersPage({
+  projectId,
   projectName,
   members,
 }: ProjectMembersPageProps) {
+  const [isInviteOpen, setIsInviteOpen] = useState(false)
+
   return (
     <section className="px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-8">
       <div className="mx-auto w-full max-w-350">
@@ -35,6 +43,7 @@ export default function ProjectMembersPage({
             type="button"
             size="lg"
             className="mt-auto hidden h-12 gap-2 rounded-md px-4 text-[14px] font-semibold shadow-[0_10px_18px_rgba(0,50,184,0.15)] sm:inline-flex"
+            onClick={() => setIsInviteOpen(true)}
           >
             <UserPlus className="size-4" /> Invite Members
           </Button>
@@ -149,9 +158,17 @@ export default function ProjectMembersPage({
         size="icon-lg"
         className="fixed right-4 bottom-4 z-20 rounded-xl p-6 shadow-[0_10px_20px_rgba(0,50,184,0.22)] sm:hidden"
         aria-label="Invite members"
+        onClick={() => setIsInviteOpen(true)}
       >
         <UserPlus className="size-5" />
       </Button>
+
+      <InviteMemberForm
+        projectId={projectId}
+        projectName={projectName}
+        open={isInviteOpen}
+        onClose={() => setIsInviteOpen(false)}
+      />
     </section>
   )
 }

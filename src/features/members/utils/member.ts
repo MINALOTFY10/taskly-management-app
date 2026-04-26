@@ -1,4 +1,4 @@
-import type { ProjectMemberRole } from "@/features/projects/types"
+import type { ProjectMemberRole } from "@/features/members/types"
 
 export const PROJECT_MEMBER_ROLE_BADGE_CLASS_NAME: Record<ProjectMemberRole, string> = {
   owner: "bg-primary text-primary-foreground",

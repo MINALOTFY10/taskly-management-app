@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils"
-import { getAvatarColor, getInitials } from "@/features/projects/utils/avatar"
+import { getAvatarColor, getInitials } from "@/features/members/utils/avatar"
 
 type ProjectMemberAvatarProps = {
   name: string
