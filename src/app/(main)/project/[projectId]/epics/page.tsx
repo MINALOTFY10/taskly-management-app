@@ -2,10 +2,11 @@ import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 
 import { PAGE_SIZE } from "@/lib/pagination"
-import { getProjectById, getProjectMembers } from "@/features/projects/queries"
+import { getProjectById } from "@/features/projects/queries"
 import { getEpics } from "@/features/epics/queries"
 import EpicsListPage from "@/features/epics/components/listing/epics-list-page"
 import { getOffsetFromPage, parsePageParam } from "@/lib/pagination"
+import { getProjectMembers } from "@/features/members/queries"
 
 type EpicsPageProps = {
   params: Promise<{ projectId: string }>

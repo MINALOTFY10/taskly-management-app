@@ -24,7 +24,7 @@ export function AppSidebar() {
   const { handleLogout, isLoggingOut, logoutError } = useLogout()
 
   return (
-    <Sidebar collapsible="icon" className="border-0!">
+    <Sidebar collapsible="icon" className="">
       <SidebarHeader className="h-16 justify-center border-b border-border/50">
         <AppLogo className="ml-4" />
       </SidebarHeader>
@@ -40,7 +40,7 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="border-t border-border/50 px-4 py-3">
-        <SidebarMenu className="gap-2">
+        <SidebarMenu className="gap-1">
           <SidebarMenuItem className="hidden lg:flex">
             <CollapseButton />
           </SidebarMenuItem>
@@ -49,7 +49,7 @@ export function AppSidebar() {
               onClick={handleLogout}
               disabled={isLoggingOut}
               tooltip="Logout"
-              className="h-10 text-destructive hover:bg-destructive/10 hover:text-destructive"
+              className="h-10 ms-1 text-destructive hover:bg-destructive/10 hover:text-destructive cursor-pointer"
             >
               <LogOut className="size-4.5" />
               <span className="text-sm">
@@ -63,7 +63,7 @@ export function AppSidebar() {
           role="alert"
           className={
             logoutError
-              ? "mt-2 rounded-md border border-error/30 bg-error/10 px-2 py-1 text-xs text-error"
+              ? "mt-2 rounded-md border border-error/30 bg-error/10 px-2 py-1 text-xs text-error "
               : "sr-only"
           }
         >
@@ -81,7 +81,7 @@ function CollapseButton() {
     <SidebarMenuButton
       onClick={toggleSidebar}
       tooltip={open ? "Collapse" : "Expand"}
-      className="h-10"
+      className="h-10 cursor-pointer"
     >
       {open ? (
         <ChevronLeft className="size-5!" />

@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -14,6 +14,7 @@ import { loginUser } from "@/features/auth/services/auth-service"
 
 export default function Page() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [apiError, setApiError] = useState<string | null>(null)
 
   const {
@@ -42,7 +43,14 @@ export default function Page() {
         )
         return
       }
-      router.push("/project")
+
+      const returnTo = searchParams.get("returnTo")
+      if (returnTo && returnTo.startsWith("/")) {
+        router.push(returnTo)
+      } else {
+        router.push("/project")
+      }
+
       router.refresh()
     } catch {
       setApiError("Network error. Please check your connection and try again.")

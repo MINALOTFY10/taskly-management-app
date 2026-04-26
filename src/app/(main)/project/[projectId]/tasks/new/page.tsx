@@ -3,7 +3,8 @@ import { notFound } from "next/navigation"
 
 import AddTaskForm from "@/features/tasks/components/add/add-task-form"
 import { getEpics } from "@/features/epics/queries"
-import { getProjectById, getProjectMembers } from "@/features/projects/queries"
+import { getProjectById } from "@/features/projects/queries"
+import { getProjectMembers } from "@/features/members/queries"
 
 type NewTaskPageProps = {
   params: Promise<{ projectId: string }>
