@@ -9,7 +9,7 @@ export function useAcceptInvitation(token: string | null) {
   const [error, setError] = useState<string | null>(null)
   const [isAccepted, setIsAccepted] = useState(false)
 
-  const handleAccept = useCallback(async (): Promise<string | null> => {
+  const handleAccept = async (): Promise<string | null> => {
     if (isLoading) return null
 
     if (!token) {
@@ -33,7 +33,7 @@ export function useAcceptInvitation(token: string | null) {
     } finally {
       setIsLoading(false)
     }
-  }, [isLoading, token])
+  }
 
   return {
     isLoading,

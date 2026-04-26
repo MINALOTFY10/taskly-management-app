@@ -9,6 +9,19 @@ export type ProjectMembersQueryResult = {
   error: string | null
 }
 
+const PROJECT_MEMBER_ROLE_PRIORITY: Record<ProjectMemberRole, number> = {
+  owner: 0,
+  admin: 1,
+  member: 2,
+  viewer: 3,
+}
+
+export type CurrentUserRoleQueryResult = {
+  userId: string | null
+  role: ProjectMemberRole | null
+  error: string | null
+}
+
 function createSupabaseAdminClient() {
   const serviceRoleKey =
     process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SERVICE_ROLE_KEY
@@ -131,5 +144,58 @@ export async function getProjectMembers(
     }
   })
 
+  result.sort((a, b) => {
+    const roleDifference =
+      PROJECT_MEMBER_ROLE_PRIORITY[a.role] - PROJECT_MEMBER_ROLE_PRIORITY[b.role]
+
+    if (roleDifference !== 0) {
+      return roleDifference
+    }
+
+    return a.name.localeCompare(b.name)
+  })
+
   return { data: result, error: null }
+}
+
+export async function getCurrentUserRole(
+  projectId: string
+): Promise<CurrentUserRoleQueryResult> {
+  const normalizedProjectId = projectId.trim()
+
+  if (!normalizedProjectId) {
+    return { userId: null, role: null, error: "Invalid project id." }
+  }
+
+  const supabase = await createSupabaseServerClient()
+
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser()
+
+  if (userError || !user) {
+    return {
+      userId: null,
+      role: null,
+      error: userError?.message ?? "Failed to load current user role.",
+    }
+  }
+
+  const { data, error } = await supabase
+    .from("project_members")
+    .select("role")
+    .eq("project_id", normalizedProjectId)
+    .eq("user_id", user.id)
+    .maybeSingle<{ role: unknown }>()
+
+  if (error) {
+    return { userId: user.id, role: null, error: `Failed to load role: ${error.message}` }
+  }
+
+  if (!data) {
+    return { userId: user.id, role: null, error: null }
+  }
+
+  return { userId: user.id, role: normalizeRole(data.role), error: null }
 }

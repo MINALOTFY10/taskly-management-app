@@ -12,7 +12,7 @@ export function useInviteMember(projectId: string) {
 	const [error, setError] = useState<string | null>(null)
 	const [successEmail, setSuccessEmail] = useState<string | null>(null)
 
-	const handleSubmit = useCallback(async () => {
+	const handleSubmit = async () => {
 		if (isLoading) return
 
 		const normalizedEmail = email.trim()
@@ -49,7 +49,7 @@ export function useInviteMember(projectId: string) {
 		} finally {
 			setIsLoading(false)
 		}
-	}, [email, isLoading, projectId])
+	}
 
 	const reset = useCallback(() => {
 		setEmail("")

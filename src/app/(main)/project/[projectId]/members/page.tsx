@@ -4,7 +4,7 @@ import { notFound } from "next/navigation"
 import ProjectMembersError from "@/features/members/components/project-members-error"
 import ProjectMembersPage from "@/features/members/components/project-members-page"
 import { getProjectById } from "@/features/projects/queries"
-import { getProjectMembers } from "@/features/members/queries"
+import { getCurrentUserRole, getProjectMembers } from "@/features/members/queries"
 
 type MembersPageProps = {
     params: Promise<{ projectId: string }>
@@ -24,9 +24,10 @@ export async function generateMetadata({
 export default async function MembersPage({ params }: MembersPageProps) {
     const { projectId } = await params
 
-    const [projectResult, membersResult] = await Promise.all([
+    const [projectResult, membersResult, roleResult] = await Promise.all([
         getProjectById(projectId),
         getProjectMembers(projectId),
+        getCurrentUserRole(projectId),
     ])
 
     if (projectResult.error) {
@@ -46,11 +47,16 @@ export default async function MembersPage({ params }: MembersPageProps) {
         )
     }
 
+    const currentUserId = roleResult.userId
+    const currentUserRole = roleResult.role
+
     return (
         <ProjectMembersPage
             projectId={projectId}
             projectName={projectResult.data.name}
             members={membersResult.data}
+            currentUserId={currentUserId}
+            currentUserRole={currentUserRole}
         />
     )
 }

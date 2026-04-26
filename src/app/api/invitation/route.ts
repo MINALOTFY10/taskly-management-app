@@ -1,12 +1,5 @@
-import { createClient } from "@supabase/supabase-js"
 import { NextRequest, NextResponse } from "next/server"
-
-function createServiceClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
-}
+import {createClient} from "@/lib/supabase/client"
 
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get("token")
@@ -15,7 +8,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "invalid_token" }, { status: 400 })
   }
 
-  const supabase = createServiceClient()
+  const supabase = createClient()
 
   const { data: invitation, error: invitationError } = await supabase
     .from("project_invitations")
