@@ -79,8 +79,5 @@ https://taskly-management-app.vercel.app
 - **Normalized API envelope** — all list endpoints return `{ data, error, pagination }` consumed by a shared `useMobilePaginationFetch` hook
 - **Optimistic UI on the board** — drag-and-drop updates fire immediately; server failure triggers rollback and a toast
 
----
-
-## License
 
 MIT
