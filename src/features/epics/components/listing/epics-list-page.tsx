@@ -1,5 +1,6 @@
 "use client"
 
+import { useCallback } from "react"
 import Link from "next/link"
 import { Plus } from "lucide-react"
 
@@ -20,19 +21,36 @@ import ScrollSentinel from "@/components/shared/pagination/scroll-sentinel"
 type EpicsListPageProps = {
   projectId: string
   projectName: string
+  initialSearchTerm: string
   initialEpics: EpicRow[]
   initialError: string | null
   initialPagination: PaginationMeta
+  assigneeOptions: {
+    userId: string
+    name: string
+    email: string
+    avatarUrl: string | null
+  }[]
 }
 
 export default function EpicsListPage({
   projectId,
   projectName,
+  initialSearchTerm,
   initialEpics,
   initialError,
   initialPagination,
+  assigneeOptions,
 }: EpicsListPageProps) {
   const isMobile = useIsMobile()
+
+  const buildRequestUrl = useCallback(
+    ({ limit, offset }: { limit: number; offset: number }) =>
+      `/api/projects/${projectId}/epics?limit=${limit}&offset=${offset}${
+        initialSearchTerm ? `&q=${encodeURIComponent(initialSearchTerm)}` : ""
+      }`,
+    [projectId, initialSearchTerm]
+  )
 
   const {
     items: epics,
@@ -47,51 +65,69 @@ export default function EpicsListPage({
     initialItems: initialEpics,
     initialPagination,
     isMobile,
-    buildRequestUrl: ({ limit, offset }) =>
-      `/api/projects/${projectId}/epics?limit=${limit}&offset=${offset}`,
+    buildRequestUrl,
     getItemId: (epic) => epic.id,
     loadMoreErrorMessage: "Failed to load more epics.",
   })
 
-  if (initialError) return <EpicsError />
-  if (epics.length === 0) return <EpicsEmpty projectId={projectId} />
+  const hasError = Boolean(initialError)
+  const isEmpty = !hasError && epics.length === 0
 
   return (
     <section className="relative px-5 py-5 sm:px-6 sm:py-7 lg:px-8">
-      <EpicsListHeader projectId={projectId} projectName={projectName} />
+      <EpicsListHeader
+        projectId={projectId}
+        projectName={projectName}
+        initialSearchTerm={initialSearchTerm}
+      />
 
-      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2" aria-label="Epics list">
-        {epics.map((epic) => (
-          <EpicCard key={epic.id} epic={epic} />
-        ))}
-      </div>
-
-      <div className="mt-8 flex min-h-7 items-center justify-between gap-4 pb-4">
-        <ListPaginationSummary
-          shownCount={epics.length}
-          totalCount={totalCount}
-          itemLabel="active epics"
+      {hasError ? (
+        <EpicsError
+          message={initialSearchTerm ? "Failed to search epics" : undefined}
         />
+      ) : isEmpty ? (
+        <EpicsEmpty projectId={projectId} searchTerm={initialSearchTerm} />
+      ) : (
+        <>
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2" aria-label="Epics list">
+            {epics.map((epic) => (
+              <EpicCard
+                key={epic.id}
+                epic={epic}
+                projectId={projectId}
+                assigneeOptions={assigneeOptions}
+              />
+            ))}
+          </div>
 
-        {isMobile === false && totalCount > 0 && (
-          <CompactPagination currentPage={currentPage} totalPages={totalPages} />
-        )}
-      </div>
+          <div className="mt-8 flex min-h-7 items-center justify-between gap-4 pb-4">
+            <ListPaginationSummary
+              shownCount={epics.length}
+              totalCount={totalCount}
+              itemLabel="active epics"
+            />
 
-      <ScrollSentinel
-        enabled={isMobile === true && hasMore}
-        onIntersect={fetchNextPageOnMobile}
-      />
+            {isMobile === false && totalCount > 0 && (
+              <CompactPagination currentPage={currentPage} totalPages={totalPages} />
+            )}
+          </div>
 
-      <MobilePaginationFeedback
-        isLoadingMore={isLoadingMore}
-        loadingText="Loading more epics"
-        errorMessage={loadMoreError}
-        showError={epics.length > 0}
-        onRetry={() => {
-          void fetchNextPageOnMobile()
-        }}
-      />
+          <ScrollSentinel
+            enabled={isMobile === true && hasMore}
+            onIntersect={fetchNextPageOnMobile}
+          />
+
+          <MobilePaginationFeedback
+            isLoadingMore={isLoadingMore}
+            loadingText="Loading more epics"
+            errorMessage={loadMoreError}
+            showError={epics.length > 0}
+            onRetry={() => {
+              void fetchNextPageOnMobile()
+            }}
+          />
+        </>
+      )}
 
       <Button
         asChild

@@ -2,7 +2,8 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
 import AddEpicForm from "@/features/epics/components/add/add-epic-form"
-import { getProjectById, getProjectMembers } from "@/features/projects/queries"
+import { getProjectById } from "@/features/projects/queries"
+import { getProjectMembers } from "@/features/members/queries"
 
 type NewEpicPageProps = {
   params: Promise<{ projectId: string }>

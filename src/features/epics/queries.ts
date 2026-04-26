@@ -8,9 +8,15 @@ export type EpicsQueryResult = {
   pagination: PaginationMeta
 }
 
+export type EpicDetailsQueryResult = {
+  data: EpicRow | null
+  error: string | null
+}
+
 export type GetEpicsOptions = {
   limit?: number
   offset?: number
+  search?: string
 }
 
 const EMPTY_PAGINATION = (limit: number, offset: number): PaginationMeta => ({
@@ -35,15 +41,26 @@ export async function getEpics(
     }
   }
 
-  const limit = Math.max(1, options.limit ?? PAGE_SIZE)
-  const offset = Math.max(0, options.offset ?? 0)
+  const rawLimit = Number(options.limit)
+  const rawOffset = Number(options.offset)
+
+  const limit = Number.isFinite(rawLimit) && rawLimit > 0 ? Math.floor(rawLimit) : PAGE_SIZE
+  const offset =
+    Number.isFinite(rawOffset) && rawOffset >= 0 ? Math.floor(rawOffset) : 0
+  const search = options.search?.trim() ?? ""
 
   const supabase = await createSupabaseServerClient()
 
-  const { data, error, count } = await supabase
+  let query = supabase
     .from("project_epics")
     .select("*", { count: "exact" })
     .eq("project_id", normalizedId)
+
+  if (search) {
+    query = query.ilike("title", `%${search}%`)
+  }
+
+  const { data, error, count } = await query
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1)
 
@@ -67,5 +84,48 @@ export async function getEpics(
       rangeStart: rows.length > 0 ? offset : 0,
       rangeEnd: rows.length > 0 ? offset + rows.length - 1 : 0,
     },
+  }
+}
+
+export async function getEpicById(
+  projectId: string,
+  epicId: string
+): Promise<EpicDetailsQueryResult> {
+  const normalizedProjectId = projectId.trim()
+  const normalizedEpicId = epicId.trim()
+
+  if (!normalizedProjectId || !normalizedEpicId) {
+    return {
+      data: null,
+      error: "Invalid project id or epic id.",
+    }
+  }
+
+  const supabase = await createSupabaseServerClient()
+
+  const { data, error } = await supabase
+    .from("project_epics")
+    .select("*")
+    .eq("project_id", normalizedProjectId)
+    .eq("id", normalizedEpicId)
+    .maybeSingle<EpicRow>()
+
+  if (error) {
+    return {
+      data: null,
+      error: `Failed to load epic details: ${error.message}`,
+    }
+  }
+
+  if (!data) {
+    return {
+      data: null,
+      error: "Epic not found.",
+    }
+  }
+
+  return {
+    data,
+    error: null,
   }
 }

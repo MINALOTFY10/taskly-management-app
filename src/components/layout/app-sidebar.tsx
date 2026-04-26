@@ -19,13 +19,12 @@ import {
 import { NAV_ITEMS } from "./main-shell.constants"
 import AppLogo from "../shared/app-logo"
 import { useLogout } from "@/hooks/use-logout"
-import console from "console"
 
 export function AppSidebar() {
   const { handleLogout, isLoggingOut, logoutError } = useLogout()
 
   return (
-    <Sidebar collapsible="icon" className="border-0!">
+    <Sidebar collapsible="icon" className="">
       <SidebarHeader className="h-16 justify-center border-b border-border/50">
         <AppLogo className="ml-4" />
       </SidebarHeader>
@@ -41,7 +40,7 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="border-t border-border/50 px-4 py-3">
-        <SidebarMenu className="gap-2">
+        <SidebarMenu className="gap-1">
           <SidebarMenuItem className="hidden lg:flex">
             <CollapseButton />
           </SidebarMenuItem>
@@ -50,7 +49,7 @@ export function AppSidebar() {
               onClick={handleLogout}
               disabled={isLoggingOut}
               tooltip="Logout"
-              className="h-10 text-destructive hover:bg-destructive/10 hover:text-destructive"
+              className="h-10 ms-1 text-destructive hover:bg-destructive/10 hover:text-destructive cursor-pointer"
             >
               <LogOut className="size-4.5" />
               <span className="text-sm">
@@ -64,7 +63,7 @@ export function AppSidebar() {
           role="alert"
           className={
             logoutError
-              ? "mt-2 rounded-md border border-error/30 bg-error/10 px-2 py-1 text-xs text-error"
+              ? "mt-2 rounded-md border border-error/30 bg-error/10 px-2 py-1 text-xs text-error "
               : "sr-only"
           }
         >
@@ -82,7 +81,7 @@ function CollapseButton() {
     <SidebarMenuButton
       onClick={toggleSidebar}
       tooltip={open ? "Collapse" : "Expand"}
-      className="h-10"
+      className="h-10 cursor-pointer"
     >
       {open ? (
         <ChevronLeft className="size-5!" />
@@ -97,14 +96,17 @@ function CollapseButton() {
 function NavItems() {
   const pathname = usePathname()
   const projectIdMatch = pathname.match(/^\/project\/([^\/]+)/)
-  const projectId = projectIdMatch?.[1] ?? null
+  const extractedId = projectIdMatch?.[1] ?? null
+  const projectId = extractedId === "add" ? null : extractedId
 
   const projectNavHrefByKey = {
     epics: projectId ? `/project/${projectId}/epics` : undefined,
-    tasks: projectId ? `/project/${projectId}/tasks` : undefined,
+    tasks: projectId ? `/project/${projectId}/tasks?view=board` : undefined,
     members: projectId ? `/project/${projectId}/members` : undefined,
     details: projectId ? `/project/${projectId}/details` : undefined,
   } as const
+
+  const getActiveHref = (href: string | undefined) => href?.split("?")[0]
 
   return (
     <>
@@ -113,9 +115,11 @@ function NavItems() {
           item.key === "projects" ? item.href : projectNavHrefByKey[item.key]
         const isDisabled = item.key !== "projects" && !projectId
         const Icon = item.icon
+        const activeHref = getActiveHref(href)
 
-        const isActive = href
-          ? pathname === (href || pathname.startsWith(`${href}/`))
+        const isActive = activeHref
+          ? pathname === activeHref ||
+            (pathname.startsWith(`${activeHref}/`) && activeHref !== "/project")
           : false
 
         if (href && !isDisabled) {

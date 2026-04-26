@@ -3,6 +3,7 @@ import { getAvatarColor, getInitials } from "@/features/epics/utils/avatar"
 
 type EpicAvatarProps = {
   name: string
+  avatarUrl?: string | null
   size?: "sm" | "md"
   className?: string
 }
@@ -12,7 +13,12 @@ const SIZE_CLASSES = {
   md: "size-9 text-sm",
 }
 
-export default function EpicAvatar({ name, size = "md", className }: EpicAvatarProps) {
+export default function EpicAvatar({
+  name,
+  avatarUrl,
+  size = "md",
+  className,
+}: EpicAvatarProps) {
   const { bg, text } = getAvatarColor(name)
   const initials = getInitials(name)
 
@@ -28,7 +34,16 @@ export default function EpicAvatar({ name, size = "md", className }: EpicAvatarP
       aria-hidden="true"
       title={name}
     >
-      {initials}
+      {avatarUrl ? (
+        <img
+          src={avatarUrl}
+          alt={name}
+          className="size-full rounded-[inherit] object-cover"
+          loading="lazy"
+        />
+      ) : (
+        initials
+      )}
     </div>
   )
 }

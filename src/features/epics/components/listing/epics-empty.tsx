@@ -1,7 +1,8 @@
+import Link from "next/link"
 import {
   GitBranch,
   LayoutGrid,
-  Link,
+  Search,
   Plus,
   Rocket,
   Ruler,
@@ -31,27 +32,52 @@ const featureCards = [
   },
 ]
 
-export default function EpicsEmpty({ projectId }: { projectId: string }) {
+type EpicsEmptyProps = {
+  projectId: string
+  searchTerm?: string
+}
+
+export default function EpicsEmpty({ projectId, searchTerm }: EpicsEmptyProps) {
+  if (searchTerm?.trim()) {
+    return (
+      <section className="flex flex-col items-center justify-center px-6 py-30 text-center">
+        <div className="mb-8 flex size-19 items-center justify-center rounded-xl bg-[#f4d8d8]">
+          <Search
+            className="size-8 text-[#c62828]"
+            strokeWidth={2.6}
+            aria-hidden="true"
+          />
+        </div>
+        <h2 className="text-2xl font-bold text-foreground">
+          No epics found matching your search
+        </h2>
+        <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
+          Try a different title keyword.
+        </p>
+      </section>
+    )
+  }
+
   return (
     <section className="flex flex-col items-center justify-center px-6 py-12 text-center">
       <div className="mb-8 rounded-4xl border border-border/60 bg-card p-10 shadow-sm">
         <div className="grid grid-cols-2 gap-3">
-          <div className="flex size-[4.5rem] items-center justify-center rounded-xl bg-primary/10">
+          <div className="flex size-18 items-center justify-center rounded-xl bg-primary/10">
             <Rocket className="size-7 text-primary" aria-hidden="true" />
           </div>
-          <div className="flex size-[4.5rem] items-center justify-center rounded-xl bg-muted">
+          <div className="flex size-18 items-center justify-center rounded-xl bg-muted">
             <Ruler
               className="size-7 text-muted-foreground/40"
               aria-hidden="true"
             />
           </div>
-          <div className="flex size-[4.5rem] items-center justify-center rounded-xl bg-muted">
+          <div className="flex size-18 items-center justify-center rounded-xl bg-muted">
             <LayoutGrid
               className="size-7 text-muted-foreground/40"
               aria-hidden="true"
             />
           </div>
-          <div className="flex size-[4.5rem] items-center justify-center rounded-xl border-2 border-dashed border-border">
+          <div className="flex size-18 items-center justify-center rounded-xl border-2 border-dashed border-border">
             <Plus
               className="size-6 text-muted-foreground/40"
               aria-hidden="true"
@@ -60,15 +86,13 @@ export default function EpicsEmpty({ projectId }: { projectId: string }) {
         </div>
       </div>
 
-      <h2 className="text-2xl font-bold text-foreground">
-        No epics in this project yet.
-      </h2>
+      <h2 className="text-2xl font-bold text-foreground">No epics found for this project</h2>
       <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
         Break down your large project into manageable epics to track progress
         better and maintain architectural clarity.
       </p>
 
-      <Link href={`/project/${projectId}/epics/new`} aria-label="New epic">
+      <Link href={`/project/${projectId}/epics/add`} aria-label="New epic">
         <Button
           className="mt-8 h-12 gap-2 px-8 text-sm font-semibold shadow-[0_8px_20px_rgba(0,50,184,0.18)]"
           size="lg"

@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server"
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
   const { pathname } = req.nextUrl
+  const isInvitePath = pathname === "/invite"
   const publicPaths = new Set([
     "/login",
     "/signup",
@@ -45,7 +46,7 @@ export async function middleware(req: NextRequest) {
     return redirectRes
   }
 
-  if (!isAuthenticated && !publicPaths.has(pathname)) {
+  if (!isAuthenticated && !publicPaths.has(pathname) && !isInvitePath) {
     return redirectWithCookies("/signup")
   }
 
@@ -59,7 +60,7 @@ export async function middleware(req: NextRequest) {
     )
   }
 
-  if (publicPaths.has(pathname) && isAuthenticated) {
+  if (publicPaths.has(pathname) && isAuthenticated && !isInvitePath) {
     return redirectWithCookies("/project")
   }
 

@@ -25,4 +25,5 @@ export type EpicRow = {
   created_at: string
   created_by: EpicUserObject
   assignee: EpicUserObject | null
+  project_id: string
 }

@@ -13,6 +13,7 @@ type CompactPaginationProps = {
   currentPage: number
   totalPages: number
   pageParamName?: string
+  fixedSearchParams?: Record<string, string | null | undefined>
   className?: string
 }
 
@@ -20,6 +21,7 @@ export default function CompactPagination({
   currentPage,
   totalPages,
   pageParamName = "page",
+  fixedSearchParams,
   className,
 }: CompactPaginationProps) {
   const router = useRouter()
@@ -33,6 +35,17 @@ export default function CompactPagination({
 
   const createPageHref = (page: number) => {
     const params = new URLSearchParams(searchParams.toString())
+
+    if (fixedSearchParams) {
+      Object.entries(fixedSearchParams).forEach(([key, value]) => {
+        if (value === null || value === undefined || value === "") {
+          params.delete(key)
+        } else {
+          params.set(key, value)
+        }
+      })
+    }
+
     if (page <= 1) {
       params.delete(pageParamName)
     } else {
