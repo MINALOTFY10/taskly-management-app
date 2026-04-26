@@ -78,6 +78,3 @@ https://taskly-management-app.vercel.app
 - **Multi-layer auth enforcement** — middleware → layout → individual server action
 - **Normalized API envelope** — all list endpoints return `{ data, error, pagination }` consumed by a shared `useMobilePaginationFetch` hook
 - **Optimistic UI on the board** — drag-and-drop updates fire immediately; server failure triggers rollback and a toast
-
-
-MIT
