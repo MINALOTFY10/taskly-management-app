@@ -5,7 +5,9 @@ export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
   const { pathname } = req.nextUrl
   const isInvitePath = pathname === "/invite"
+  const isRootPath = pathname === "/"
   const publicPaths = new Set([
+    "/",
     "/login",
     "/signup",
     "/forgot-password",
@@ -61,6 +63,10 @@ export async function middleware(req: NextRequest) {
   }
 
   if (publicPaths.has(pathname) && isAuthenticated && !isInvitePath) {
+    return redirectWithCookies("/project")
+  }
+
+  if (isRootPath && isAuthenticated) {
     return redirectWithCookies("/project")
   }
 

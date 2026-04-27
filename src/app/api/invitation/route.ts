@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import {createClient} from "@/lib/supabase/client"
+import { createAdminClient } from "@/lib/supabase/admin" 
 
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get("token")
@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "invalid_token" }, { status: 400 })
   }
 
-  const supabase = createClient()
+  const supabase = createAdminClient()
 
   const { data: invitation, error: invitationError } = await supabase
     .from("project_invitations")
