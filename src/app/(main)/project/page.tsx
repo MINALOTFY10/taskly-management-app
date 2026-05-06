@@ -4,10 +4,6 @@ import { getProjects } from "@/features/projects/queries"
 import ProjectListPage from "@/features/projects/components/listing/project-list-page"
 import { getOffsetFromPage, parsePageParam } from "@/lib/pagination"
 
-export const metadata: Metadata = {
-  title: "Projects",
-}
-
 export default async function ProjectPage({
   searchParams,
 }: {

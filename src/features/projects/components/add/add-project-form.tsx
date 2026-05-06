@@ -36,7 +36,10 @@ export default function AddProjectForm() {
   return (
     <ProjectForm
       content={{
-        breadcrumb: "Projects > Add New Project",
+        breadcrumbItems: [
+          { label: "Projects", href: "/project" },
+          { label: "Add New Project", current: true },
+        ],
         pageTitle: "Add New Project",
         cardTitle: "Initialize New Project",
         cardDescription:

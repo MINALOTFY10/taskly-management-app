@@ -34,7 +34,7 @@ export default function NavItems() {
 
         if (href && !isDisabled) {
           return (
-            <SidebarMenuItem key={item.key}>
+            <SidebarMenuItem key={item.key} className="ms-2 pe-2">
               <SidebarMenuButton
                 asChild
                 isActive={isActive}
