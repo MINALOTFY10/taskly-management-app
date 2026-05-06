@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { UserPlus } from "lucide-react"
 
+import { BreadcrumbNav } from "@/components/shared/breadcrumb-nav"
 import { Button } from "@/components/ui/button"
 import InviteMemberForm from "@/features/members/components/invite-member-form"
 import LeaveProjectDialog from "@/features/members/components/leave-project-dialog"
@@ -48,9 +49,16 @@ export default function ProjectMembersPage({
       <div className="app-page-frame">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-[0.65rem] font-semibold tracking-[0.12em] text-muted-foreground uppercase">
-              Projects &gt; {projectName} &gt; Members
-            </p>
+            <BreadcrumbNav
+              items={[
+                { label: "Projects", href: "/project" },
+                {
+                  label: projectName,
+                  href: `/project/${projectId}/details`,
+                },
+                { label: "Members", current: true },
+              ]}
+            />
             <h1 className="mt-1.5 text-[2rem] leading-none font-semibold tracking-tight text-foreground">
               Project Members
             </h1>

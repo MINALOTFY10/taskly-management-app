@@ -1,6 +1,7 @@
 import { Filter, Loader2, Plus, Search } from "lucide-react"
 import Link from "next/link"
 
+import { BreadcrumbNav } from "@/components/shared/breadcrumb-nav"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -44,9 +45,16 @@ export function TasksPageHeader({
   return (
     <header className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
       <div className="space-y-2">
-        <p className="text-[0.6rem] font-bold tracking-[0.28em] text-muted-foreground uppercase">
-          Projects &gt; {projectName} &gt; Tasks
-        </p>
+        <BreadcrumbNav
+          items={[
+            { label: "Projects", href: "/project" },
+            {
+              label: projectName,
+              href: `/project/${projectId}/details`,
+            },
+            { label: "Tasks", current: true },
+          ]}
+        />
         <div className="space-y-1">
           <h1 className="text-[2rem] leading-none font-semibold tracking-tight text-foreground">
             Active Workboard

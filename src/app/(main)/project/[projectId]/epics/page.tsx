@@ -13,16 +13,6 @@ type EpicsPageProps = {
   searchParams: Promise<{ page?: string; q?: string }>
 }
 
-export async function generateMetadata({
-  params,
-}: EpicsPageProps): Promise<Metadata> {
-  const { projectId } = await params
-  const { data } = await getProjectById(projectId)
-  return {
-    title: data ? `${data.name} — Epics` : "Project Epics",
-  }
-}
-
 export default async function EpicsPage({
   params,
   searchParams,
@@ -42,13 +32,13 @@ export default async function EpicsPage({
   if (projectResult.error) {
     throw new Error(projectResult.error)
   }
+  
+  if (membersResult.error) {
+    throw new Error(membersResult.error)
+  }
 
   if (projectResult.notFound || !projectResult.data) {
     notFound()
-  }
-
-  if (membersResult.error) {
-    throw new Error(membersResult.error)
   }
 
   const assigneeOptions = membersResult.data.map((member) => ({

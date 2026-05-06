@@ -3,8 +3,9 @@
 import { useEffect, useMemo, useState, useTransition } from "react"
 import Link from "next/link"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { ChevronRight, Loader2, Plus, Search } from "lucide-react"
+import { Loader2, Plus, Search } from "lucide-react"
 
+import { BreadcrumbNav } from "@/components/shared/breadcrumb-nav"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
@@ -71,16 +72,16 @@ export default function EpicsListHeader({
   return (
     <header className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
       <div>
-        <nav
-          className="flex items-center gap-1 text-[0.65rem] font-bold tracking-widest text-muted-foreground uppercase"
-          aria-label="Breadcrumb"
-        >
-          <span>Projects</span>
-          <ChevronRight className="size-3" aria-hidden="true" />
-          <span>{projectName}</span>
-          <ChevronRight className="size-3" aria-hidden="true" />
-          <span className="text-primary">Epics</span>
-        </nav>
+        <BreadcrumbNav
+          items={[
+            { label: "Projects", href: "/project" },
+            {
+              label: projectName,
+              href: `/project/${projectId}/details`,
+            },
+            { label: "Epics", current: true },
+          ]}
+        />
 
         <h1 className="mt-2 text-[2rem] leading-none font-semibold tracking-tight text-foreground">
           Project Epics

@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { CalendarDays, CheckSquare, Layers, Pencil, Users } from "lucide-react"
 
+import { BreadcrumbNav } from "@/components/shared/breadcrumb-nav"
 import { Button } from "@/components/ui/button"
 import { formatProjectDate } from "@/features/projects/utils/date"
 import type { EpicRow, ProjectRow, TaskRow } from "@/features/projects/types"
@@ -62,7 +63,16 @@ export default function ProjectDetailsPage({
       <div className="app-page-frame">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
           <div className="space-y-3">
-            <p className="app-eyebrow">Projects &rsaquo; Overview</p>
+            <BreadcrumbNav
+              items={[
+                { label: "Projects", href: "/project" },
+                {
+                  label: project.name,
+                  href: `/project/${project.id}/details`,
+                },
+                { label: "Overview", current: true },
+              ]}
+            />
             <h1 className="text-4xl leading-none font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
               {project.name}
             </h1>

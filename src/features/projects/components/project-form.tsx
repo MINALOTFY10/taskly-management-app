@@ -8,6 +8,7 @@ import {
 } from "lucide-react"
 import { useForm, useWatch } from "react-hook-form"
 
+import { BreadcrumbNav, type BreadcrumbNavItem } from "@/components/shared/breadcrumb-nav"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { FormField } from "@/components/shared/form-field"
@@ -18,7 +19,7 @@ import {
 } from "@/features/projects/schemas/validations"
 
 type ProjectFormContent = {
-  breadcrumb: string
+  breadcrumbItems: BreadcrumbNavItem[]
   pageTitle: string
   cardTitle: string
   cardDescription: string
@@ -65,9 +66,7 @@ export default function ProjectForm({
     <section className="app-page-shell">
       <div className="mx-auto hidden w-full items-start justify-between gap-4 sm:flex">
         <div className="space-y-2">
-          <p className="text-[0.6rem] font-bold tracking-widest text-muted-foreground uppercase">
-            {content.breadcrumb}
-          </p>
+          <BreadcrumbNav items={content.breadcrumbItems} />
           <h1 className="mt-3 text-[2rem] leading-none font-semibold tracking-tight text-foreground">
             {content.pageTitle}
           </h1>
