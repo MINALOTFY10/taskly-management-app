@@ -1,7 +1,5 @@
 "use client"
 
-import Image from "next/image"
-import Icon from "@/../public/assets/icon.png"
 import React from "react"
 import { cn } from "@/lib/utils"
 import AppLogo from "@/components/shared/app-logo"
@@ -20,12 +18,12 @@ export default function AuthLayout({
   className,
 }: AuthLayoutProps) {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-background px-4 py-6 sm:px-8 sm:py-7">
+    <main className="relative min-h-screen overflow-hidden bg-background px-3 py-4 sm:px-5 sm:py-5">
       <div className="relative mx-auto flex min-h-[calc(100vh-3rem)] w-full flex-col gap-6">
-         <AppLogo />
+        <AppLogo />
 
         <section
-          className={cn(`mx-auto w-full ${className ?? "max-w-xl"} rounded-xl bg-card p-4 sm:px-10 sm:py-10 sm:shadow-[0_10px_25px_rgba(0,0,0,0.05),0_20px_40px_rgba(0,0,0,0.08)]`)}
+          className={cn(`mx-auto w-full ${className ?? "max-w-xl"} rounded-lg border border-border/70 bg-card/95 p-3 shadow-sm sm:px-8 sm:py-8`)}
         >
           {(title || subtitle) && (
             <div className="mt-4 mb-8 space-y-2 text-center">

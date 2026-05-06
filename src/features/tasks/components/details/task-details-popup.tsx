@@ -84,14 +84,14 @@ function ModalContent({
     <>
       <div className="hidden sm:grid sm:max-h-[90vh] sm:grid-cols-[minmax(0,1fr)_320px]">
         <section className="flex min-h-0 flex-col bg-white/35">
-          <div className="border-b border-[#DCE3F1] px-8 py-8">
+          <div className="border-b border-[#DCE3F1] px-6 py-6">
             <TaskIdBadge taskId={task.id} epicId={task.epic_id} />
             <h2 className="mt-3 text-[35px] leading-[1.08] font-bold tracking-[-0.02em] text-[#132A4D]">
               {task.title}
             </h2>
           </div>
 
-          <div className="min-h-0 flex-1 overflow-y-auto px-8 py-6">
+          <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
             <p className="text-[12px] font-bold tracking-[0.12em] text-muted-foreground/80 uppercase">
               Description
             </p>
@@ -106,7 +106,7 @@ function ModalContent({
             </div>
           </div>
 
-          <div className="flex items-center justify-between border-t border-[#DCE3F1] px-8 py-4">
+          <div className="flex items-center justify-between border-t border-[#DCE3F1] px-6 py-3">
             <button
               type="button"
               onClick={onCopyLink}
@@ -126,7 +126,7 @@ function ModalContent({
           </div>
         </section>
 
-        <aside className="max-h-[90vh] overflow-y-auto border-l border-[#DCE3F1] bg-[#EEF2FC] px-6 py-7">
+        <aside className="max-h-[90vh] overflow-y-auto border-l border-[#DCE3F1] bg-[#EEF2FC] px-5 py-5">
           <TaskMetaGrid task={task} />
         </aside>
       </div>
@@ -214,7 +214,7 @@ function ModalError({
   onClose: () => void
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-4 px-8 py-20 text-center">
+    <div className="flex flex-col items-center justify-center gap-3 px-6 py-14 text-center">
       <p className="text-sm font-medium text-destructive">{message}</p>
       <Button variant="outline" onClick={onClose}>
         Close
@@ -225,7 +225,7 @@ function ModalError({
 
 function ModalEmpty({ onClose }: { onClose: () => void }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-4 px-8 py-20 text-center">
+    <div className="flex flex-col items-center justify-center gap-3 px-6 py-14 text-center">
       <p className="text-sm font-medium text-muted-foreground">
         Task not found
       </p>

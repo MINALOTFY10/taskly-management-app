@@ -36,25 +36,25 @@ export default function InviteMemberForm({
 
 	return (
 		<Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
-			<DialogContent className="w-[calc(100%-2rem)] max-w-170 rounded-xl border border-border/45 p-0 sm:w-160">
-				<div className="px-6 py-6 sm:px-7 sm:py-7">
+			<DialogContent className="w-[calc(100%-2rem)] max-w-160 rounded-xl border border-border/45 p-0 sm:w-150">
+				<div className="px-5 py-5 sm:px-6 sm:py-6">
 					<DialogHeader className="space-y-3">
-						<div className="inline-flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-							<UserPlus className="size-5" />
+						<div className="inline-flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+							<UserPlus className="size-4.5" />
 						</div>
 
 						<div className="space-y-1">
-							<DialogTitle className="text-[2rem] leading-none font-semibold tracking-tight text-foreground sm:text-[2.15rem]">
+							<DialogTitle className="text-[1.7rem] leading-none font-semibold tracking-tight text-foreground sm:text-[1.8rem]">
 								Invite Team Member
 							</DialogTitle>
-							<DialogDescription className="max-w-120 text-sm leading-relaxed text-muted-foreground">
+							<DialogDescription className="max-w-120 text-xs leading-relaxed text-muted-foreground">
 								Send an invitation to join the {projectName} workspace.
 							</DialogDescription>
 						</div>
 					</DialogHeader>
 
 					<form
-						className="mt-6 space-y-5"
+						className="mt-5 space-y-4"
 						onSubmit={(event) => {
 							event.preventDefault()
 							void handleSubmit()
@@ -78,7 +78,7 @@ export default function InviteMemberForm({
 									onChange={(event) => setEmail(event.target.value)}
 									disabled={isLoading}
 									aria-invalid={Boolean(error)}
-									className="h-12 border-transparent bg-surface-highest px-4 pr-11 text-base shadow-none"
+									className="h-10 border-transparent bg-surface-highest px-3 pr-10 text-sm shadow-none"
 								/>
 								<Mail className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted-foreground" />
 							</div>
@@ -99,11 +99,11 @@ export default function InviteMemberForm({
 							) : null}
 						</div>
 
-						<div className="flex items-center justify-end gap-3 pt-2">
+						<div className="flex items-center justify-end gap-2.5 pt-2">
 							<Button
 								type="button"
 								variant="ghost"
-								className="h-11 min-w-24 px-4 text-[0.95rem] font-semibold text-muted-foreground hover:text-foreground"
+								className="h-9 min-w-20 px-3 text-[0.85rem] font-semibold text-muted-foreground hover:text-foreground"
 								onClick={handleClose}
 							>
 								Cancel
@@ -112,7 +112,7 @@ export default function InviteMemberForm({
 							<Button
 								type="submit"
 								size="lg"
-								className="h-11 min-w-46 px-6 text-[0.95rem] font-semibold shadow-[0_10px_18px_rgba(0,50,184,0.2)]"
+								className="h-9 min-w-40 px-5 text-[0.85rem] font-semibold shadow-[0_10px_18px_rgba(0,50,184,0.2)]"
 								disabled={isLoading}
 							>
 								{isLoading ? (

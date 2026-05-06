@@ -188,8 +188,8 @@ export default function TasksBoardPage({
   }))
 
   return (
-    <section className="px-4 py-5 sm:px-6 sm:py-7 lg:px-8">
-      <div className="mx-auto w-full max-w-[calc(94vw-var(--sidebar-width))] min-w-0 max-sm:max-w-full">
+    <section className="app-page-shell">
+      <div className="app-page-frame min-w-0">
         <TasksPageHeader
           projectId={projectId}
           projectName={projectName}
@@ -200,9 +200,9 @@ export default function TasksBoardPage({
           isSearching={isSearching}
         />
 
-        <div className="mt-10 max-w-full overflow-x-auto pb-3">
+        <div className="mt-6 max-w-full overflow-x-auto pb-2">
           <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-            <div className="grid min-w-max auto-cols-[17.8rem] grid-flow-col gap-4">
+            <div className="grid min-w-max auto-cols-[16rem] grid-flow-col gap-3">
               {groupedTasks.map(({ status, tasks: columnTasks }) => (
                 <TaskColumn
                   key={status}

@@ -49,12 +49,12 @@ export default function EpicCard({
       <article
         onClick={() => setOpen(true)}
         className={cn(
-          "group flex flex-col rounded-xl border-l-7 border-[#004E32] bg-card p-4 shadow-sm transition-colors hover:border-primary/20 hover:bg-accent/10 sm:p-5 cursor-pointer",
+          "group flex flex-col rounded-lg border border-border/60 border-l-5 border-l-[#004E32] bg-card p-3 shadow-sm transition-colors hover:border-primary/20 hover:bg-accent/10 sm:p-3.5 cursor-pointer",
           isDone && "border-0! bg-primary/5 hover:bg-primary/5"
         )}
       >
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-2">
+        <div className="flex items-start justify-between gap-1.5">
+          <div className="flex items-center gap-1.5">
             <span
               className={cn(
                 "inline-flex items-center rounded-sm border-0! px-3.5 py-1 text-[0.68rem] font-bold tracking-wide",
@@ -86,12 +86,12 @@ export default function EpicCard({
           </Button>
         </div>
 
-        <h3 className="mt-5 line-clamp-2 text-[1.35rem] leading-snug font-bold text-foreground">
+        <h3 className="mt-2.5 line-clamp-2 text-[1.1rem] leading-snug font-bold text-foreground">
           {currentEpic.title}
         </h3>
 
-        <div className="mt-4 hidden items-center justify-between sm:flex">
-          <div className="flex items-center gap-2.5">
+        <div className="mt-2.5 hidden items-center justify-between sm:flex">
+          <div className="flex items-center gap-2">
             <EpicAvatar name={assigneeName} size="md" />
             <div>
               <p className="text-[0.6rem] font-bold tracking-widest text-muted-foreground uppercase">
@@ -113,35 +113,35 @@ export default function EpicCard({
           </span>
         </div>
 
-        <div className="mt-3 flex items-center justify-between sm:hidden">
-          <div className="flex items-center gap-2">
+        <div className="mt-2 flex items-center justify-between sm:hidden">
+          <div className="flex items-center gap-1.5">
             <EpicAvatar name={assigneeName} size="sm" />
             <div>
-              <p className="text-[0.6rem] font-bold tracking-widest text-muted-foreground uppercase">
+              <p className="text-[0.55rem] font-bold tracking-widest text-muted-foreground uppercase">
                 Assignee
               </p>
-              <p className="text-sm font-medium text-foreground">
+              <p className="text-xs font-medium text-foreground">
                 {assigneeName}
               </p>
             </div>
           </div>
 
           <div className="text-right">
-            <p className="text-[0.6rem] font-bold tracking-widest text-muted-foreground uppercase">
+            <p className="text-[0.55rem] font-bold tracking-widest text-muted-foreground uppercase">
               Deadline
             </p>
-            <p className="text-sm font-medium text-foreground">
+            <p className="text-xs font-medium text-foreground">
               {formatEpicDate(currentEpic.deadline)}
             </p>
           </div>
         </div>
 
-        <div className="mt-8 hidden sm:block">
-          <div className="border-1.5 mb-3 h-px w-full bg-border/30" />
+        <div className="mt-2.5 hidden sm:block">
+          <div className="border-1.5 mb-2 h-px w-full bg-border/30" />
 
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <div className="flex items-center gap-1.5">
-              <UserRound className="size-3.5 shrink-0" aria-hidden="true" />
+          <div className="flex items-center justify-between text-[0.7rem] text-muted-foreground">
+            <div className="flex items-center gap-1">
+              <UserRound className="size-3 shrink-0" aria-hidden="true" />
               <span>
                 Created by:{" "}
                 <span className="font-medium text-foreground/80">
@@ -150,8 +150,8 @@ export default function EpicCard({
               </span>
             </div>
 
-            <div className="flex items-center gap-1.5">
-              <CalendarDays className="size-3.5 shrink-0" aria-hidden="true" />
+            <div className="flex items-center gap-1">
+              <CalendarDays className="size-3 shrink-0" aria-hidden="true" />
               <span>{formatEpicDate(currentEpic.created_at)}</span>
             </div>
           </div>

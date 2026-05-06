@@ -87,28 +87,28 @@ export default function TaskForm({
   const isBusy = isSubmitting || isPending
 
   return (
-    <section className="px-4 py-5 sm:px-6 sm:py-7 lg:px-8">
+    <section className="app-page-shell">
       <div className="mx-auto hidden w-full items-start sm:flex">
         <div className="space-y-2">
           <p className="text-[0.6rem] font-bold tracking-widest text-muted-foreground uppercase">
             Projects &gt; {projectName} &gt; Tasks &gt; New Task
           </p>
-          <h1 className="mt-4 text-[2.2rem] leading-none font-semibold tracking-tight text-foreground">
+          <h1 className="mt-3 text-[2rem] leading-none font-semibold tracking-tight text-foreground">
             Create New Task
           </h1>
-          <p className="max-w-130 text-sm text-muted-foreground">
+          <p className="max-w-130 text-xs text-muted-foreground">
             Initialize a new work item within the {workspaceName} Workspace
             ecosystem.
           </p>
         </div>
       </div>
 
-      <div className="mx-auto mt-2 w-full max-w-220 overflow-hidden rounded-md bg-transparent sm:mt-10 sm:mb-5 sm:border sm:border-border/55 sm:bg-card">
+      <div className="mx-auto mt-2 w-full max-w-220 overflow-hidden rounded-lg bg-transparent sm:mt-8 sm:mb-4 sm:border sm:border-border/55 sm:bg-card">
         <div className="px-0 py-2 sm:hidden">
-          <h1 className="text-[2.2rem] leading-none font-semibold tracking-tight text-foreground">
+          <h1 className="text-[2rem] leading-none font-semibold tracking-tight text-foreground">
             Create New Task
           </h1>
-          <p className="mt-3 max-w-90 text-[1.1rem] leading-7 text-muted-foreground">
+          <p className="mt-2 max-w-90 text-[0.95rem] leading-6 text-muted-foreground">
             Initialize a new work item within the {workspaceName} ecosystem.
           </p>
         </div>
@@ -116,7 +116,7 @@ export default function TaskForm({
         <form
           noValidate
           onSubmit={handleSubmit(onSubmit)}
-          className="space-y-6 px-0 py-2 sm:px-8 sm:py-7"
+          className="space-y-5 px-0 py-2 sm:px-7 sm:py-6"
           aria-describedby="task-form-status"
         >
           <FormField
@@ -132,12 +132,12 @@ export default function TaskForm({
               maxLength={200}
               aria-invalid={Boolean(errors.title)}
               aria-describedby={errors.title ? "task-title-error" : undefined}
-              className="h-14 border-transparent bg-surface-highest px-4 text-base shadow-none sm:h-12"
+              className="h-12 border-transparent bg-surface-highest px-3 text-sm shadow-none sm:h-10"
               {...register("title")}
             />
           </FormField>
 
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <FormField
               label="Status"
               htmlFor="task-status"
@@ -156,7 +156,7 @@ export default function TaskForm({
                       aria-describedby={
                         errors.status ? "task-status-error" : undefined
                       }
-                      className="h-14 w-full border-transparent bg-surface-highest px-4 text-base shadow-none sm:h-12"
+                      className="h-12 w-full border-transparent bg-surface-highest px-3 text-sm shadow-none sm:h-10"
                     >
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
@@ -195,7 +195,7 @@ export default function TaskForm({
                       aria-describedby={
                         errors.assigneeId ? "task-assignee-error" : undefined
                       }
-                      className="h-14 w-full border-transparent bg-surface-highest px-4 text-base shadow-none sm:h-12"
+                      className="h-12 w-full border-transparent bg-surface-highest px-3 text-sm shadow-none sm:h-10"
                     >
                       <SelectValue placeholder="Select Team Member" />
                     </SelectTrigger>
@@ -239,7 +239,7 @@ export default function TaskForm({
                     aria-describedby={
                       errors.epicId ? "task-epic-error" : undefined
                     }
-                    className="h-14 w-full border-transparent bg-surface-highest px-4 text-base shadow-none sm:h-12"
+                    className="h-12 w-full border-transparent bg-surface-highest px-3 text-sm shadow-none sm:h-10"
                   >
                     <SelectValue placeholder="Select Epic Link" />
                   </SelectTrigger>
@@ -276,7 +276,7 @@ export default function TaskForm({
                 aria-describedby={
                   errors.dueDate ? "task-due-date-error" : undefined
                 }
-                className="h-16 border-transparent bg-surface-highest px-4 text-base shadow-none sm:h-12"
+                className="h-12 border-transparent bg-surface-highest px-3 text-sm shadow-none sm:h-10"
                 {...register("dueDate")}
               />
             </div>
@@ -297,7 +297,7 @@ export default function TaskForm({
               aria-describedby={
                 errors.description ? "task-description-error" : undefined
               }
-              className="min-h-44 w-full resize-none rounded-md border border-transparent bg-surface-highest px-4 py-3 text-base outline-none placeholder:text-muted-foreground focus:border-primary focus:ring-3 focus:ring-primary/20 sm:min-h-36"
+              className="min-h-36 w-full resize-none rounded-md border border-transparent bg-surface-highest px-3 py-2.5 text-sm outline-none placeholder:text-muted-foreground focus:border-primary focus:ring-3 focus:ring-primary/20 sm:min-h-32"
               {...register("description")}
             />
           </FormField>
@@ -308,7 +308,7 @@ export default function TaskForm({
             <Button
               type="submit"
               size="lg"
-              className="order-1 h-12 w-full min-w-40 px-6 text-[14px] font-semibold shadow-[0_8px_20px_rgba(0,50,184,0.18)] sm:order-2 sm:w-auto"
+              className="order-1 h-10 w-full min-w-36 px-5 text-[13px] font-semibold shadow-[0_8px_20px_rgba(0,50,184,0.18)] sm:order-2 sm:w-auto"
               disabled={isBusy}
             >
               <Plus className="size-4" />
@@ -318,7 +318,7 @@ export default function TaskForm({
             <Button
               type="button"
               variant="ghost"
-              className="order-2 h-11 px-4 text-[14px] font-semibold text-primary hover:text-primary/85 sm:order-1 sm:text-muted-foreground sm:hover:text-foreground"
+              className="order-2 h-9 px-3 text-[13px] font-semibold text-primary hover:text-primary/85 sm:order-1 sm:text-muted-foreground sm:hover:text-foreground"
               onClick={onCancel}
               disabled={isBusy}
             >

@@ -37,19 +37,19 @@ export default function TaskRow({
       role="button"
       tabIndex={0}
       aria-label={`Open task: ${task.title}`}
-      className="cursor-pointer border-b border-border/20 transition-colors hover:bg-accent/20 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-inset"
+      className="cursor-pointer border-b border-border/30 transition-colors hover:bg-accent/20 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-inset"
       onClick={handleSelect}
       onKeyDown={handleKeyDown}
     >
-      <td className="px-6 py-4 text-sm font-semibold whitespace-nowrap text-blue-600">
+      <td className="px-5 py-3 text-sm font-semibold whitespace-nowrap text-blue-600">
         {shortId}
       </td>
 
-      <td className="max-w-xs px-6 py-4 text-sm font-medium text-foreground">
+      <td className="max-w-xs px-5 py-3 text-sm font-medium text-foreground">
         <span className="block truncate">{task.title}</span>
       </td>
 
-      <td className="px-6 py-4 text-sm whitespace-nowrap">
+      <td className="px-5 py-3 text-sm whitespace-nowrap">
         <span
           className={cn(
             "inline-flex items-center rounded-md px-2.5 py-1 text-xs font-semibold",
@@ -60,11 +60,11 @@ export default function TaskRow({
         </span>
       </td>
 
-      <td className="px-6 py-4 text-sm whitespace-nowrap text-muted-foreground">
+      <td className="px-5 py-3 text-sm whitespace-nowrap text-muted-foreground">
         {formatTaskDate(task.due_date)}
       </td>
 
-      <td className="px-6 py-4 text-sm whitespace-nowrap">
+      <td className="px-5 py-3 text-sm whitespace-nowrap">
         <AssigneeCell
           name={assigneeName}
           avatar={task.assignee_avatar}
@@ -74,7 +74,7 @@ export default function TaskRow({
         />
       </td>
 
-      <td className="px-6 py-4 text-center">
+      <td className="px-5 py-3 text-center">
         <button
           type="button"
           aria-label="Task options"

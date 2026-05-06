@@ -37,21 +37,21 @@ export default function TaskCard({
       onClick={handleSelect}
       onKeyDown={handleKeyDown}
       className={cn(
-        "rounded-xl border px-4 py-4 shadow-sm cursor-pointer transition-all",
-        "hover:shadow-md hover:scale-105",
+        "rounded-lg border border-border/60 bg-card px-3 py-3 shadow-sm cursor-pointer transition-all",
+        "hover:shadow-md hover:-translate-y-0.5",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         theme.card
       )}
     >
-      <div className="flex min-h-28 flex-col justify-between gap-4">
-        <div className="space-y-3">
-          <h3 className="line-clamp-2 text-[0.93rem] leading-5 font-semibold tracking-tight text-slate-800">
+      <div className="flex min-h-24 flex-col justify-between gap-2.5">
+        <div className="space-y-2">
+          <h3 className="line-clamp-2 text-[0.85rem] leading-5 font-semibold tracking-tight text-foreground">
             {task.title}
           </h3>
         </div>
 
-        <div className="flex items-end justify-between gap-3">
-          <div className="flex items-center gap-1.5 text-[0.68rem] font-semibold tracking-[0.18em] text-slate-500 uppercase">
+        <div className="flex items-end justify-between gap-2">
+          <div className="flex items-center gap-1.5 text-[0.68rem] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
             <CalendarDays className="size-3.5" />
             <span>{formatTaskDate(task.due_date)}</span>
           </div>
