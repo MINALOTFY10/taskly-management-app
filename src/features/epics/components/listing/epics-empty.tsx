@@ -40,18 +40,18 @@ type EpicsEmptyProps = {
 export default function EpicsEmpty({ projectId, searchTerm }: EpicsEmptyProps) {
   if (searchTerm?.trim()) {
     return (
-      <section className="flex flex-col items-center justify-center px-6 py-30 text-center">
-        <div className="mb-8 flex size-19 items-center justify-center rounded-xl bg-[#f4d8d8]">
+      <section className="flex flex-col items-center justify-center px-5 py-24 text-center">
+        <div className="mb-6 flex size-16 items-center justify-center rounded-lg bg-error/15">
           <Search
-            className="size-8 text-[#c62828]"
+            className="size-7 text-error"
             strokeWidth={2.6}
             aria-hidden="true"
           />
         </div>
-        <h2 className="text-2xl font-bold text-foreground">
+        <h2 className="text-xl font-bold text-foreground">
           No epics found matching your search
         </h2>
-        <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
+        <p className="mt-2 max-w-sm text-xs leading-relaxed text-muted-foreground">
           Try a different title keyword.
         </p>
       </section>
@@ -59,42 +59,42 @@ export default function EpicsEmpty({ projectId, searchTerm }: EpicsEmptyProps) {
   }
 
   return (
-    <section className="flex flex-col items-center justify-center px-6 py-12 text-center">
-      <div className="mb-8 rounded-4xl border border-border/60 bg-card p-10 shadow-sm">
-        <div className="grid grid-cols-2 gap-3">
-          <div className="flex size-18 items-center justify-center rounded-xl bg-primary/10">
+    <section className="flex flex-col items-center justify-center px-5 py-10 text-center">
+      <div className="mb-6 rounded-3xl border border-border/60 bg-card p-8 shadow-sm">
+        <div className="grid grid-cols-2 gap-2.5">
+          <div className="flex size-15 items-center justify-center rounded-lg bg-primary/10">
             <Rocket className="size-7 text-primary" aria-hidden="true" />
           </div>
-          <div className="flex size-18 items-center justify-center rounded-xl bg-muted">
+          <div className="flex size-15 items-center justify-center rounded-lg bg-muted">
             <Ruler
               className="size-7 text-muted-foreground/40"
               aria-hidden="true"
             />
           </div>
-          <div className="flex size-18 items-center justify-center rounded-xl bg-muted">
+          <div className="flex size-15 items-center justify-center rounded-lg bg-muted">
             <LayoutGrid
               className="size-7 text-muted-foreground/40"
               aria-hidden="true"
             />
           </div>
-          <div className="flex size-18 items-center justify-center rounded-xl border-2 border-dashed border-border">
+          <div className="flex size-15 items-center justify-center rounded-lg border-2 border-dashed border-border">
             <Plus
-              className="size-6 text-muted-foreground/40"
+              className="size-5 text-muted-foreground/40"
               aria-hidden="true"
             />
           </div>
         </div>
       </div>
 
-      <h2 className="text-2xl font-bold text-foreground">No epics found for this project</h2>
-      <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
+      <h2 className="text-xl font-bold text-foreground">No epics found for this project</h2>
+      <p className="mt-2 max-w-sm text-xs leading-relaxed text-muted-foreground">
         Break down your large project into manageable epics to track progress
         better and maintain architectural clarity.
       </p>
 
       <Link href={`/project/${projectId}/epics/add`} aria-label="New epic">
         <Button
-          className="mt-8 h-12 gap-2 px-8 text-sm font-semibold shadow-[0_8px_20px_rgba(0,50,184,0.18)]"
+          className="mt-6 h-10 gap-1.5 px-6 text-xs font-semibold shadow-sm"
           size="lg"
         >
           <Sparkles className="size-4" aria-hidden="true" />
@@ -102,17 +102,17 @@ export default function EpicsEmpty({ projectId, searchTerm }: EpicsEmptyProps) {
         </Button>
       </Link>
 
-      <div className="mt-12 grid w-full max-w-2xl grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="mt-10 grid w-full max-w-2xl grid-cols-1 gap-3 sm:grid-cols-3">
         {featureCards.map((card) => (
           <div
             key={card.title}
-            className="rounded-xl border border-border/60 bg-card px-5 py-4 text-left shadow-sm"
+            className="rounded-lg border border-border/60 bg-card px-4 py-3 text-left shadow-sm"
           >
-            <div className="mb-3">{card.icon}</div>
-            <h3 className="text-sm font-semibold text-foreground">
+            <div className="mb-2.5">{card.icon}</div>
+            <h3 className="text-xs font-semibold text-foreground">
               {card.title}
             </h3>
-            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+            <p className="mt-0.5 text-[0.7rem] leading-relaxed text-muted-foreground">
               {card.description}
             </p>
           </div>

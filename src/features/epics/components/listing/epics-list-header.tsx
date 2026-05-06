@@ -82,7 +82,7 @@ export default function EpicsListHeader({
           <span className="text-primary">Epics</span>
         </nav>
 
-        <h1 className="mt-2 text-[2rem] leading-none font-bold tracking-tight text-foreground sm:text-[2.2rem]">
+        <h1 className="mt-2 text-[2rem] leading-none font-semibold tracking-tight text-foreground">
           Project Epics
         </h1>
       </div>
@@ -103,7 +103,7 @@ export default function EpicsListHeader({
           <Input
             type="search"
             placeholder="Search epics..."
-            className="h-10 w-full border-0 bg-[#d9e2ff] pl-9 text-sm text-foreground shadow-none placeholder:text-slate-500 focus-visible:ring-0"
+            className="h-9 w-full border-0 bg-[#d9e2ff] pl-8.5 text-xs text-foreground shadow-none placeholder:text-slate-500 focus-visible:ring-0"
             aria-label="Search epics"
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}

@@ -36,7 +36,7 @@ function DialogOverlay({
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
       className={cn(
-        "fixed inset-0 z-50 bg-[#2A3B59]/20 backdrop-blur-[3px] data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
+        "fixed inset-0 z-50 bg-foreground/15 backdrop-blur-sm data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
         className
       )}
       {...props}
@@ -58,7 +58,7 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 grid w-[calc(100%-1.5rem)] max-w-[788px] -translate-x-1/2 -translate-y-1/2 gap-0 rounded-xl border border-border/50 bg-card p-0 text-card-foreground shadow-[0_24px_80px_rgba(13,27,42,0.22)] duration-150 data-open:animate-in data-open:zoom-in-95 data-open:fade-in-0 data-closed:animate-out data-closed:zoom-out-95 data-closed:fade-out-0 sm:w-[calc(100%-2rem)]",
+          "fixed top-1/2 left-1/2 z-50 grid w-[calc(100%-1.5rem)] max-w-197 -translate-x-1/2 -translate-y-1/2 gap-0 rounded-xl border border-border/70 bg-card p-0 text-card-foreground shadow-[0_20px_64px_rgba(13,27,42,0.2)] duration-150 data-open:animate-in data-open:zoom-in-95 data-open:fade-in-0 data-closed:animate-out data-closed:zoom-out-95 data-closed:fade-out-0 sm:w-[calc(100%-2rem)]",
           className
         )}
         {...props}
@@ -66,10 +66,10 @@ function DialogContent({
         {children}
         {showCloseButton && (
           <DialogPrimitive.Close
-            className="absolute top-4 right-4 inline-flex size-8 items-center justify-center rounded-md text-[#5C6E82] transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="absolute top-3 right-3 inline-flex size-7 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
             aria-label="Close"
           >
-            <X className="size-5" />
+            <X className="size-4" />
           </DialogPrimitive.Close>
         )}
       </DialogPrimitive.Content>

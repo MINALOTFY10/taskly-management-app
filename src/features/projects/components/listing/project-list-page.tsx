@@ -52,14 +52,14 @@ export default function ProjectListPage({
   if (projects.length === 0) return <EmptyState />
 
   return (
-    <section className="px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-8">
-      <div className="mx-auto w-full max-w-350">
+    <section className="app-page-shell">
+      <div className="app-page-frame">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-[2.2rem] leading-none font-semibold tracking-tight text-foreground">
+            <h1 className="text-[2rem] leading-none font-semibold tracking-tight text-foreground">
               Projects
             </h1>
-            <p className="mt-2 text-[0.9rem] text-muted-foreground">
+            <p className="mt-1.5 text-[0.82rem] text-muted-foreground">
               Manage and curate your projects
             </p>
           </div>
@@ -67,7 +67,7 @@ export default function ProjectListPage({
           <Button
             asChild
             size="lg"
-            className="mt-auto hidden h-12 gap-2 rounded-md px-4 text-[14px] font-semibold shadow-[0_10px_18px_rgba(0,50,184,0.15)] sm:inline-flex"
+            className="mt-auto hidden h-10 gap-1.5 rounded-md px-3.5 text-[13px] font-semibold shadow-[0_10px_18px_rgba(0,50,184,0.15)] sm:inline-flex"
           >
             <Link href="/project/add">
               <Plus className="size-4" /> Create New Project
@@ -77,7 +77,7 @@ export default function ProjectListPage({
 
         <div
           role="list"
-          className="mt-7 grid grid-cols-1 gap-4 sm:mt-8 md:grid-cols-2 xl:grid-cols-3 xl:gap-5"
+          className="mt-6 grid grid-cols-1 gap-3 sm:mt-6 md:grid-cols-2 xl:grid-cols-3 xl:gap-3"
         >
           {projects.map((project) => (
             <div key={project.id} role="listitem">
@@ -86,7 +86,7 @@ export default function ProjectListPage({
           ))}
         </div>
 
-        <div className="mt-8 flex min-h-7 items-center justify-between gap-4 pb-4">
+        <div className="mt-6 flex min-h-7 items-center justify-between gap-4 pb-3">
           <ListPaginationSummary
             shownCount={projects.length}
             totalCount={totalCount}
@@ -121,10 +121,10 @@ export default function ProjectListPage({
       <Button
         asChild
         size="icon-lg"
-        className="fixed right-4 bottom-4 z-20 rounded-xl p-6 shadow-[0_10px_20px_rgba(0,50,184,0.22)] sm:hidden"
+        className="app-floating-action p-4 shadow-[0_10px_20px_rgba(0,50,184,0.22)]"
       >
         <Link href="/project/add" aria-label="Create new project">
-          <Plus className="size-6" />
+          <Plus className="size-5" />
         </Link>
       </Button>
     </section>

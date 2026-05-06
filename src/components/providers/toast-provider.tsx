@@ -102,7 +102,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       <div
         aria-live="polite"
         aria-atomic="true"
-        className="pointer-events-none fixed bottom-4 right-4 z-100 flex w-[calc(100%-2rem)] max-w-sm flex-col gap-2"
+        className="pointer-events-none fixed bottom-3 right-3 z-100 flex w-[calc(100%-2rem)] max-w-sm flex-col gap-1.5"
       >
         {toasts.map((toast) => {
           const Icon =
@@ -117,7 +117,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               key={toast.id}
               role="status"
               className={cn(
-                "pointer-events-auto flex items-start gap-3 rounded-lg border border-l-5 bg-card px-3 py-3 shadow-lg animate-in fade-in-0 slide-in-from-bottom-2 duration-800 ease-out",
+                "pointer-events-auto flex items-start gap-2.5 rounded-lg border border-l-5 bg-card px-2.5 py-2.5 shadow-lg animate-in fade-in-0 slide-in-from-bottom-2 duration-800 ease-out",
                 toast.variant === "success" &&
                   "border-success bg-[#E6F7EC] text-success font-bold",
                 toast.variant === "error" &&

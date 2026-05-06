@@ -74,30 +74,30 @@ export default function EpicForm({
   const isBusy = isSubmitting || isPending
 
   return (
-    <section className="px-5 py-5 sm:px-6 sm:py-7 lg:px-8">
+    <section className="app-page-shell">
       <div className="mx-auto hidden w-full items-start sm:flex">
         <div className="space-y-2">
           <p className="text-[0.6rem] font-bold uppercase text-muted-foreground tracking-widest">
             Projects › {projectName} › Epics › New Epic
           </p>
-          <h1 className="mt-4 text-[2.2rem] leading-none font-semibold tracking-tight text-foreground">
+          <h1 className="mt-3 text-[2rem] leading-none font-semibold tracking-tight text-foreground">
             Create New Epic
           </h1>
         </div>
       </div>
 
-      <div className="mx-auto mt-4 w-full max-w-220 overflow-hidden rounded-md bg-transparent sm:mt-10 sm:mb-5 sm:border sm:border-border/55 sm:bg-card">
-        <div className="px-0 py-5 sm:border-b sm:border-border/60 sm:px-8 sm:py-8">
-          <div className="flex items-start gap-4">
-            <div className="hidden size-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary sm:flex">
-              <CircleCheckBig className="size-7" />
+      <div className="mx-auto mt-3 w-full max-w-220 overflow-hidden rounded-lg bg-transparent sm:mt-8 sm:mb-4 sm:border sm:border-border/55 sm:bg-card">
+        <div className="px-0 py-4 sm:border-b sm:border-border/60 sm:px-7 sm:py-6">
+          <div className="flex items-start gap-3">
+            <div className="hidden size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary sm:flex">
+              <CircleCheckBig className="size-6" />
             </div>
 
             <div>
-              <h2 className="text-[1.70rem] leading-none font-bold text-foreground sm:text-[1.4rem]">
+              <h2 className="text-[1.45rem] leading-none font-bold text-foreground sm:text-[1.25rem]">
                 New Epic
               </h2>
-              <p className="mt-1 max-w-125 text-[0.8rem] leading-snug text-muted-foreground sm:text-[0.9rem]">
+              <p className="mt-1 max-w-125 text-[0.75rem] leading-snug text-muted-foreground sm:text-[0.85rem]">
                 Define a major milestone and group related tasks.
               </p>
             </div>
@@ -107,7 +107,7 @@ export default function EpicForm({
         <form
           noValidate
           onSubmit={handleSubmit(onSubmit)}
-          className="space-y-6 px-0 py-5 sm:px-8 sm:py-7"
+          className="space-y-5 px-0 py-4 sm:px-7 sm:py-6"
           aria-describedby="epic-form-status"
         >
           <FormField
@@ -124,7 +124,7 @@ export default function EpicForm({
               maxLength={120}
               aria-invalid={Boolean(errors.title)}
               aria-describedby={errors.title ? "epic-title-error" : undefined}
-              className="h-14 border-transparent bg-surface-highest px-4 text-base shadow-none sm:h-12"
+              className="h-12 border-transparent bg-surface-highest px-3 text-sm shadow-none sm:h-10"
               {...register("title")}
             />
           </FormField>
@@ -146,7 +146,7 @@ export default function EpicForm({
                   ? "epic-description-error"
                   : "epic-description-char-count"
               }
-              className="min-h-44 w-full resize-none rounded-md border border-transparent bg-surface-highest px-4 py-3 text-base outline-none placeholder:text-muted-foreground focus:border-primary focus:ring-3 focus:ring-primary/20 sm:min-h-36"
+              className="min-h-36 w-full resize-none rounded-md border border-transparent bg-surface-highest px-3 py-2.5 text-sm outline-none placeholder:text-muted-foreground focus:border-primary focus:ring-3 focus:ring-primary/20 sm:min-h-32"
               {...register("description")}
             />
 
@@ -163,7 +163,7 @@ export default function EpicForm({
             </p>
           </FormField>
 
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <FormField
               label="Assignee"
               htmlFor="epic-assignee"
@@ -187,7 +187,7 @@ export default function EpicForm({
                       aria-describedby={
                         errors.assigneeUserId ? "epic-assignee-error" : undefined
                       }
-                      className="h-14 w-full border-transparent bg-surface-highest px-4 text-base shadow-none sm:h-12"
+                      className="h-12 w-full border-transparent bg-surface-highest px-3 text-sm shadow-none sm:h-10"
                     >
                       <SelectValue placeholder="Select a member..." />
                     </SelectTrigger>
@@ -217,7 +217,7 @@ export default function EpicForm({
                 min={todayDate}
                 aria-invalid={Boolean(errors.deadline)}
                 aria-describedby={errors.deadline ? "epic-deadline-error" : undefined}
-                className="h-14 border-transparent bg-surface-highest px-4 text-base shadow-none sm:h-12"
+                className="h-12 border-transparent bg-surface-highest px-3 text-sm shadow-none sm:h-10"
                 {...register("deadline")}
               />
             </FormField>
@@ -225,11 +225,11 @@ export default function EpicForm({
 
           <FormStatusMessage id="epic-form-status" message={apiError} />
 
-          <div className="flex flex-col-reverse gap-4 pt-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
             <Button
               type="button"
               variant="ghost"
-              className="h-11 px-4 text-[14px] font-semibold text-primary hover:text-primary/85 sm:text-muted-foreground sm:hover:text-foreground"
+              className="h-9 px-3 text-[13px] font-semibold text-primary hover:text-primary/85 sm:text-muted-foreground sm:hover:text-foreground"
               onClick={onCancel}
               disabled={isBusy}
             >
@@ -239,7 +239,7 @@ export default function EpicForm({
             <Button
               type="submit"
               size="lg"
-              className="h-12 w-full min-w-40 px-6 text-[14px] font-semibold shadow-[0_8px_20px_rgba(0,50,184,0.18)] sm:w-auto"
+              className="h-10 w-full min-w-36 px-5 text-[13px] font-semibold shadow-[0_8px_20px_rgba(0,50,184,0.18)] sm:w-auto"
               disabled={isBusy}
             >
               {isBusy ? "Creating..." : "Create Epic"}
@@ -247,8 +247,8 @@ export default function EpicForm({
           </div>
         </form>
 
-        <div className="mt-3 rounded-lg bg-surface-high px-4 py-4 sm:mt-0 sm:rounded-none sm:border-t sm:border-border/60 sm:px-8">
-          <p className="flex items-start gap-2 text-sm text-muted-foreground">
+        <div className="mt-2 rounded-lg bg-surface-high px-3 py-3 sm:mt-0 sm:rounded-none sm:border-t sm:border-border/60 sm:px-7">
+          <p className="flex items-start gap-1.5 text-xs text-muted-foreground">
             <Lightbulb
               className="mt-0.5 size-4 shrink-0 text-muted-foreground"
               aria-hidden="true"
