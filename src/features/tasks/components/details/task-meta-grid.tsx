@@ -1,6 +1,17 @@
 import { cn } from "@/lib/utils"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Input } from "@/components/ui/input"
 import type { TaskWithAssignee } from "@/features/tasks/queries"
+import type { UpdateTaskFormValues } from "@/features/tasks/schemas/validations"
 import { formatTaskDate } from "@/features/tasks/utils/date"
+import { getTaskStatusLabel } from "@/features/tasks/utils/status"
+import { TASK_STATUS_VALUES, type TaskStatus } from "@/features/tasks/types"
 import { getInitials, getAvatarColor } from "@/features/epics/utils/avatar"
 import { CalendarDays, Clock3 } from "lucide-react"
 import { TaskStatusBadge } from "./task-status-badge"
@@ -8,6 +19,11 @@ import { TaskStatusBadge } from "./task-status-badge"
 interface TaskMetaGridProps {
   task: TaskWithAssignee
   mode?: "desktop" | "mobile"
+  isBusy?: boolean
+  onUpdate?: (
+    payload: UpdateTaskFormValues,
+    buildOptimisticTask: (current: TaskWithAssignee) => TaskWithAssignee
+  ) => void
 }
 
 type PersonRowProps = {
@@ -55,7 +71,31 @@ function PersonRow({ name, avatar, subtitle, compact = false }: PersonRowProps) 
   )
 }
 
-export function TaskMetaGrid({ task, mode = "desktop" }: TaskMetaGridProps) {
+function toDateTimeLocalValue(value: string | null) {
+  if (!value) return ""
+
+  const parsed = new Date(value)
+  if (Number.isNaN(parsed.getTime())) {
+    return ""
+  }
+
+  const pad = (segment: number) => String(segment).padStart(2, "0")
+
+  const year = parsed.getFullYear()
+  const month = pad(parsed.getMonth() + 1)
+  const day = pad(parsed.getDate())
+  const hours = pad(parsed.getHours())
+  const minutes = pad(parsed.getMinutes())
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`
+}
+
+export function TaskMetaGrid({
+  task,
+  mode = "desktop",
+  isBusy = false,
+  onUpdate,
+}: TaskMetaGridProps) {
   const assigneeName = task.assignee_name ?? "Unassigned"
   const reporterName = task.reporter_name ?? "Unknown"
 
@@ -119,12 +159,39 @@ export function TaskMetaGrid({ task, mode = "desktop" }: TaskMetaGridProps) {
         <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground/80">
           Status
         </p>
-        <div className="mt-2.5">
-          <TaskStatusBadge
-            status={task.status}
-            className="w-full justify-start rounded-lg px-4 py-2.5 text-[11.5px] font-bold uppercase tracking-[0.08em]"
-          />
-        </div>
+        {onUpdate ? (
+          <div className="mt-2.5">
+            <Select
+              value={task.status}
+              onValueChange={(nextStatus) => {
+                if (!onUpdate || nextStatus === task.status) return
+                onUpdate(
+                  { status: nextStatus as TaskStatus },
+                  (current) => ({ ...current, status: nextStatus as TaskStatus })
+                )
+              }}
+              disabled={isBusy}
+            >
+              <SelectTrigger className="h-10 w-full rounded-lg border-[#CFD7EA] bg-white px-3 text-left text-sm font-medium text-[#243B63]">
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                {TASK_STATUS_VALUES.map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {getTaskStatusLabel(status)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        ) : (
+          <div className="mt-2.5">
+            <TaskStatusBadge
+              status={task.status}
+              className="w-full justify-start rounded-lg px-4 py-2.5 text-[11.5px] font-bold uppercase tracking-[0.08em]"
+            />
+          </div>
+        )}
       </section>
 
       <section>
@@ -156,7 +223,35 @@ export function TaskMetaGrid({ task, mode = "desktop" }: TaskMetaGridProps) {
       <section className="space-y-3.5 border-t border-[#D9DFED] pt-6">
         <div className="flex items-center justify-between gap-3 text-sm">
           <span className="text-muted-foreground">Due Date</span>
-          <span className="font-medium text-foreground">{formatTaskDate(task.due_date)}</span>
+          {onUpdate ? (
+            <Input
+              key={task.due_date ?? "no-due-date"}
+              type="datetime-local"
+              defaultValue={toDateTimeLocalValue(task.due_date)}
+              onBlur={(event) => {
+                if (!onUpdate) return
+
+                const nextValue = event.target.value
+                const currentValue = toDateTimeLocalValue(task.due_date)
+
+                if (nextValue === currentValue) {
+                  return
+                }
+
+                onUpdate(
+                  { dueDate: nextValue || null },
+                  (current) => ({
+                    ...current,
+                    due_date: nextValue ? new Date(nextValue).toISOString() : null,
+                  })
+                )
+              }}
+              disabled={isBusy}
+              className="h-8 w-44 border-[#CFD7EA] bg-white px-2 text-xs"
+            />
+          ) : (
+            <span className="font-medium text-foreground">{formatTaskDate(task.due_date)}</span>
+          )}
         </div>
         <div className="flex items-center justify-between gap-3 text-sm">
           <span className="text-muted-foreground">Created At</span>

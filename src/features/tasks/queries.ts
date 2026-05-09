@@ -37,6 +37,11 @@ export type TasksByProjectResult = {
   pagination: PaginationMeta
 }
 
+export type TaskDetailsQueryResult = {
+  data: TaskWithAssignee | null
+  error: string | null
+}
+
 export type GetTasksOptions = {
   limit?: number
   offset?: number
@@ -359,5 +364,59 @@ export async function getAllTasksByProjectId(
     data: resolved.data,
     error: resolved.error,
     pagination: taskResult.pagination,
+  }
+}
+
+export async function getTaskById(
+  projectId: string,
+  taskId: string
+): Promise<TaskDetailsQueryResult> {
+  const normalizedProjectId = projectId.trim()
+  const normalizedTaskId = taskId.trim()
+
+  if (!normalizedProjectId || !normalizedTaskId) {
+    return {
+      data: null,
+      error: "Invalid project id or task id.",
+    }
+  }
+
+  const supabase = await createSupabaseServerClient()
+
+  const { data: taskRow, error } = await supabase
+    .from("tasks")
+    .select(
+      "id, project_id, title, description, epic_id, assignee_id, due_date, status, created_at, created_by"
+    )
+    .eq("project_id", normalizedProjectId)
+    .eq("id", normalizedTaskId)
+    .maybeSingle<TaskQueryRow>()
+
+  if (error) {
+    return {
+      data: null,
+      error: `Failed to load task details: ${error.message}`,
+    }
+  }
+
+  if (!taskRow) {
+    return {
+      data: null,
+      error: "Task not found.",
+    }
+  }
+
+  const resolved = await resolveTasksWithAssignees(normalizedProjectId, [taskRow])
+
+  if (resolved.error) {
+    return {
+      data: null,
+      error: resolved.error,
+    }
+  }
+
+  return {
+    data: resolved.data[0] ?? null,
+    error: null,
   }
 }

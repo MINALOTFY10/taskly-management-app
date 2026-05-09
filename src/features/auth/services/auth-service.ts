@@ -98,6 +98,22 @@ export async function loginUser(values: { email: string; password: string }) {
   return { data, error }
 }
 
+const GUEST_LOGIN_CREDENTIALS = {
+  email: "chugchugpickles89@gmail.com",
+  password: "Menajosef1452002$",
+} as const
+
+export async function guestLoginUser() {
+  const supabase = createClient()
+
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: GUEST_LOGIN_CREDENTIALS.email,
+    password: GUEST_LOGIN_CREDENTIALS.password,
+  })
+
+  return { data, error }
+}
+
 /**
  * Sends a password-recovery email via the Supabase SDK.
  * Always returns a generic message — never reveals whether the address exists.

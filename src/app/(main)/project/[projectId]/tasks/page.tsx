@@ -1,5 +1,4 @@
 import type { Metadata } from "next"
-import { notFound } from "next/navigation"
 
 import TasksViewSwitcher from "@/features/tasks/components/tasks-view-switcher"
 import { getProjectById } from "@/features/projects/queries"
@@ -8,6 +7,7 @@ import {
   getTasksByProjectId,
 } from "@/features/tasks/queries"
 import { PAGE_SIZE, getOffsetFromPage, parsePageParam } from "@/lib/pagination"
+import { assertProjectExists } from "@/lib/project-guards"
 
 type TasksPageProps = {
   params: Promise<{ projectId: string }>
@@ -59,13 +59,7 @@ export default async function TasksPage({
     }),
   ])
 
-  if (projectResult.error) {
-    throw new Error(projectResult.error)
-  }
-
-  if (projectResult.notFound || !projectResult.data) {
-    notFound()
-  }
+  assertProjectExists(projectResult)
 
   return (
     <TasksViewSwitcher
