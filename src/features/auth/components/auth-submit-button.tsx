@@ -1,8 +1,8 @@
 "use client"
 
 import React from "react"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+
+import AuthActionButton from "@/features/auth/components/auth-action-button"
 
 interface AuthSubmitButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 	isLoading?: boolean
@@ -13,20 +13,19 @@ export default function AuthSubmitButton({
 	children,
 	isLoading = false,
 	loadingText = "Submitting...",
-	className,
-	disabled,
 	...props
 }: AuthSubmitButtonProps) {
 	return (
-		<Button
+		<AuthActionButton
 			type={props.type ?? "submit"}
 			size="lg"
-			disabled={Boolean(disabled) || isLoading}
-			className={cn(`h-13 sm:h-11 max-sm:mt-4 w-full text-base font-semibold`, className)}
+			className="h-13 w-full text-base font-semibold sm:h-11 max-sm:mt-4"
+			isLoading={isLoading}
+			loadingText={loadingText}
 			{...props}
 		>
-			{isLoading ? loadingText : children}
-		</Button>
+			{children}
+		</AuthActionButton>
 	)
 }
 

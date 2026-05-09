@@ -25,7 +25,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ProjectDetailPage({ params }: Props) {
   const { projectId } = await params
 
-  // Fetch all data in parallel — one round-trip to Supabase
   const [projectResult, membersResult, epicsResult, tasksResult] =
     await Promise.all([
       getProjectById(projectId),

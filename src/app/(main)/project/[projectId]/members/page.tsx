@@ -1,10 +1,10 @@
 import type { Metadata } from "next"
-import { notFound } from "next/navigation"
 
 import ProjectMembersError from "@/features/members/components/project-members-error"
 import ProjectMembersPage from "@/features/members/components/project-members-page"
 import { getProjectById } from "@/features/projects/queries"
 import { getCurrentUserRole, getProjectMembers } from "@/features/members/queries"
+import { assertProjectExists } from "@/lib/project-guards"
 
 type MembersPageProps = {
     params: Promise<{ projectId: string }>
@@ -30,13 +30,7 @@ export default async function MembersPage({ params }: MembersPageProps) {
         getCurrentUserRole(projectId),
     ])
 
-    if (projectResult.error) {
-        throw new Error(projectResult.error)
-    }
-
-    if (projectResult.notFound || !projectResult.data) {
-        notFound()
-    }
+    assertProjectExists(projectResult)
 
     if (membersResult.error) {
         return (

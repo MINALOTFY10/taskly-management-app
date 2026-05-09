@@ -1,10 +1,10 @@
 import type { Metadata } from "next"
-import { notFound } from "next/navigation"
 
 import AddTaskForm from "@/features/tasks/components/add/add-task-form"
 import { getEpics } from "@/features/epics/queries"
 import { getProjectById } from "@/features/projects/queries"
 import { getProjectMembers } from "@/features/members/queries"
+import { assertProjectExists } from "@/lib/project-guards"
 
 type NewTaskPageProps = {
   params: Promise<{ projectId: string }>
@@ -35,13 +35,7 @@ export default async function NewTaskPage({
     getEpics(projectId, { limit: 500, offset: 0 }),
   ])
 
-  if (projectResult.error) {
-    throw new Error(projectResult.error)
-  }
-
-  if (projectResult.notFound || !projectResult.data) {
-    notFound()
-  }
+  assertProjectExists(projectResult)
 
   if (membersResult.error) {
     throw new Error(membersResult.error)
