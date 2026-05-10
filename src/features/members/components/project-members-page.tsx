@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { UserPlus } from "lucide-react"
 
+import { BreadcrumbNav } from "@/components/shared/breadcrumb-nav"
 import { Button } from "@/components/ui/button"
 import InviteMemberForm from "@/features/members/components/invite-member-form"
 import LeaveProjectDialog from "@/features/members/components/leave-project-dialog"
@@ -44,14 +45,21 @@ export default function ProjectMembersPage({
     : "grid-cols-[minmax(0,1.5fr)_minmax(110px,0.7fr)_minmax(120px,0.7fr)]"
 
   return (
-    <section className="px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-8">
-      <div className="mx-auto w-full max-w-350">
-        <div className="flex items-start justify-between gap-4">
+    <section className="app-page-shell">
+      <div className="app-page-frame">
+        <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-[0.68rem] font-semibold tracking-[0.14em] text-muted-foreground uppercase">
-              Projects &gt; {projectName} &gt; Members
-            </p>
-            <h1 className="mt-2 text-[2.2rem] leading-none font-semibold tracking-tight text-foreground">
+            <BreadcrumbNav
+              items={[
+                { label: "Projects", href: "/project" },
+                {
+                  label: projectName,
+                  href: `/project/${projectId}/details`,
+                },
+                { label: "Members", current: true },
+              ]}
+            />
+            <h1 className="mt-1.5 text-[2rem] leading-none font-semibold tracking-tight text-foreground">
               Project Members
             </h1>
           </div>
@@ -60,33 +68,33 @@ export default function ProjectMembersPage({
             <Button
               type="button"
               size="lg"
-              className="mt-auto hidden h-12 gap-2 rounded-md px-4 text-[14px] font-semibold shadow-[0_10px_18px_rgba(0,50,184,0.15)] sm:inline-flex"
+              className="mt-auto hidden h-10 gap-2 rounded-lg px-3.5 text-[13px] font-semibold shadow-sm sm:inline-flex"
               onClick={() => setIsInviteOpen(true)}
             >
-              <UserPlus className="size-4" /> Invite Members
+              <UserPlus className="size-3.5" /> Invite Members
             </Button>
           ) : null}
         </div>
 
         {members.length === 0 ? (
-          <div className="mt-7 rounded-xl border border-border/45 bg-card px-5 py-8 text-center sm:mt-8">
+          <div className="mt-5 rounded-lg border border-border/60 bg-card px-4 py-6 text-center shadow-sm sm:mt-6">
             <p className="text-sm text-muted-foreground">No project members found.</p>
           </div>
         ) : (
           <>
-            <div className="mt-7 hidden overflow-hidden rounded-xl border border-border/45 bg-card sm:mt-8 md:block">
-              <div className={`grid ${desktopGridColumns} gap-4 border-b border-border/60 ps-4 pe-10 py-4`}>
-                <span className="text-[0.68rem] font-semibold tracking-[0.14em] text-muted-foreground uppercase">
+            <div className="mt-5 hidden overflow-hidden rounded-lg border border-border/60 bg-card shadow-sm sm:mt-6 md:block">
+              <div className={`grid ${desktopGridColumns} gap-3 border-b border-border/60 ps-3 pe-8 py-3`}>
+                <span className="text-[0.64rem] font-semibold tracking-[0.12em] text-muted-foreground uppercase">
                   Member
                 </span>
-                <span className="text-[0.68rem] font-semibold tracking-[0.14em] text-muted-foreground uppercase">
+                <span className="text-[0.64rem] font-semibold tracking-[0.12em] text-muted-foreground uppercase">
                   Role
                 </span>
-                <span className="text-[0.68rem] font-semibold tracking-[0.14em] text-muted-foreground uppercase">
+                <span className="text-[0.64rem] font-semibold tracking-[0.12em] text-muted-foreground uppercase">
                   Joined At
                 </span>
                 {canShowActionsColumn ? (
-                  <span className="text-[0.68rem] text-right font-semibold tracking-[0.14em] text-muted-foreground uppercase">
+                  <span className="text-[0.64rem] text-right font-semibold tracking-[0.12em] text-muted-foreground uppercase">
                     Actions
                   </span>
                 ) : null}
@@ -97,7 +105,7 @@ export default function ProjectMembersPage({
                   <div
                     key={member.id}
                     role="listitem"
-                    className={`grid ${desktopGridColumns} items-center gap-4 ps-4 pe-10 py-4`}
+                    className={`grid ${desktopGridColumns} items-center gap-3 ps-3 pe-8 py-3`}
                   >
                     <div className="flex min-w-0 items-center gap-3">
                       <ProjectMemberAvatar name={member.name} />
@@ -144,16 +152,16 @@ export default function ProjectMembersPage({
                 <div
                   key={member.id}
                   role="listitem"
-                  className="rounded-xl border border-border/45 bg-card px-4 py-3"
+                  className="rounded-lg border border-border/60 bg-card px-3 py-2.5 shadow-sm"
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2.5">
                     <ProjectMemberAvatar name={member.name} />
 
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-[1.01rem] font-semibold text-foreground">
+                      <p className="truncate text-[0.95rem] font-semibold text-foreground">
                         {member.name}
                       </p>
-                      <p className="truncate text-[0.84rem] text-muted-foreground">
+                      <p className="truncate text-[0.8rem] text-muted-foreground">
                         {member.email}
                       </p>
                     </div>
@@ -182,7 +190,7 @@ export default function ProjectMembersPage({
             </div>
 
             {canLeaveProject ? (
-              <div className="mt-6 rounded-xl border border-destructive/15 bg-destructive/5 px-4 py-4 sm:px-5">
+              <div className="mt-5 rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-3 sm:px-4">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <p className="text-sm font-semibold text-foreground">Leave project</p>

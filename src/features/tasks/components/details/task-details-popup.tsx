@@ -1,23 +1,29 @@
 "use client"
 
-import { useCallback } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { Link2, X } from "lucide-react"
 
 import { useAppToast } from "@/components/providers/toast-provider"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
+import { updateTaskAction } from "@/features/tasks/actions"
 import type { TaskWithAssignee } from "@/features/tasks/queries"
+import type { UpdateTaskFormValues } from "@/features/tasks/schemas/validations"
 import { TaskMetaGrid } from "./task-meta-grid"
+import { TaskDescriptionSection } from "./task-description-section"
 import { TaskStatusBadge } from "./task-status-badge"
+import { TaskTitleSection } from "./task-title-section"
+
+const UPDATE_TASK_ERROR_MESSAGE = "Failed to update task. Please try again."
 
 type TaskDetailsModalProps = {
   open: boolean
   onClose: () => void
   task: TaskWithAssignee | null
   projectId: string
+  onTaskUpdated?: (task: TaskWithAssignee) => void
   loading?: boolean
   error?: string | null
 }
@@ -27,22 +33,63 @@ export default function TaskDetailsModal({
   onClose,
   task,
   projectId,
+  onTaskUpdated,
   loading = false,
   error = null,
 }: TaskDetailsModalProps) {
   const { showToast } = useAppToast()
+  const [localTask, setLocalTask] = useState<TaskWithAssignee | null>(task)
+  const [isSaving, setIsSaving] = useState(false)
+
+  useEffect(() => {
+    setLocalTask(task)
+  }, [task, open])
+
+  const saveTaskUpdate = async (
+    payload: UpdateTaskFormValues,
+    buildOptimisticTask: (current: TaskWithAssignee) => TaskWithAssignee
+  ) => {
+    if (!localTask || isSaving) return
+
+    const previousTask = localTask
+    const optimisticTask = buildOptimisticTask(previousTask)
+
+    setIsSaving(true)
+    setLocalTask(optimisticTask)
+    onTaskUpdated?.(optimisticTask)
+
+    try {
+      const result = await updateTaskAction(projectId, localTask.id, payload)
+
+      if (result.error || !result.data) {
+        throw new Error(result.error ?? UPDATE_TASK_ERROR_MESSAGE)
+      }
+
+      setLocalTask(result.data)
+      onTaskUpdated?.(result.data)
+      showToast({ variant: "success", message: "Task updated successfully" })
+    } catch {
+      setLocalTask(previousTask)
+      onTaskUpdated?.(previousTask)
+      showToast({ variant: "error", message: UPDATE_TASK_ERROR_MESSAGE })
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const isBusy = loading || isSaving
 
   const handleCopyLink = useCallback(async () => {
-    if (!task) return
+    if (!localTask) return
     try {
       const url = new URL(`/project/${projectId}/tasks`, window.location.origin)
-      url.searchParams.set("taskId", task.id)
+      url.searchParams.set("taskId", localTask.id)
       await navigator.clipboard.writeText(url.toString())
       showToast({ variant: "success", message: "Task link copied" })
     } catch {
       showToast({ variant: "error", message: "Unable to copy task link" })
     }
-  }, [task, projectId, showToast])
+  }, [localTask, projectId, showToast])
 
   return (
     <Dialog open={open} onOpenChange={(val) => !val && onClose()}>
@@ -51,11 +98,12 @@ export default function TaskDetailsModal({
         className="min-h-[90%] w-[calc(100%-1.25rem)] max-w-245 overflow-hidden border border-[#DCE3F1] bg-[#F4F6FC] p-0 shadow-[0_26px_88px_rgba(15,30,60,0.24)] max-sm:top-auto max-sm:right-0 max-sm:bottom-0 max-sm:left-0 max-sm:w-full max-sm:max-w-none max-sm:translate-x-0 max-sm:translate-y-0 max-sm:rounded-t-[28px] max-sm:rounded-b-none sm:w-[calc(100%-2rem)] sm:rounded-2xl"
       >
         <ModalContent
-          task={task}
-          loading={loading}
+          task={localTask}
+          isBusy={isBusy}
           error={error}
           onClose={onClose}
           onCopyLink={handleCopyLink}
+          onUpdateTask={saveTaskUpdate}
         />
       </DialogContent>
     </Dialog>
@@ -64,18 +112,23 @@ export default function TaskDetailsModal({
 
 type ModalContentProps = {
   task: TaskWithAssignee | null
-  loading: boolean
+  isBusy: boolean
   error: string | null
   onClose: () => void
   onCopyLink: () => void
+  onUpdateTask: (
+    payload: UpdateTaskFormValues,
+    buildOptimisticTask: (current: TaskWithAssignee) => TaskWithAssignee
+  ) => Promise<void>
 }
 
 function ModalContent({
   task,
-  loading,
+  isBusy,
   error,
   onClose,
   onCopyLink,
+  onUpdateTask,
 }: ModalContentProps) {
   if (error) return <ModalError message={error} onClose={onClose} />
   if (!task) return <ModalEmpty onClose={onClose} />
@@ -84,29 +137,34 @@ function ModalContent({
     <>
       <div className="hidden sm:grid sm:max-h-[90vh] sm:grid-cols-[minmax(0,1fr)_320px]">
         <section className="flex min-h-0 flex-col bg-white/35">
-          <div className="border-b border-[#DCE3F1] px-8 py-8">
+          <div className="border-b border-[#DCE3F1] px-6 py-6">
             <TaskIdBadge taskId={task.id} epicId={task.epic_id} />
-            <h2 className="mt-3 text-[35px] leading-[1.08] font-bold tracking-[-0.02em] text-[#132A4D]">
-              {task.title}
-            </h2>
+            <TaskTitleSection
+              task={task}
+              isBusy={isBusy}
+              onSave={(title) =>
+                onUpdateTask({ title }, (current) => ({ ...current, title }))
+              }
+            />
           </div>
 
-          <div className="min-h-0 flex-1 overflow-y-auto px-8 py-6">
+          <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
             <p className="text-[12px] font-bold tracking-[0.12em] text-muted-foreground/80 uppercase">
               Description
             </p>
-            <div className="mt-3 rounded-xl border-0 py-3 text-[14px] leading-6 text-[#2A3D5F]">
-              {task.description?.trim() ? (
-                task.description.trim()
-              ) : (
-                <span className="italic opacity-70">
-                  No description provided
-                </span>
-              )}
-            </div>
+            <TaskDescriptionSection
+              task={task}
+              isBusy={isBusy}
+              onSave={(description) =>
+                onUpdateTask({ description }, (current) => ({
+                  ...current,
+                  description,
+                }))
+              }
+            />
           </div>
 
-          <div className="flex items-center justify-between border-t border-[#DCE3F1] px-8 py-4">
+          <div className="flex items-center justify-between border-t border-[#DCE3F1] px-6 py-3">
             <button
               type="button"
               onClick={onCopyLink}
@@ -126,8 +184,12 @@ function ModalContent({
           </div>
         </section>
 
-        <aside className="max-h-[90vh] overflow-y-auto border-l border-[#DCE3F1] bg-[#EEF2FC] px-6 py-7">
-          <TaskMetaGrid task={task} />
+        <aside className="max-h-[90vh] overflow-y-auto border-l border-[#DCE3F1] bg-[#EEF2FC] px-5 py-5">
+          <TaskMetaGrid
+            task={task}
+            isBusy={isBusy}
+            onUpdate={onUpdateTask}
+          />
         </aside>
       </div>
 
@@ -214,7 +276,7 @@ function ModalError({
   onClose: () => void
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-4 px-8 py-20 text-center">
+    <div className="flex flex-col items-center justify-center gap-3 px-6 py-14 text-center">
       <p className="text-sm font-medium text-destructive">{message}</p>
       <Button variant="outline" onClick={onClose}>
         Close
@@ -225,7 +287,7 @@ function ModalError({
 
 function ModalEmpty({ onClose }: { onClose: () => void }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-4 px-8 py-20 text-center">
+    <div className="flex flex-col items-center justify-center gap-3 px-6 py-14 text-center">
       <p className="text-sm font-medium text-muted-foreground">
         Task not found
       </p>

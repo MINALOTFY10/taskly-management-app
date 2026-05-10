@@ -4,9 +4,12 @@ import { revalidatePath } from "next/cache"
 
 import { requireUser } from "@/lib/auth.utils"
 import { createSupabaseServerClient } from "@/lib/supabase/server"
+import { getTaskById, type TaskWithAssignee } from "@/features/tasks/queries"
 import {
   createTaskSchema,
   type CreateTaskFormValues,
+  updateTaskSchema,
+  type UpdateTaskFormValues,
 } from "@/features/tasks/schemas/validations"
 import { isTaskStatus, type TaskStatus } from "@/features/tasks/types"
 
@@ -17,6 +20,11 @@ type TaskActionResult = {
 
 type TaskStatusActionResult = {
   data: { id: string; status: TaskStatus } | null
+  error: string | null
+}
+
+type TaskDetailsActionResult = {
+  data: TaskWithAssignee | null
   error: string | null
 }
 
@@ -231,4 +239,127 @@ export async function updateTaskStatusAction(
   revalidatePath(`/project/${normalizedProjectId}/epics`)
 
   return { data, error: null }
+}
+
+export async function updateTaskAction(
+  projectId: string,
+  taskId: string,
+  values: UpdateTaskFormValues
+): Promise<TaskDetailsActionResult> {
+  const normalizedProjectId = projectId.trim()
+  const normalizedTaskId = taskId.trim()
+
+  if (!normalizedProjectId || !normalizedTaskId) {
+    return { data: null, error: "Invalid project id or task id." }
+  }
+
+  const validated = updateTaskSchema.safeParse(values)
+  if (!validated.success) {
+    return { data: null, error: "Invalid form data." }
+  }
+
+  const authUser = await requireUser()
+  const supabase = await createSupabaseServerClient()
+
+  const { data: member, error: memberError } = await supabase
+    .from("project_members")
+    .select("id")
+    .eq("project_id", normalizedProjectId)
+    .eq("user_id", authUser.id)
+    .maybeSingle<{ id: string }>()
+
+  if (memberError) {
+    return {
+      data: null,
+      error: `Failed to validate project membership: ${memberError.message}`,
+    }
+  }
+
+  if (!member) {
+    return {
+      data: null,
+      error: "You are not allowed to update tasks in this project.",
+    }
+  }
+
+  const { data: task, error: taskError } = await supabase
+    .from("tasks")
+    .select("id")
+    .eq("id", normalizedTaskId)
+    .eq("project_id", normalizedProjectId)
+    .maybeSingle<{ id: string }>()
+
+  if (taskError) {
+    return {
+      data: null,
+      error: `Failed to validate task: ${taskError.message}`,
+    }
+  }
+
+  if (!task) {
+    return {
+      data: null,
+      error: "Task does not belong to this project.",
+    }
+  }
+
+  const payload = validated.data
+
+  const updatePayload: {
+    title?: string
+    description?: string | null
+    status?: TaskStatus
+    due_date?: string | null
+  } = {}
+
+  if (payload.title !== undefined) {
+    updatePayload.title = payload.title
+  }
+
+  if (payload.description !== undefined) {
+    updatePayload.description = payload.description?.trim() || null
+  }
+
+  if (payload.status !== undefined) {
+    updatePayload.status = payload.status
+  }
+
+  if (payload.dueDate !== undefined) {
+    updatePayload.due_date = payload.dueDate ? toIsoDateTime(payload.dueDate) : null
+  }
+
+  const { data: updatedRow, error: updateError } = await supabase
+    .from("tasks")
+    .update(updatePayload)
+    .eq("id", normalizedTaskId)
+    .eq("project_id", normalizedProjectId)
+    .select("id")
+    .maybeSingle<{ id: string }>()
+
+  if (updateError) {
+    return {
+      data: null,
+      error: `Failed to update task: ${updateError.message}`,
+    }
+  }
+
+  if (!updatedRow) {
+    return {
+      data: null,
+      error: "Task not found or you do not have permission to edit it.",
+    }
+  }
+
+  const refreshedTask = await getTaskById(normalizedProjectId, normalizedTaskId)
+  if (refreshedTask.error || !refreshedTask.data) {
+    return {
+      data: null,
+      error: refreshedTask.error ?? "Failed to load updated task details.",
+    }
+  }
+
+  revalidatePath(`/project/${normalizedProjectId}/tasks`)
+  revalidatePath(`/project/${normalizedProjectId}/epics`)
+
+  return { data: refreshedTask.data, error: null }
 }

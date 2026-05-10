@@ -1,4 +1,3 @@
-import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 
 import { PAGE_SIZE } from "@/lib/pagination"
@@ -7,20 +6,11 @@ import { getEpics } from "@/features/epics/queries"
 import EpicsListPage from "@/features/epics/components/listing/epics-list-page"
 import { getOffsetFromPage, parsePageParam } from "@/lib/pagination"
 import { getProjectMembers } from "@/features/members/queries"
+import { assertProjectExists } from "@/lib/project-guards"
 
 type EpicsPageProps = {
   params: Promise<{ projectId: string }>
   searchParams: Promise<{ page?: string; q?: string }>
-}
-
-export async function generateMetadata({
-  params,
-}: EpicsPageProps): Promise<Metadata> {
-  const { projectId } = await params
-  const { data } = await getProjectById(projectId)
-  return {
-    title: data ? `${data.name} — Epics` : "Project Epics",
-  }
 }
 
 export default async function EpicsPage({
@@ -39,13 +29,7 @@ export default async function EpicsPage({
     getProjectMembers(projectId),
   ])
 
-  if (projectResult.error) {
-    throw new Error(projectResult.error)
-  }
-
-  if (projectResult.notFound || !projectResult.data) {
-    notFound()
-  }
+  assertProjectExists(projectResult)
 
   if (membersResult.error) {
     throw new Error(membersResult.error)

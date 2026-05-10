@@ -64,13 +64,13 @@ function getInviteErrorMessage(error: string | null): string | null {
 
 function InviteErrorCard({ message }: { message: string }) {
   return (
-    <main className="flex min-h-svh items-center justify-center bg-[#eff1fb] px-4 py-10">
+    <main className="flex min-h-svh items-center justify-center bg-background px-4 py-10">
       <div className="w-full max-w-205">
         <div className="mb-10 flex justify-center">
           <AppLogo className="pointer-events-none" />
         </div>
 
-        <section className="mx-auto w-full max-w-170 rounded-xl border border-border/50 bg-card px-6 py-8 text-center shadow-[0_24px_80px_rgba(13,27,42,0.12)] sm:px-8 sm:py-10">
+        <section className="mx-auto w-full max-w-170 rounded-3xl border border-border/60 bg-card px-6 py-8 text-center shadow-sm sm:px-8 sm:py-10">
           <h1 className="text-3xl font-semibold tracking-tight text-foreground">
             Invitation Unavailable
           </h1>
@@ -83,7 +83,7 @@ function InviteErrorCard({ message }: { message: string }) {
 
 function CenteredSpinner() {
   return (
-    <main className="flex min-h-svh items-center justify-center bg-[#eff1fb]">
+    <main className="flex min-h-svh items-center justify-center bg-background">
       <Loader2 className="size-8 animate-spin text-primary" />
     </main>
   )

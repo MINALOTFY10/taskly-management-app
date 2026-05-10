@@ -9,13 +9,19 @@ import { useForm } from "react-hook-form"
 import { loginSchema, type LoginFormValues } from "@/features/auth/schemas/validations"
 import AuthLayout from "@/features/auth/components/auth-layout"
 import AuthInput from "@/features/auth/components/auth-input"
+import AuthActionButton from "@/features/auth/components/auth-action-button"
 import AuthSubmitButton from "@/features/auth/components/auth-submit-button"
-import { loginUser } from "@/features/auth/services/auth-service"
+import { Separator } from "@/components/ui/separator"
+import {
+  guestLoginUser,
+  loginUser,
+} from "@/features/auth/services/auth-service"
 
 export default function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [apiError, setApiError] = useState<string | null>(null)
+  const [isGuestLoading, setIsGuestLoading] = useState(false)
 
   const {
     register,
@@ -52,6 +58,34 @@ export default function LoginForm() {
       router.refresh()
     } catch {
       setApiError("Network error. Please check your connection and try again.")
+    }
+  }
+
+  const handleGuestLogin = async () => {
+    setApiError(null)
+    setIsGuestLoading(true)
+
+    try {
+      const { data, error } = await guestLoginUser()
+
+      if (error) {
+        setApiError("Guest login failed. Please try again.")
+        return
+      }
+
+      if (!data.session) {
+        setApiError(
+          "Guest login succeeded but no session was returned. Please try again."
+        )
+        return
+      }
+
+      router.replace("/project")
+      router.refresh()
+    } catch {
+      setApiError("Network error. Please check your connection and try again.")
+    } finally {
+      setIsGuestLoading(false)
     }
   }
 
@@ -117,9 +151,34 @@ export default function LoginForm() {
           {apiError ?? ""}
         </p>
 
-        <AuthSubmitButton isLoading={isSubmitting} loadingText="Signing in...">
+        <AuthSubmitButton
+          isLoading={isSubmitting}
+          loadingText="Signing in..."
+          disabled={isGuestLoading}
+        >
           Log In
         </AuthSubmitButton>
+
+        <div className="flex items-center gap-3 py-2">
+          <Separator className="flex-1" />
+          <span className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+            or
+          </span>
+          <Separator className="flex-1" />
+        </div>
+
+        <AuthActionButton
+          type="button"
+          variant="outline"
+          size="lg"
+          className="h-13 w-full text-base font-semibold sm:h-11"
+          onClick={handleGuestLogin}
+          isLoading={isGuestLoading}
+          loadingText="Entering guest mode..."
+          disabled={isSubmitting}
+        >
+          Continue as Guest
+        </AuthActionButton>
       </form>
 
       <p className="mx-sm:absolute mx-sm:left-1/2 mx-sm:-translate-x-1/2 bottom-10 mt-8 w-full text-center text-sm text-muted-foreground">

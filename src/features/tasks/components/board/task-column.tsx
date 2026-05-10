@@ -35,19 +35,19 @@ export default function TaskColumn({
   const addTaskHref = `/project/${projectId}/tasks/new?status=${status}`
 
   return (
-    <section className="flex min-h-120 flex-col gap-3">
-      <div className="flex items-center justify-between gap-3 px-1">
-        <div className="flex items-center gap-2.5">
+    <section className="flex min-h-96 flex-col gap-2.5">
+      <div className="flex items-center justify-between gap-2 px-0.5">
+        <div className="flex items-center gap-1.5">
           <span
-            className={cn("size-2 rounded-full", theme.dot)}
+            className={cn("size-1.5 rounded-full", theme.dot)}
             aria-hidden="true"
           />
-          <h2 className="text-[0.72rem] font-bold tracking-[0.24em] text-slate-500 uppercase">
+          <h2 className="text-[0.65rem] font-bold tracking-[0.2em] text-slate-500 uppercase">
             {statusLabel}
           </h2>
           <span
             className={cn(
-              "inline-flex h-5 min-w-5 items-center justify-center rounded-md px-1.5 text-[0.68rem] font-semibold",
+              "inline-flex h-4 min-w-4 items-center justify-center rounded-sm px-1 text-[0.6rem] font-semibold",
               theme.count
             )}
           >
@@ -59,10 +59,10 @@ export default function TaskColumn({
           asChild
           variant="ghost"
           size="icon-xs"
-          className="text-muted-foreground hover:text-foreground"
+          className="size-6 text-muted-foreground hover:text-foreground"
         >
           <Link href={addTaskHref} aria-label={`Add task to ${statusLabel}`}>
-            <Plus className="size-4" />
+            <Plus className="size-3.5" />
           </Link>
         </Button>
       </div>
@@ -70,18 +70,18 @@ export default function TaskColumn({
       <Button
         asChild
         variant="outline"
-        className="h-12 w-full border-dashed border-border/60 bg-transparent px-3 text-[0.75rem] font-semibold tracking-[0.18em] text-slate-500 uppercase shadow-none hover:bg-muted/40"
+        className="h-9 w-full border-dashed border-border/60 bg-transparent px-2.5 text-[0.65rem] font-semibold tracking-[0.15em] text-slate-500 uppercase shadow-none hover:bg-muted/40"
       >
         <Link
           href={addTaskHref}
-          className="flex items-center justify-center gap-2"
+          className="flex items-center justify-center gap-1.5"
         >
-          <PlusCircle className="size-4" />
+          <PlusCircle className="size-3.5" />
           Add New Task
         </Link>
       </Button>
 
-      <div ref={setNodeRef} className="flex flex-1 flex-col gap-3 pt-0.5">
+      <div ref={setNodeRef} className="flex flex-1 flex-col gap-2 pt-0.5">
         {tasks.map((task) => (
           <DraggableTaskCard
             key={task.id}

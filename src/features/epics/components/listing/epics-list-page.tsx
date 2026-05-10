@@ -74,68 +74,70 @@ export default function EpicsListPage({
   const isEmpty = !hasError && epics.length === 0
 
   return (
-    <section className="relative px-5 py-5 sm:px-6 sm:py-7 lg:px-8">
-      <EpicsListHeader
-        projectId={projectId}
-        projectName={projectName}
-        initialSearchTerm={initialSearchTerm}
-      />
-
-      {hasError ? (
-        <EpicsError
-          message={initialSearchTerm ? "Failed to search epics" : undefined}
+    <section className="app-page-shell">
+      <div className="app-page-frame">
+        <EpicsListHeader
+          projectId={projectId}
+          projectName={projectName}
+          initialSearchTerm={initialSearchTerm}
         />
-      ) : isEmpty ? (
-        <EpicsEmpty projectId={projectId} searchTerm={initialSearchTerm} />
-      ) : (
-        <>
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2" aria-label="Epics list">
-            {epics.map((epic) => (
-              <EpicCard
-                key={epic.id}
-                epic={epic}
-                projectId={projectId}
-                assigneeOptions={assigneeOptions}
-              />
-            ))}
-          </div>
 
-          <div className="mt-8 flex min-h-7 items-center justify-between gap-4 pb-4">
-            <ListPaginationSummary
-              shownCount={epics.length}
-              totalCount={totalCount}
-              itemLabel="active epics"
+        {hasError ? (
+          <EpicsError
+            message={initialSearchTerm ? "Failed to search epics" : undefined}
+          />
+        ) : isEmpty ? (
+          <EpicsEmpty projectId={projectId} searchTerm={initialSearchTerm} />
+        ) : (
+          <>
+            <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3" aria-label="Epics list">
+              {epics.map((epic) => (
+                <EpicCard
+                  key={epic.id}
+                  epic={epic}
+                  projectId={projectId}
+                  assigneeOptions={assigneeOptions}
+                />
+              ))}
+            </div>
+
+            <div className="mt-6 flex min-h-7 items-center justify-between gap-4 pb-3">
+              <ListPaginationSummary
+                shownCount={epics.length}
+                totalCount={totalCount}
+                itemLabel="active epics"
+              />
+
+              {isMobile === false && totalCount > 0 && (
+                <CompactPagination currentPage={currentPage} totalPages={totalPages} />
+              )}
+            </div>
+
+            <ScrollSentinel
+              enabled={isMobile === true && hasMore}
+              onIntersect={fetchNextPageOnMobile}
             />
 
-            {isMobile === false && totalCount > 0 && (
-              <CompactPagination currentPage={currentPage} totalPages={totalPages} />
-            )}
-          </div>
-
-          <ScrollSentinel
-            enabled={isMobile === true && hasMore}
-            onIntersect={fetchNextPageOnMobile}
-          />
-
-          <MobilePaginationFeedback
-            isLoadingMore={isLoadingMore}
-            loadingText="Loading more epics"
-            errorMessage={loadMoreError}
-            showError={epics.length > 0}
-            onRetry={() => {
-              void fetchNextPageOnMobile()
-            }}
-          />
-        </>
-      )}
+            <MobilePaginationFeedback
+              isLoadingMore={isLoadingMore}
+              loadingText="Loading more epics"
+              errorMessage={loadMoreError}
+              showError={epics.length > 0}
+              onRetry={() => {
+                void fetchNextPageOnMobile()
+              }}
+            />
+          </>
+        )}
+      </div>
 
       <Button
         asChild
-        size="icon"
-        className="fixed right-6 bottom-6 size-14 rounded-full shadow-[0_8px_24px_rgba(0,50,184,0.25)] sm:hidden"
+        size="icon-lg"
+        className="app-floating-action p-4 shadow-[0_10px_20px_rgba(0,50,184,0.22)]"
       >
         <Link href={`/project/${projectId}/epics/add`} aria-label="New epic">
-          <Plus className="size-6" aria-hidden="true" />
+          <Plus className="size-5" aria-hidden="true" />
         </Link>
       </Button>
     </section>

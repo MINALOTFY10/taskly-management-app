@@ -4,6 +4,8 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 
+import { Button } from "@/components/ui/button"
+
 export default function NotFoundPage() {
   const router = useRouter()
 
@@ -22,21 +24,20 @@ export default function NotFoundPage() {
           </p>
 
           <div className="flex w-full flex-col gap-2 sm:w-fit sm:flex-row">
-            <Link
-              href="/"
-              className="inline-flex h-8 items-center justify-center gap-1.5 rounded-md bg-primary px-2.5 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/80 focus-visible:ring-3 focus-visible:ring-ring/50"
-            >
-              Back home
-            </Link>
+            <Button asChild size="sm" className="h-10 px-4">
+              <Link href="/">Back home</Link>
+            </Button>
 
             {/* Go back */}
-            <button
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
               onClick={() => router.back()}
-              className="inline-flex h-8 items-center justify-center gap-1.5 rounded-md border border-border bg-background px-2.5 text-sm font-medium transition-all hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
             >
               <ArrowLeft className="size-4" />
               Go back
-            </button>
+            </Button>
           </div>
         </section>
 

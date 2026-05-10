@@ -84,24 +84,24 @@ export default function ChangeRoleDialog({
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
-      <DialogContent className="w-[calc(100%-2rem)] max-w-170 rounded-xl border border-border/45 p-0 sm:w-160">
-        <div className="px-6 py-6 sm:px-7 sm:py-7">
+      <DialogContent className="w-[calc(100%-2rem)] max-w-160 rounded-xl border border-border/45 p-0 sm:w-150">
+        <div className="px-5 py-5 sm:px-6 sm:py-6">
           <DialogHeader className="space-y-3">
-            <div className="inline-flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <UserCog className="size-5" />
+            <div className="inline-flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <UserCog className="size-4.5" />
             </div>
 
             <div className="space-y-1">
-              <DialogTitle className="mb-3 text-[2rem] leading-none font-semibold tracking-tight text-foreground sm:text-[2.15rem]">
+              <DialogTitle className="mb-2 text-[1.7rem] leading-none font-semibold tracking-tight text-foreground sm:text-[1.8rem]">
                 Change Member Role
               </DialogTitle>
-              <DialogDescription className="max-w-140 ps-1 text-sm leading-relaxed text-muted-foreground">
+              <DialogDescription className="max-w-140 ps-1 text-xs leading-relaxed text-muted-foreground">
                 Update {member.name}&apos;s role in {projectName}.
               </DialogDescription>
             </div>
           </DialogHeader>
 
-          <div className="mt-6 space-y-4">
+          <div className="mt-5 space-y-3.5">
             <label
               htmlFor="change-member-role"
               className="text-[0.68rem] font-semibold tracking-[0.14em] text-muted-foreground uppercase"
@@ -118,7 +118,7 @@ export default function ChangeRoleDialog({
             >
               <SelectTrigger
                 id="change-member-role"
-                className="h-12 w-full bg-surface-highest px-4"
+                className="h-10 w-full bg-surface-highest px-3 text-sm"
               >
                 <SelectValue placeholder="Select a role" />
               </SelectTrigger>
@@ -138,11 +138,11 @@ export default function ChangeRoleDialog({
             ) : null}
           </div>
 
-          <div className="mt-7 flex items-center justify-end gap-3">
+          <div className="mt-5 flex items-center justify-end gap-2.5">
             <Button
               type="button"
               variant="ghost"
-              className="h-11 min-w-24 px-4 text-[0.95rem] font-semibold text-muted-foreground hover:text-foreground"
+              className="h-9 min-w-20 px-3 text-[0.85rem] font-semibold text-muted-foreground hover:text-foreground"
               onClick={handleClose}
               disabled={isLoading}
             >
@@ -152,7 +152,7 @@ export default function ChangeRoleDialog({
             <Button
               type="button"
               size="lg"
-              className="h-11 min-w-46 px-6 text-[0.95rem] font-semibold shadow-[0_10px_18px_rgba(0,50,184,0.2)]"
+              className="h-9 min-w-40 px-5 text-[0.85rem] font-semibold shadow-[0_10px_18px_rgba(0,50,184,0.2)]"
               onClick={() => {
                 void handleConfirm()
               }}

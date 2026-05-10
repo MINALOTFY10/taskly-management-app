@@ -13,7 +13,7 @@ export function TasksListTable({
 }: TasksListTableProps) {
   if (tasks.length === 0) {
     return (
-      <div className="rounded-lg border border-border/20 bg-background px-6 py-12 text-center">
+      <div className="rounded-lg border border-border/60 bg-card px-4 py-9 text-center shadow-sm">
         <p className="text-sm font-medium text-muted-foreground">
           No tasks found. Create a new task to get started.
         </p>
@@ -22,27 +22,27 @@ export function TasksListTable({
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-border/20 bg-background">
+    <div className="overflow-hidden rounded-lg border border-border/60 bg-card shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr className="border-b border-border/20">
-              <th className="px-6 py-4 text-left text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+              <th className="px-5 py-3 text-left text-xs font-semibold tracking-wide text-muted-foreground uppercase">
                 Task ID
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+              <th className="px-5 py-3 text-left text-xs font-semibold tracking-wide text-muted-foreground uppercase">
                 Title
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+              <th className="px-5 py-3 text-left text-xs font-semibold tracking-wide text-muted-foreground uppercase">
                 Status
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+              <th className="px-5 py-3 text-left text-xs font-semibold tracking-wide text-muted-foreground uppercase">
                 Due Date
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+              <th className="px-5 py-3 text-left text-xs font-semibold tracking-wide text-muted-foreground uppercase">
                 Assignee
               </th>
-              <th className="px-6 py-4 text-center text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+              <th className="px-5 py-3 text-center text-xs font-semibold tracking-wide text-muted-foreground uppercase">
                 <span className="sr-only">Actions</span>
               </th>
             </tr>

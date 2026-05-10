@@ -25,7 +25,7 @@ export function TasksList({ epic, projectId, onTaskSelect }: TasksListProps) {
       ) : tasks.length === 0 ? (
         <TasksListEmpty />
       ) : (
-        <div className="rounded-xl border border-border/60 overflow-hidden bg-background">
+        <div className="overflow-hidden rounded-lg border border-border/60 bg-card shadow-sm">
           {tasks.map((task, index) => (
             <div
               key={task.id}
@@ -42,22 +42,22 @@ export function TasksList({ epic, projectId, onTaskSelect }: TasksListProps) {
 
 function TasksListLoading() {
   return (
-    <div className="space-y-0 rounded-xl border border-border/60 overflow-hidden">
+    <div className="space-y-0 rounded-lg border border-border/60 overflow-hidden bg-card shadow-sm">
       {Array.from({ length: 3 }).map((_, i) => (
         <div
           key={i}
-          className={`flex items-center justify-between px-4 py-4 ${i !== 2 ? "border-b border-border/60" : ""}`}
+          className={`flex items-center justify-between px-3 py-2.5 ${i !== 2 ? "border-b border-border/60" : ""}`}
         >
-          <div className="flex items-center gap-3 flex-1">
-            <Skeleton className="h-5 w-5 rounded-full shrink-0" />
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-48" />
-              <Skeleton className="h-3 w-24" />
+          <div className="flex items-center gap-2 flex-1">
+            <Skeleton className="h-4 w-4 rounded-full shrink-0" />
+            <div className="space-y-1.5">
+              <Skeleton className="h-3 w-44" />
+              <Skeleton className="h-2.5 w-20" />
             </div>
           </div>
-          <div className="text-right space-y-2">
-            <Skeleton className="h-3 w-16 ml-auto" />
-            <Skeleton className="h-4 w-24 ml-auto" />
+          <div className="text-right space-y-1.5">
+            <Skeleton className="h-2.5 w-14 ml-auto" />
+            <Skeleton className="h-3 w-20 ml-auto" />
           </div>
         </div>
       ))}
@@ -67,7 +67,7 @@ function TasksListLoading() {
 
 function TasksListEmpty() {
   return (
-    <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border/50 bg-accent/10 py-10">
+    <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-border/50 bg-accent/10 py-8">
       <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-accent">
         <List className="h-5 w-5 text-muted-foreground" />
       </div>
@@ -80,7 +80,7 @@ function TasksListEmpty() {
 
 function TasksListError({ message }: { message: string }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-destructive/30 bg-destructive/5 py-10">
+    <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-destructive/30 bg-destructive/5 py-8">
       <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-destructive/20">
         <AlertCircle className="h-5 w-5 text-destructive" />
       </div>

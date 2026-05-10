@@ -121,8 +121,8 @@ export default function TasksListPage({
   const hasSearchTerm = Boolean(normalizedInitialSearchTerm)
 
   return (
-    <section className="px-4 py-5 sm:px-6 sm:py-7 lg:px-8">
-      <div className="mx-auto w-full max-w-[calc(94vw-var(--sidebar-width))] min-w-0 max-sm:max-w-full">
+    <section className="app-page-shell">
+      <div className="app-page-frame min-w-0">
         <TasksPageHeader
           projectId={projectId}
           projectName={projectName}
@@ -135,8 +135,8 @@ export default function TasksListPage({
 
         {hasError ? (
           hasSearchTerm ? (
-            <section className="mt-9 flex flex-col items-center justify-center px-6 py-24 text-center">
-              <div className="mb-6 flex size-16 items-center justify-center rounded-2xl bg-error/15">
+            <section className="mt-7 flex flex-col items-center justify-center px-5 py-18 text-center">
+              <div className="mb-6 flex size-16 items-center justify-center rounded-lg bg-error/15">
                 <EyeOff className="size-8 text-error" aria-hidden="true" />
               </div>
 
@@ -148,29 +148,29 @@ export default function TasksListPage({
               </p>
             </section>
           ) : (
-            <div className="mt-9 rounded-lg border border-error/20 bg-error/5 px-6 py-10 text-center">
+            <div className="mt-7 rounded-lg border border-error/20 bg-error/5 px-5 py-8 text-center">
               <p className="text-sm font-medium text-error">Failed to load tasks.</p>
             </div>
           )
         ) : isEmpty ? (
           hasSearchTerm ? (
-            <section className="mt-9 flex flex-col items-center justify-center px-6 py-30 text-center">
-              <div className="mb-8 flex size-19 items-center justify-center rounded-xl bg-[#f4d8d8]">
+            <section className="mt-7 flex flex-col items-center justify-center px-5 py-18 text-center">
+              <div className="mb-6 flex size-16 items-center justify-center rounded-lg bg-[#f4d8d8]">
                 <Search
-                  className="size-8 text-[#c62828]"
+                  className="size-7 text-[#c62828]"
                   strokeWidth={2.6}
                   aria-hidden="true"
                 />
               </div>
-              <h2 className="text-2xl font-bold text-foreground">
+              <h2 className="text-xl font-bold text-foreground">
                 No tasks found matching your search
               </h2>
-              <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
+              <p className="mt-2 max-w-sm text-xs leading-relaxed text-muted-foreground">
                 Try a different title keyword.
               </p>
             </section>
           ) : (
-            <div className="mt-9 rounded-lg border border-border/20 bg-background px-6 py-12 text-center">
+            <div className="mt-7 rounded-lg border border-border/60 bg-card px-5 py-9 text-center shadow-sm">
               <p className="text-sm font-medium text-muted-foreground">
                 No tasks found for this project
               </p>

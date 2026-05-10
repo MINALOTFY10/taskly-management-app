@@ -40,7 +40,10 @@ export default function EditProjectForm({ project }: EditProjectFormProps) {
   return (
     <ProjectForm
       content={{
-        breadcrumb: "Projects > Edit Project",
+        breadcrumbItems: [
+          { label: "Projects", href: "/project" },
+          { label: "Edit Project", current: true },
+        ],
         pageTitle: "Edit Project",
         cardTitle: "Update Project Details",
         cardDescription:

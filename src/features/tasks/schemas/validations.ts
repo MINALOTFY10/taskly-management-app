@@ -33,3 +33,37 @@ export const createTaskSchema = z.object({
 })
 
 export type CreateTaskFormValues = z.infer<typeof createTaskSchema>
+
+export const updateTaskSchema = z
+  .object({
+    title: z
+      .string()
+      .trim()
+      .min(3, "Title is required (minimum 3 characters).")
+      .max(200, "Title must be at most 200 characters.")
+      .optional(),
+
+    status: z.enum(TASK_STATUS_VALUES).optional(),
+
+    description: z
+      .union([
+        z
+          .string()
+          .trim()
+          .max(2000, "Description must be at most 2000 characters."),
+        z.null(),
+      ])
+      .optional(),
+
+    dueDate: z
+      .union([
+        z.string().trim().refine((value) => isValidDateTime(value), "Invalid due date."),
+        z.null(),
+      ])
+      .optional(),
+  })
+  .refine((payload) => Object.keys(payload).length > 0, {
+    message: "At least one field is required.",
+  })
+
+export type UpdateTaskFormValues = z.infer<typeof updateTaskSchema>

@@ -98,6 +98,17 @@ export async function loginUser(values: { email: string; password: string }) {
   return { data, error }
 }
 
+export async function guestLoginUser() {
+  try {
+    const res = await fetch("/api/auth/guest", { method: "POST" })
+    const json = await res.json()
+
+    return { data: json.data ?? null, error: json.error ?? null }
+  } catch {
+    return { data: null, error: "Network error. Please try again." }
+  }
+}
+
 /**
  * Sends a password-recovery email via the Supabase SDK.
  * Always returns a generic message — never reveals whether the address exists.
@@ -176,3 +187,46 @@ export async function resetPasswordWithAccessToken(values: {
     }
   }
 }
+
+export async function updateUserProfile(values: {
+  name?: string
+  jobTitle?: string | null
+  password?: string
+}) {
+  const supabase = createClient()
+
+  try {
+    const payload: {
+      data?: {
+        name?: string
+        full_name?: string
+        job_title?: string | null
+      }
+      password?: string
+    } = {}
+
+    if (values.name !== undefined || values.jobTitle !== undefined) {
+      payload.data = {}
+
+      if (values.name !== undefined) {
+        payload.data.name = values.name
+        payload.data.full_name = values.name
+      }
+
+      if (values.jobTitle !== undefined) {
+        payload.data.job_title = values.jobTitle
+      }
+    }
+
+    if (values.password) payload.password = values.password
+
+    const { data, error } = await supabase.auth.updateUser(payload)
+
+    if (error) return { error: error.message ?? "Failed to update profile" }
+
+    return { error: null, user: data.user }
+  } catch {
+    return { error: "Network error. Please try again." }
+  }
+}
+

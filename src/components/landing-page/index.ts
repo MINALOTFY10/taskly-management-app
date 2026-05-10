@@ -1,0 +1,8 @@
+export { default as LandingPage } from "@/components/landing-page/landing-page"
+export { default as LandingPageBackground } from "@/components/landing-page/landing-page-background"
+export { default as LandingPageCta } from "@/components/landing-page/landing-page-cta"
+export { default as LandingPageFeatures } from "@/components/landing-page/landing-page-features"
+export { default as LandingPageFooter } from "@/components/landing-page/landing-page-footer"
+export { default as LandingPageHeader } from "@/components/landing-page/landing-page-header"
+export { default as LandingPageOverview } from "@/components/landing-page/landing-page-overview"
+export { default as LandingPageWorkflow } from "@/components/landing-page/landing-page-workflow"
