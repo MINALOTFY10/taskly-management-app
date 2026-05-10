@@ -1,11 +1,25 @@
 "use client"
 
-import { ChevronLeft, ChevronRight, LogOut } from "lucide-react"
+import { ChevronsLeft, ChevronsRight } from "lucide-react"
 import NavItems from "./nav-bar/nav-items"
-import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar} from "@/components/ui/sidebar"
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuItem,
+  useSidebar,
+} from "@/components/ui/sidebar"
 import AppLogo from "../shared/app-logo"
+import SettingsDialog from "../../features/settings/components/SettingsDialog"
+import { NavItem } from "./nav-bar/nav-item"
 
 export function AppSidebar() {
+  const { toggleSidebar, open } = useSidebar()
+
   return (
     <Sidebar collapsible="icon" className="">
       <SidebarHeader className="h-14 justify-center border-b border-border/50">
@@ -22,31 +36,21 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-border/50 px-3 py-2.5">
-        <SidebarMenu className="gap-1">
-          <SidebarMenuItem className="hidden lg:flex">
-            <CollapseButton />
+      <SidebarFooter className="border-t border-border/50 py-3.5 pt-4">
+        <SidebarMenu className="items-start gap-3.5">
+          <NavItem
+            label={open ? "Collapse" : "Expand"}
+            icon={open ? ChevronsLeft : ChevronsRight}
+            onClick={toggleSidebar}
+            menuItemClassName="hidden lg:flex ms-1"
+            buttonClassName="h-8 px-3 w-58 cursor-pointer"
+            iconClassName="size-5.5!"
+          />
+          <SidebarMenuItem className="ms-1 hidden lg:flex">
+            <SettingsDialog />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
-  )
-}
-
-function CollapseButton() {
-  const { toggleSidebar, open } = useSidebar()
-  return (
-    <SidebarMenuButton
-      onClick={toggleSidebar}
-      tooltip={open ? "Collapse" : "Expand"}
-      className="h-8 cursor-pointer"
-    >
-      {open ? (
-        <ChevronLeft className="size-4.5!" />
-      ) : (
-        <ChevronRight className="size-4.5!" />
-      )}
-      <span className="text-xs">Collapse</span>
-    </SidebarMenuButton>
   )
 }

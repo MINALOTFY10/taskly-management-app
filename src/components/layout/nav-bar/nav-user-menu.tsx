@@ -31,7 +31,7 @@ export function NavUserMenu() {
           variant="outline"
           className="h-8 gap-2 rounded-full bg-muted/50 pr-3 pl-1 text-xs ring-1 ring-border/30 transition-colors hover:bg-muted/80"
         >
-          <div className="flex size-7 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/60 text-[0.65rem] font-bold text-primary-foreground shadow-[0_1px_6px_rgba(0,0,0,0.25)]">
+          <div className="flex size-7 items-center justify-center rounded-full bg-primary text-[0.65rem] font-bold text-primary-foreground shadow-[0_1px_6px_rgba(0,0,0,0.25)]">
             {initials}
           </div>
 
