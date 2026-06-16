@@ -89,29 +89,6 @@ export default function EpicsListHeader({
       </div>
 
       <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center lg:justify-end">
-        <div className="relative w-full sm:w-80 lg:w-82.5">
-          {isSearching ? (
-            <Loader2
-              className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 animate-spin text-muted-foreground"
-              aria-hidden="true"
-            />
-          ) : (
-            <Search
-              className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
-              aria-hidden="true"
-            />
-          )}
-          <Input
-            type="search"
-            placeholder="Search epics..."
-            className="h-9 w-full border-0 bg-[#d9e2ff] pl-8.5 text-xs text-foreground shadow-none placeholder:text-slate-500 focus-visible:ring-0"
-            aria-label="Search epics"
-            value={searchTerm}
-            onChange={(event) => setSearchTerm(event.target.value)}
-            aria-busy={isSearching}
-          />
-        </div>
-
         <Button
           asChild
           size="lg"
