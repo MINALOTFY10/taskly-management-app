@@ -1,6 +1,6 @@
 export type PaginationItem = number | "ellipsis"
 
-export const PAGE_SIZE = 6
+export const PAGE_SIZE = 9
 
 export type PaginationMeta = {
   limit: number
