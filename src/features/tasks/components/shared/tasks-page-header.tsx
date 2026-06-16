@@ -66,26 +66,6 @@ export function TasksPageHeader({
       </div>
 
       <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center">
-        <div className="relative w-full sm:w-50">
-          {isSearching ? (
-            <Loader2 className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 animate-spin text-muted-foreground" />
-          ) : (
-            <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-          )}
-          <Input
-            aria-label="Search tasks"
-            placeholder="Search tasks..."
-            className={cn(
-              "h-9 border border-border/60 bg-surface-highest pl-8.5 text-xs text-foreground shadow-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring/30",
-              !onSearchTermChange && "cursor-default"
-            )}
-            value={searchTerm}
-            onChange={(event) => onSearchTermChange?.(event.target.value)}
-            readOnly={!onSearchTermChange}
-            aria-busy={isSearching}
-          />
-        </div>
-
         <Select
           value={view}
           onValueChange={handleViewChange}
